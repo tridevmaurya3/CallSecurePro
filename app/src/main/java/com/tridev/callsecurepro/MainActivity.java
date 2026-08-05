@@ -36,17 +36,37 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation(savedInstanceState);
     }
 
+    /**
+     * Keeps page content clear of status bars and display cut-outs while allowing the
+     * bottom navigation surface to extend behind the system navigation area. The bottom
+     * inset is applied only inside the navigation surface, so icons and labels are never
+     * compressed or clipped on gesture-navigation and three-button-navigation devices.
+     */
     private void applySystemBarInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.main, (view, windowInsets) -> {
-            Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets systemBars = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
             view.setPadding(
                     systemBars.left,
                     systemBars.top,
                     systemBars.right,
+                    0
+            );
+
+            binding.bottomNavigationSurface.setPadding(
+                    0,
+                    0,
+                    0,
                     systemBars.bottom
             );
+
             return windowInsets;
         });
+
+        ViewCompat.requestApplyInsets(binding.main);
     }
 
     private void setupBottomNavigation(Bundle savedInstanceState) {
