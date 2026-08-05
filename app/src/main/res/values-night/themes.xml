@@ -1,7 +1,48 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.CallSecurePro" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Call Secure Pro is intentionally light-theme-first. -->
+    <style name="Base.Theme.CallSecurePro" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/csp_primary</item>
+        <item name="colorOnPrimary">@color/csp_on_primary</item>
+        <item name="colorPrimaryContainer">@color/csp_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/csp_on_primary_container</item>
+
+        <item name="colorSecondary">@color/csp_secondary</item>
+        <item name="colorOnSecondary">@color/csp_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/csp_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/csp_on_secondary_container</item>
+
+        <item name="colorTertiary">@color/csp_tertiary</item>
+        <item name="colorOnTertiary">@color/csp_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/csp_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/csp_on_tertiary_container</item>
+
+        <item name="android:colorBackground">@color/csp_background</item>
+        <item name="colorOnBackground">@color/csp_on_background</item>
+        <item name="colorSurface">@color/csp_surface</item>
+        <item name="colorOnSurface">@color/csp_on_surface</item>
+        <item name="colorSurfaceVariant">@color/csp_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/csp_on_surface_variant</item>
+        <item name="colorOutline">@color/csp_outline</item>
+        <item name="colorOutlineVariant">@color/csp_outline_variant</item>
+
+        <item name="colorError">@color/csp_error</item>
+        <item name="colorOnError">@color/csp_on_error</item>
+        <item name="colorErrorContainer">@color/csp_error_container</item>
+        <item name="colorOnErrorContainer">@color/csp_on_error_container</item>
+
+        <item name="android:fontFamily">sans</item>
+        <item name="fontFamily">sans</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/csp_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowBackground">@color/csp_background</item>
+        <item name="android:windowDisablePreview">false</item>
+        <item name="android:windowContentTransitions">true</item>
     </style>
+
 </resources>
