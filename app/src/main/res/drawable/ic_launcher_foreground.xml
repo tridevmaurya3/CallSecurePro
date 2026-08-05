@@ -1,30 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
+
+    <!-- Protective shield -->
+    <path
+        android:pathData="M54,16L83,29L80,58C78.2,74.2 68.2,86.1 54,93C39.8,86.1 29.8,74.2 28,58L25,29Z"
+        android:strokeColor="#C9EEFF"
+        android:strokeWidth="2.2"
+        android:strokeLineJoin="round">
         <aapt:attr name="android:fillColor">
             <gradient
-                android:endX="85.84757"
-                android:endY="92.4963"
-                android:startX="42.9492"
-                android:startY="49.59793"
+                android:startX="31"
+                android:startY="22"
+                android:endX="79"
+                android:endY="88"
                 android:type="linear">
-                <item
-                    android:color="#44000000"
-                    android:offset="0.0" />
-                <item
-                    android:color="#00000000"
-                    android:offset="1.0" />
+                <item android:offset="0" android:color="#47C8FF" />
+                <item android:offset="0.52" android:color="#1578EA" />
+                <item android:offset="1" android:color="#0A3EA7" />
             </gradient>
         </aapt:attr>
     </path>
+
+    <!-- Caller identity -->
     <path
-        android:fillColor="#FFFFFF"
-        android:fillType="nonZero"
-        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
-        android:strokeWidth="1"
-        android:strokeColor="#00000000" />
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M66,34a7,7 0,1 1,-14,0a7,7 0,1 1,14,0" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M47,55C47,47.8 52.3,43 59,43C65.7,43 71,47.8 71,55V59H47Z" />
+
+    <!-- Phone handset -->
+    <group
+        android:scaleX="2.15"
+        android:scaleY="2.15"
+        android:translateX="10"
+        android:translateY="21">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M6.62,10.79C8.06,13.62 10.38,15.93 13.21,17.38L15.41,15.18C15.68,14.91 16.08,14.82 16.43,14.94C17.55,15.31 18.76,15.51 20,15.51C20.55,15.51 21,15.96 21,16.51V20C21,20.55 20.55,21 20,21C10.61,21 3,13.39 3,4C3,3.45 3.45,3 4,3H7.5C8.05,3 8.5,3.45 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59Z" />
+    </group>
+
+    <!-- Verified badge -->
+    <path
+        android:fillColor="#27B85A"
+        android:pathData="M91,76a15,15 0,1 1,-30,0a15,15 0,1 1,30,0" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M68.5,76.2L73.2,80.9L83.7,70.4L86.3,73L73.2,86.1L65.9,78.8Z" />
+
+    <!-- Soft highlight -->
+    <path
+        android:fillColor="#28FFFFFF"
+        android:pathData="M33,32C40,23 51,20 62,22C49,25 39,34 34,47Z" />
 </vector>
