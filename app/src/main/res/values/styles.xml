@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Typography -->
+    <style name="TextAppearance.CallSecurePro.Display" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:textColor">@color/csp_text_primary</item>
+        <item name="android:textSize">@dimen/csp_text_display</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
+
+    <style name="TextAppearance.CallSecurePro.PageTitle" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textColor">@color/csp_text_primary</item>
+        <item name="android:textSize">@dimen/csp_text_page_title</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
+
+    <style name="TextAppearance.CallSecurePro.SectionTitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/csp_text_primary</item>
+        <item name="android:textSize">@dimen/csp_text_section_title</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
+
+    <style name="TextAppearance.CallSecurePro.CardTitle" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:textColor">@color/csp_text_primary</item>
+        <item name="android:textSize">@dimen/csp_text_card_title</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
+
+    <style name="TextAppearance.CallSecurePro.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/csp_text_secondary</item>
+        <item name="android:textSize">@dimen/csp_text_body</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
+    <style name="TextAppearance.CallSecurePro.Label" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textColor">@color/csp_text_secondary</item>
+        <item name="android:textSize">@dimen/csp_text_label</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
+
+    <style name="TextAppearance.CallSecurePro.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/csp_text_muted</item>
+        <item name="android:textSize">@dimen/csp_text_caption</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
+
+    <style name="TextAppearance.CallSecurePro.Number" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textColor">@color/csp_text_primary</item>
+        <item name="android:textSize">@dimen/csp_text_number</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
+
+    <!-- Cards -->
+    <style name="Widget.CallSecurePro.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/csp_surface</item>
+        <item name="cardCornerRadius">@dimen/csp_radius_card</item>
+        <item name="cardElevation">@dimen/csp_elevation_none</item>
+        <item name="strokeColor">@color/csp_outline</item>
+        <item name="strokeWidth">@dimen/csp_stroke</item>
+        <item name="rippleColor">@color/csp_ripple</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Card.Header" parent="Widget.CallSecurePro.Card">
+        <item name="cardBackgroundColor">@color/csp_section_header</item>
+        <item name="strokeColor">@color/csp_primary_container</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Card.Lavender" parent="Widget.CallSecurePro.Card">
+        <item name="cardBackgroundColor">@color/csp_section_lavender</item>
+        <item name="strokeColor">@color/csp_secondary_container</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Card.Mint" parent="Widget.CallSecurePro.Card">
+        <item name="cardBackgroundColor">@color/csp_section_mint</item>
+        <item name="strokeColor">@color/csp_tertiary_container</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Card.Peach" parent="Widget.CallSecurePro.Card">
+        <item name="cardBackgroundColor">@color/csp_section_peach</item>
+        <item name="strokeColor">@color/csp_warning_container</item>
+    </style>
+
+    <!-- Buttons -->
+    <style name="Widget.CallSecurePro.Button.Primary" parent="Widget.Material3.Button">
+        <item name="android:minHeight">@dimen/csp_button_height</item>
+        <item name="cornerRadius">@dimen/csp_radius_medium</item>
+        <item name="backgroundTint">@color/csp_primary</item>
+        <item name="android:textColor">@color/csp_on_primary</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="rippleColor">@color/csp_ripple</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">@dimen/csp_button_height</item>
+        <item name="cornerRadius">@dimen/csp_radius_medium</item>
+        <item name="strokeColor">@color/csp_outline</item>
+        <item name="strokeWidth">@dimen/csp_stroke</item>
+        <item name="android:textColor">@color/csp_primary</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="rippleColor">@color/csp_ripple</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Button.Danger" parent="Widget.Material3.Button">
+        <item name="android:minHeight">@dimen/csp_button_height</item>
+        <item name="cornerRadius">@dimen/csp_radius_medium</item>
+        <item name="backgroundTint">@color/csp_spam_container</item>
+        <item name="android:textColor">@color/csp_spam</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="rippleColor">@color/csp_ripple</item>
+    </style>
+
+    <!-- Chips -->
+    <style name="Widget.CallSecurePro.Chip" parent="Widget.Material3.Chip.Assist">
+        <item name="chipCornerRadius">@dimen/csp_radius_pill</item>
+        <item name="chipMinHeight">@dimen/csp_chip_height</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/csp_text_caption</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Chip.Safe" parent="Widget.CallSecurePro.Chip">
+        <item name="chipBackgroundColor">@color/csp_safe_container</item>
+        <item name="android:textColor">@color/csp_safe</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Chip.Verified" parent="Widget.CallSecurePro.Chip">
+        <item name="chipBackgroundColor">@color/csp_verified_container</item>
+        <item name="android:textColor">@color/csp_verified</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Chip.Business" parent="Widget.CallSecurePro.Chip">
+        <item name="chipBackgroundColor">@color/csp_business_container</item>
+        <item name="android:textColor">@color/csp_business</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Chip.Unknown" parent="Widget.CallSecurePro.Chip">
+        <item name="chipBackgroundColor">@color/csp_unknown_container</item>
+        <item name="android:textColor">@color/csp_unknown</item>
+    </style>
+
+    <style name="Widget.CallSecurePro.Chip.Spam" parent="Widget.CallSecurePro.Chip">
+        <item name="chipBackgroundColor">@color/csp_spam_container</item>
+        <item name="android:textColor">@color/csp_spam</item>
+    </style>
+
+</resources>
