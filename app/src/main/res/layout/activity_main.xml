@@ -38,7 +38,6 @@
             android:layout_height="@dimen/csp_bottom_navigation_content_height"
             android:background="@android:color/transparent"
             android:minHeight="@dimen/csp_touch_target"
-            app:itemActiveIndicatorColor="@color/csp_secondary_container"
             app:itemHorizontalTranslationEnabled="false"
             app:itemIconSize="@dimen/csp_bottom_navigation_icon"
             app:itemIconTint="@color/bottom_nav_item_tint"
