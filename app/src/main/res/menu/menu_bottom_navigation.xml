@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_nav_home"
+        android:title="@string/nav_home" />
+
+    <item
+        android:id="@+id/nav_calls"
+        android:icon="@drawable/ic_nav_calls"
+        android:title="@string/nav_calls" />
+
+    <item
+        android:id="@+id/nav_dial"
+        android:icon="@drawable/ic_nav_dial"
+        android:title="@string/nav_dial" />
+
+    <item
+        android:id="@+id/nav_contacts"
+        android:icon="@drawable/ic_nav_contacts"
+        android:title="@string/nav_contacts" />
+
+    <item
+        android:id="@+id/nav_protection"
+        android:icon="@drawable/ic_nav_protection"
+        android:title="@string/nav_protection" />
+</menu>
