@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TextAppearance.CallSecurePro.BottomNavigation.Active" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">@dimen/csp_bottom_navigation_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="fontFamily">sans</item>
+    </style>
+
+    <style name="TextAppearance.CallSecurePro.BottomNavigation.Inactive" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">@dimen/csp_bottom_navigation_text</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="fontFamily">sans</item>
+    </style>
+</resources>
