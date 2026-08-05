@@ -12,28 +12,45 @@
         android:id="@+id/mainFragmentContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationSurface"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
+    <FrameLayout
+        android:id="@+id/bottomNavigationSurface"
         android:layout_width="0dp"
-        android:layout_height="@dimen/csp_bottom_navigation_height"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/csp_bottom_navigation_margin"
+        android:layout_marginEnd="@dimen/csp_bottom_navigation_margin"
         android:background="@drawable/bg_bottom_navigation"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:elevation="@dimen/csp_elevation_floating"
-        android:paddingStart="@dimen/csp_space_4"
-        android:paddingEnd="@dimen/csp_space_4"
-        app:itemHorizontalTranslationEnabled="false"
-        app:itemIconSize="@dimen/csp_bottom_navigation_icon"
-        app:itemIconTint="@color/bottom_nav_item_tint"
-        app:itemRippleColor="@color/csp_ripple"
-        app:itemTextColor="@color/bottom_nav_item_tint"
-        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_bottom_navigation" />
+        app:layout_constraintWidth_max="@dimen/csp_bottom_navigation_max_width">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/csp_bottom_navigation_content_height"
+            android:background="@android:color/transparent"
+            android:minHeight="@dimen/csp_touch_target"
+            app:itemActiveIndicatorColor="@color/csp_secondary_container"
+            app:itemHorizontalTranslationEnabled="false"
+            app:itemIconSize="@dimen/csp_bottom_navigation_icon"
+            app:itemIconTint="@color/bottom_nav_item_tint"
+            app:itemPaddingBottom="@dimen/csp_bottom_navigation_item_padding_bottom"
+            app:itemPaddingTop="@dimen/csp_bottom_navigation_item_padding_top"
+            app:itemRippleColor="@color/csp_ripple"
+            app:itemTextAppearanceActive="@style/TextAppearance.CallSecurePro.BottomNavigation.Active"
+            app:itemTextAppearanceInactive="@style/TextAppearance.CallSecurePro.BottomNavigation.Inactive"
+            app:itemTextColor="@color/bottom_nav_item_tint"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/menu_bottom_navigation" />
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
