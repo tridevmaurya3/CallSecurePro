@@ -2,35 +2,51 @@
 <resources>
     <string name="app_name">Call Secure Pro</string>
 
-    <!-- Step 4 design-system preview -->
-    <string name="design_preview_title">Call Secure Pro</string>
-    <string name="design_preview_subtitle">Fluent light design foundation</string>
-    <string name="design_ready">Design system ready</string>
-    <string name="design_ready_description">Central colors, spacing, typography, cards, buttons and caller-status styles are now active.</string>
-    <string name="design_status_active">Active</string>
+    <!-- Bottom navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_calls">Calls</string>
+    <string name="nav_dial">Dial</string>
+    <string name="nav_contacts">Contacts</string>
+    <string name="nav_protection">Protection</string>
 
-    <string name="section_palette_title">Light section palette</string>
-    <string name="section_palette_description">Every page can use different soft color zones while staying clean and professional.</string>
-    <string name="palette_sky">Sky</string>
-    <string name="palette_lavender">Lavender</string>
-    <string name="palette_mint">Mint</string>
-    <string name="palette_peach">Peach</string>
+    <!-- Shared navigation shell -->
+    <string name="navigation_shell_status">Connected</string>
+    <string name="navigation_shell_title">Navigation foundation ready</string>
+    <string name="navigation_shell_body">This page is connected to the shared Office 365 / Windows 11 Fluent navigation system. Its real feature workflow will be added in the upcoming development steps.</string>
+    <string name="navigation_shell_hint">Use the bottom navigation to open every main section.</string>
 
-    <string name="section_component_title">Reusable caller card</string>
-    <string name="sample_caller_name">Rohit Sharma</string>
-    <string name="sample_caller_number">+91 98765 43210</string>
-    <string name="sample_caller_detail">Lucknow • Jio • Last call yesterday</string>
-    <string name="status_safe">Safe Caller</string>
-    <string name="status_verified">Verified</string>
-    <string name="status_business">Business</string>
-    <string name="status_unknown">Unknown</string>
-    <string name="status_spam">Spam</string>
+    <!-- Home -->
+    <string name="home_title">Call Secure Pro</string>
+    <string name="home_subtitle">Caller identity, calling and safety in one place</string>
+    <string name="home_feature_title">Smart caller dashboard</string>
+    <string name="home_feature_body">The Home page will show caller lookup, protection status, quick actions, recent calls and important alerts.</string>
+    <string name="home_icon_text">H</string>
 
-    <string name="section_actions_title">Reusable actions</string>
-    <string name="button_primary_preview">Primary action</string>
-    <string name="button_secondary_preview">Secondary</string>
-    <string name="button_danger_preview">Block caller</string>
+    <!-- Calls -->
+    <string name="calls_title">Recent Calls</string>
+    <string name="calls_subtitle">Incoming, outgoing, missed and blocked calls</string>
+    <string name="calls_feature_title">Complete call history</string>
+    <string name="calls_feature_body">The Calls page will provide search, filters, SIM information, call direction, duration, caller status and quick actions.</string>
+    <string name="calls_icon_text">C</string>
 
-    <string name="section_status_title">Caller status system</string>
-    <string name="design_preview_note">This temporary preview confirms the shared Office 365 / Windows 11 Fluent design foundation. It will be replaced by the real dashboard in the next UI step.</string>
+    <!-- Dial -->
+    <string name="dial_title">Dial Pad</string>
+    <string name="dial_subtitle">Search, enter a number and choose a SIM</string>
+    <string name="dial_feature_title">Smart number dialling</string>
+    <string name="dial_feature_body">The Dial page will include number formatting, contact suggestions, spam warnings, dual-SIM calling and quick contact actions.</string>
+    <string name="dial_icon_text">D</string>
+
+    <!-- Contacts -->
+    <string name="contacts_title">Contacts</string>
+    <string name="contacts_subtitle">Favorites, family, work and business contacts</string>
+    <string name="contacts_feature_title">Organized contact directory</string>
+    <string name="contacts_feature_body">The Contacts page will show phone contacts with search, categories, availability labels and call or message shortcuts.</string>
+    <string name="contacts_icon_text">P</string>
+
+    <!-- Protection -->
+    <string name="protection_title">Spam Protection</string>
+    <string name="protection_subtitle">Warnings, blocking rules and community reports</string>
+    <string name="protection_feature_title">Caller safety controls</string>
+    <string name="protection_feature_body">The Protection page will manage spam detection, blocked numbers, unknown caller warnings, reports and safety preferences.</string>
+    <string name="protection_icon_text">S</string>
 </resources>
