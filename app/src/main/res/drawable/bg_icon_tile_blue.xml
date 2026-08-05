@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/csp_radius_medium" />
+    <solid android:color="@color/csp_primary_container" />
+    <stroke
+        android:width="@dimen/csp_stroke"
+        android:color="@color/csp_outline_variant" />
+</shape>
