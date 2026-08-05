@@ -44,6 +44,8 @@
     <dimen name="csp_button_height">50dp</dimen>
     <dimen name="csp_search_height">54dp</dimen>
     <dimen name="csp_chip_height">32dp</dimen>
+    <dimen name="csp_bottom_navigation_height">76dp</dimen>
+    <dimen name="csp_bottom_navigation_icon">24dp</dimen>
 
     <!-- Typography sizes -->
     <dimen name="csp_text_display">30sp</dimen>
