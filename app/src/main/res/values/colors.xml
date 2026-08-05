@@ -2,4 +2,77 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- Microsoft Fluent inspired brand palette -->
+    <color name="csp_primary">#0F6CBD</color>
+    <color name="csp_on_primary">#FFFFFFFF</color>
+    <color name="csp_primary_container">#DCEEFF</color>
+    <color name="csp_on_primary_container">#0B3558</color>
+
+    <color name="csp_secondary">#6750A4</color>
+    <color name="csp_on_secondary">#FFFFFFFF</color>
+    <color name="csp_secondary_container">#EEE8FF</color>
+    <color name="csp_on_secondary_container">#2E255A</color>
+
+    <color name="csp_tertiary">#247A68</color>
+    <color name="csp_on_tertiary">#FFFFFFFF</color>
+    <color name="csp_tertiary_container">#DDF5EE</color>
+    <color name="csp_on_tertiary_container">#123F35</color>
+
+    <!-- App surfaces -->
+    <color name="csp_background">#F7F9FC</color>
+    <color name="csp_on_background">#172033</color>
+    <color name="csp_surface">#FFFFFFFF</color>
+    <color name="csp_on_surface">#172033</color>
+    <color name="csp_surface_variant">#EEF2F7</color>
+    <color name="csp_on_surface_variant">#536174</color>
+    <color name="csp_surface_soft">#FBFCFE</color>
+    <color name="csp_outline">#D6DEE8</color>
+    <color name="csp_outline_variant">#E8EDF3</color>
+
+    <!-- Text hierarchy -->
+    <color name="csp_text_primary">#172033</color>
+    <color name="csp_text_secondary">#536174</color>
+    <color name="csp_text_muted">#7A8798</color>
+    <color name="csp_text_disabled">#A3ADBA</color>
+
+    <!-- Very light page section colors -->
+    <color name="csp_section_header">#EAF4FF</color>
+    <color name="csp_section_lavender">#F2EEFF</color>
+    <color name="csp_section_mint">#EAF8F4</color>
+    <color name="csp_section_peach">#FFF2EA</color>
+    <color name="csp_section_sky">#EDF7FF</color>
+    <color name="csp_section_warm">#FFF8ED</color>
+
+    <!-- Caller status colors -->
+    <color name="csp_safe">#1F7A4D</color>
+    <color name="csp_safe_container">#E6F6EC</color>
+    <color name="csp_verified">#0F6CBD</color>
+    <color name="csp_verified_container">#E2F1FF</color>
+    <color name="csp_business">#6B4FC6</color>
+    <color name="csp_business_container">#F0EBFF</color>
+    <color name="csp_unknown">#A15C00</color>
+    <color name="csp_unknown_container">#FFF2D7</color>
+    <color name="csp_spam">#B42318</color>
+    <color name="csp_spam_container">#FDE9E7</color>
+    <color name="csp_warning">#B54708</color>
+    <color name="csp_warning_container">#FFF1E6</color>
+
+    <!-- Call state colors -->
+    <color name="csp_call_incoming">#1F7A4D</color>
+    <color name="csp_call_outgoing">#0F6CBD</color>
+    <color name="csp_call_missed">#C4320A</color>
+    <color name="csp_call_blocked">#B42318</color>
+
+    <!-- Material error palette -->
+    <color name="csp_error">#B42318</color>
+    <color name="csp_on_error">#FFFFFFFF</color>
+    <color name="csp_error_container">#FDE9E7</color>
+    <color name="csp_on_error_container">#6B1710</color>
+
+    <!-- Interaction colors -->
+    <color name="csp_ripple">#1A0F6CBD</color>
+    <color name="csp_scrim">#660B1220</color>
+    <color name="csp_divider">#E8EDF3</color>
 </resources>
