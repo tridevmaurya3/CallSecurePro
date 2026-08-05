@@ -1,3 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Call Secure Pro</string>
+
+    <!-- Step 4 design-system preview -->
+    <string name="design_preview_title">Call Secure Pro</string>
+    <string name="design_preview_subtitle">Fluent light design foundation</string>
+    <string name="design_ready">Design system ready</string>
+    <string name="design_ready_description">Central colors, spacing, typography, cards, buttons and caller-status styles are now active.</string>
+    <string name="design_status_active">Active</string>
+
+    <string name="section_palette_title">Light section palette</string>
+    <string name="section_palette_description">Every page can use different soft color zones while staying clean and professional.</string>
+    <string name="palette_sky">Sky</string>
+    <string name="palette_lavender">Lavender</string>
+    <string name="palette_mint">Mint</string>
+    <string name="palette_peach">Peach</string>
+
+    <string name="section_component_title">Reusable caller card</string>
+    <string name="sample_caller_name">Rohit Sharma</string>
+    <string name="sample_caller_number">+91 98765 43210</string>
+    <string name="sample_caller_detail">Lucknow • Jio • Last call yesterday</string>
+    <string name="status_safe">Safe Caller</string>
+    <string name="status_verified">Verified</string>
+    <string name="status_business">Business</string>
+    <string name="status_unknown">Unknown</string>
+    <string name="status_spam">Spam</string>
+
+    <string name="section_actions_title">Reusable actions</string>
+    <string name="button_primary_preview">Primary action</string>
+    <string name="button_secondary_preview">Secondary</string>
+    <string name="button_danger_preview">Block caller</string>
+
+    <string name="section_status_title">Caller status system</string>
+    <string name="design_preview_note">This temporary preview confirms the shared Office 365 / Windows 11 Fluent design foundation. It will be replaced by the real dashboard in the next UI step.</string>
 </resources>
