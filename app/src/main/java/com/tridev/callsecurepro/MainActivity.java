@@ -3,6 +3,7 @@ package com.tridev.callsecurepro;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -88,6 +89,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         binding.bottomNavigation.setSelectedItemId(selectedItemId);
+    }
+
+    /**
+     * Lets dashboard actions open one of the five primary sections through the same
+     * BottomNavigationView state used by direct tab touches.
+     */
+    public void selectMainSection(@IdRes int itemId) {
+        if (binding != null) {
+            binding.bottomNavigation.setSelectedItemId(itemId);
+        }
     }
 
     private boolean openMainSection(int itemId) {
