@@ -15,11 +15,55 @@
     <string name="navigation_shell_body">This page is connected to the shared Office 365 / Windows 11 Fluent navigation system. Its real feature workflow will be added in the upcoming development steps.</string>
     <string name="navigation_shell_hint">Use the bottom navigation to open every main section.</string>
 
-    <!-- Home -->
+    <!-- Advanced Home dashboard -->
+    <string name="home_dashboard_greeting">Welcome back</string>
+    <string name="home_dashboard_title">Call Secure Pro</string>
+    <string name="home_dashboard_subtitle">Smart caller identity and protection</string>
+    <string name="home_dashboard_status">Foundation ready</string>
+    <string name="home_dashboard_description">Search a phone number, open your calling tools and review protection status from one secure dashboard.</string>
+
+    <string name="home_lookup_title">Find caller details</string>
+    <string name="home_lookup_subtitle">Enter a mobile, landline or business number</string>
+    <string name="home_lookup_hint">Phone number</string>
+    <string name="home_lookup_action">Look up number</string>
+    <string name="home_lookup_empty_error">Enter a phone number first</string>
+    <string name="home_lookup_placeholder_message">Caller lookup is ready for backend integration in the next feature step.</string>
+
+    <string name="home_quick_actions_title">Quick actions</string>
+    <string name="home_action_dial_title">Dial Pad</string>
+    <string name="home_action_dial_subtitle">Call a number</string>
+    <string name="home_action_calls_title">Recent Calls</string>
+    <string name="home_action_calls_subtitle">View call history</string>
+    <string name="home_action_contacts_title">Contacts</string>
+    <string name="home_action_contacts_subtitle">Find saved people</string>
+    <string name="home_action_protection_title">Protection</string>
+    <string name="home_action_protection_subtitle">Review safety tools</string>
+
+    <string name="home_protection_title">Protection overview</string>
+    <string name="home_protection_subtitle">Live statistics will appear after caller screening is enabled</string>
+    <string name="home_protection_status">Setup pending</string>
+    <string name="home_stat_spam_value">0</string>
+    <string name="home_stat_spam_label">Spam blocked</string>
+    <string name="home_stat_unknown_value">0</string>
+    <string name="home_stat_unknown_label">Unknown warned</string>
+    <string name="home_stat_reports_value">0</string>
+    <string name="home_stat_reports_label">Reports</string>
+
+    <string name="home_activity_title">Recent activity</string>
+    <string name="home_activity_empty_title">No calls to show yet</string>
+    <string name="home_activity_empty_body">Incoming, outgoing, missed and blocked calls will appear here after call access is configured.</string>
+    <string name="home_activity_open_calls">Open Calls</string>
+
+    <string name="home_setup_title">Complete caller protection setup</string>
+    <string name="home_setup_body">Caller ID, spam screening and calling permissions will be configured step by step without requesting unnecessary access.</string>
+    <string name="home_setup_action">Start setup</string>
+    <string name="home_setup_placeholder_message">Permission and caller-screening setup will be added in the onboarding step.</string>
+
+    <!-- Legacy Home shell strings retained for compatibility -->
     <string name="home_title">Call Secure Pro</string>
     <string name="home_subtitle">Caller identity, calling and safety in one place</string>
     <string name="home_feature_title">Smart caller dashboard</string>
-    <string name="home_feature_body">The Home page will show caller lookup, protection status, quick actions, recent calls and important alerts.</string>
+    <string name="home_feature_body">The Home page shows caller lookup, protection status, quick actions, recent activity and setup guidance.</string>
     <string name="home_icon_text">H</string>
 
     <!-- Calls -->
