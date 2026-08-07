@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
+import android.telecom.TelecomManager;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -27,7 +28,8 @@ import com.tridev.callsecurepro.databinding.ActivityCallerProtectionSetupBinding
  * Step-by-step setup for Call Secure Pro.
  *
  * Permissions and the Android caller-screening role are requested only after an explicit
- * user tap. The screen can also be revisited at any time to review the current status.
+ * user tap. Default Phone app status is shown here, but its role request intentionally
+ * stays locked until the complete in-call UI is implemented.
  */
 public class CallerProtectionSetupActivity extends AppCompatActivity {
 
@@ -101,6 +103,9 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
         });
 
         binding.callerRoleButton.setOnClickListener(view -> requestCallerScreeningRole());
+
+        // Intentionally locked until the full user-facing in-call screen is complete.
+        binding.defaultPhoneRoleButton.setEnabled(false);
     }
 
     @Override
@@ -152,6 +157,8 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
         if (callPermissionReady) {
             completedItems++;
         }
+
+        updateDefaultPhoneIntegrationStatus();
 
         binding.setupProgressText.setText(
                 getString(R.string.setup_progress_format, completedItems, 3)
@@ -214,6 +221,47 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
         );
     }
 
+    private void updateDefaultPhoneIntegrationStatus() {
+        if (!hasTelephonyFeature()) {
+            setUnavailableStatus(
+                    binding.defaultPhoneStatusChip,
+                    binding.defaultPhoneRoleButton,
+                    R.string.setup_default_phone_no_telephony
+            );
+            return;
+        }
+
+        if (isDefaultPhoneApp()) {
+            setGrantedStatus(
+                    binding.defaultPhoneStatusChip,
+                    binding.defaultPhoneRoleButton,
+                    R.string.setup_default_phone_active
+            );
+            return;
+        }
+
+        setPreparedStatus(
+                binding.defaultPhoneStatusChip,
+                binding.defaultPhoneRoleButton
+        );
+    }
+
+    private boolean isDefaultPhoneApp() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            RoleManager roleManager = getSystemService(RoleManager.class);
+            return roleManager != null
+                    && roleManager.isRoleAvailable(RoleManager.ROLE_DIALER)
+                    && roleManager.isRoleHeld(RoleManager.ROLE_DIALER);
+        }
+
+        TelecomManager telecomManager =
+                (TelecomManager) getSystemService(TELECOM_SERVICE);
+        String defaultDialerPackage = telecomManager == null
+                ? null
+                : telecomManager.getDefaultDialerPackage();
+        return getPackageName().equals(defaultDialerPackage);
+    }
+
     private void updatePermissionStatus(
             @NonNull Chip statusChip,
             @NonNull MaterialButton actionButton,
@@ -261,6 +309,21 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
 
         actionButton.setText(actionTextRes);
         actionButton.setEnabled(true);
+    }
+
+    private void setPreparedStatus(
+            @NonNull Chip statusChip,
+            @NonNull MaterialButton actionButton
+    ) {
+        int foreground = ContextCompat.getColor(this, R.color.csp_primary);
+        int background = ContextCompat.getColor(this, R.color.csp_primary_container);
+
+        statusChip.setText(R.string.setup_default_phone_ready);
+        statusChip.setTextColor(foreground);
+        statusChip.setChipBackgroundColor(ColorStateList.valueOf(background));
+
+        actionButton.setText(R.string.setup_default_phone_action_locked);
+        actionButton.setEnabled(false);
     }
 
     private void setUnavailableStatus(
