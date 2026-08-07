@@ -31,4 +31,7 @@ public interface CallNoteDao {
 
     @Query("UPDATE call_notes SET followUpAt = :followUpAt, followUpDone = 0, updatedAt = :updatedAt WHERE callLogId = :callLogId")
     void snoozeFollowUp(long callLogId, long followUpAt, long updatedAt);
+
+    @Query("SELECT COUNT(*) FROM call_notes WHERE followUpAt > 0 AND followUpDone = 0")
+    int countPendingFollowUps();
 }
