@@ -22,6 +22,7 @@ import com.tridev.callsecurepro.ui.incall.InCallActivity;
 public final class GlobalDialButtonManager {
 
     private static final String TAG = "call_secure_global_dial_fab";
+    private static final float BOTTOM_CLEARANCE_DP = 72f;
 
     private GlobalDialButtonManager() {
     }
@@ -55,7 +56,7 @@ public final class GlobalDialButtonManager {
                     Gravity.END | Gravity.BOTTOM
             );
             params.setMarginEnd(Math.round(dp(activity, 20)));
-            params.bottomMargin = Math.round(dp(activity, 22));
+            params.bottomMargin = Math.round(dp(activity, BOTTOM_CLEARANCE_DP));
             content.addView(button, params);
 
             button.setOnClickListener(view -> {
@@ -68,7 +69,8 @@ public final class GlobalDialButtonManager {
             ViewCompat.setOnApplyWindowInsetsListener(button, (view, insets) -> {
                 Insets bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) view.getLayoutParams();
-                layoutParams.bottomMargin = bars.bottom + Math.round(dp(activity, 22));
+                layoutParams.bottomMargin = bars.bottom
+                        + Math.round(dp(activity, BOTTOM_CLEARANCE_DP));
                 view.setLayoutParams(layoutParams);
                 return insets;
             });
