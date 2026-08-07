@@ -14,6 +14,7 @@
     <string name="calls_summary_today">Today</string>
     <string name="calls_summary_missed">Missed</string>
     <string name="calls_summary_duration">Talk time</string>
+    <string name="calls_count_zero">0 calls</string>
     <string name="calls_count_format">%1$d calls</string>
     <string name="calls_duration_minutes_format">%1$d min</string>
     <string name="calls_duration_seconds_format">%1$d sec</string>
@@ -23,6 +24,8 @@
     <string name="calls_search_empty_title">No matching calls</string>
     <string name="calls_search_empty_body">Try another name, number or filter.</string>
     <string name="calls_unknown_number">Unknown caller</string>
+    <string name="calls_private_number">Private number</string>
+    <string name="calls_restricted_number">Restricted number</string>
     <string name="calls_incoming">Incoming</string>
     <string name="calls_outgoing">Outgoing</string>
     <string name="calls_missed">Missed</string>
