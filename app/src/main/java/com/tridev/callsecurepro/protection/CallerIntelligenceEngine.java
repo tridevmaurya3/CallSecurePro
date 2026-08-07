@@ -58,18 +58,18 @@ public final class CallerIntelligenceEngine {
         int score;
         String reason;
 
-        if (savedContact) {
-            level = CallerAssessment.Level.SAFE;
-            score = 0;
-            reason = "Saved in your contacts";
+        if (userBlocked) {
+            level = CallerAssessment.Level.SPAM;
+            score = 100;
+            reason = "Blocked by you on this device";
         } else if (trusted) {
             level = CallerAssessment.Level.SAFE;
             score = 0;
             reason = "Marked trusted on this device";
-        } else if (userBlocked) {
-            level = CallerAssessment.Level.SPAM;
-            score = 100;
-            reason = "Blocked by you on this device";
+        } else if (savedContact) {
+            level = CallerAssessment.Level.SAFE;
+            score = 0;
+            reason = "Saved in your contacts";
         } else if (reports >= 3) {
             level = CallerAssessment.Level.SPAM;
             score = Math.min(95, 75 + (reports * 5));
@@ -91,8 +91,10 @@ public final class CallerIntelligenceEngine {
         boolean autoBlockHighRisk = ProtectionPreferences.isAutoBlockHighRiskEnabled(appContext);
         boolean silenceSuspicious = ProtectionPreferences.isSilenceSuspiciousEnabled(appContext);
 
-        boolean shouldBlock = !savedContact
-                && (userBlocked || (autoBlockHighRisk && level == CallerAssessment.Level.SPAM));
+        boolean shouldBlock = userBlocked
+                || (!savedContact
+                && autoBlockHighRisk
+                && level == CallerAssessment.Level.SPAM);
         boolean shouldSilence = !shouldBlock
                 && !savedContact
                 && silenceSuspicious
