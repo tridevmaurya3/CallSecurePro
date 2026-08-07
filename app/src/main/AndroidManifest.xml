@@ -28,6 +28,11 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".ui.lookup.NumberLookupActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".ui.incall.InCallActivity"
             android:excludeFromRecents="true"
             android:exported="false"
@@ -60,10 +65,7 @@
             </intent-filter>
         </activity>
 
-        <!--
-            Safe pass-through screening service. It never blocks or silences a call until
-            the protection decision engine is explicitly implemented.
-        -->
+        <!-- Offline-first caller screening using user rules and explainable local evidence. -->
         <service
             android:name=".telecom.CallSecureScreeningService"
             android:exported="true"
