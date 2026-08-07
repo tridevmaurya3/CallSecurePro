@@ -14,6 +14,12 @@
     <string name="protection_auto_block_body">Off by default. When enabled, only numbers classified Spam from local report evidence are auto-blocked. Saved contacts are protected from this automatic rule.</string>
     <string name="protection_silence_title">Silence suspicious callers</string>
     <string name="protection_silence_body">Off by default. When enabled, suspicious or spam calls can ring silently unless you explicitly blocked them.</string>
+    <string name="protection_block_hidden_title">Block hidden/private callers</string>
+    <string name="protection_block_hidden_body">Off by default. Rejects calls where Android does not expose a callable number.</string>
+    <string name="protection_block_unknown_title">Block unknown callers</string>
+    <string name="protection_block_unknown_body">Off by default. Rejects callers that are not saved, trusted or otherwise identified as safe. Use carefully.</string>
+    <string name="protection_silence_unknown_title">Silence unknown callers</string>
+    <string name="protection_silence_unknown_body">Off by default. Unknown callers are allowed but ring silently. Saved and trusted callers are not affected.</string>
 
     <string name="protection_analyze_title">Analyze a number</string>
     <string name="protection_analyze_body">Check a number against saved contacts and your local protection data.</string>
@@ -35,5 +41,21 @@
     <string name="protection_rule_updated">Protection rule updated</string>
     <string name="protection_report_added">Spam report added on this device</string>
 
-    <string name="protection_privacy_note">Protection data in this step stays on this device. No number is uploaded and no community reputation is claimed without a verified backend source.</string>
+    <string name="protection_history_title">Screening history</string>
+    <string name="protection_history_body">Recent decisions made by Call Secure Pro on this device.</string>
+    <string name="protection_history_clear">Clear history</string>
+    <string name="protection_history_empty">No screened calls yet.</string>
+    <string name="protection_history_counts_format">%1$d blocked • %2$d silenced • %3$d allowed</string>
+    <string name="protection_history_unknown_number">Hidden/private caller</string>
+    <string name="protection_history_action_blocked">Blocked</string>
+    <string name="protection_history_action_silenced">Silenced</string>
+    <string name="protection_history_action_allowed">Allowed</string>
+    <string name="protection_history_risk_format">%1$s • Risk %2$d/100</string>
+    <string name="protection_history_cleared">Screening history cleared</string>
+
+    <string name="protection_reason_hidden_blocked">Hidden/private caller blocked by your rule</string>
+    <string name="protection_reason_unknown_blocked">Unknown caller blocked by your rule</string>
+    <string name="protection_reason_unknown_silenced">Unknown caller silenced by your rule</string>
+
+    <string name="protection_privacy_note">Protection and screening history stay on this device. No number is uploaded and no community reputation is claimed without a verified backend source.</string>
 </resources>
