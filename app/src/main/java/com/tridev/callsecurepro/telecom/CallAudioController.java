@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * Process-local bridge between the user-facing in-call UI and Android InCallService audio APIs.
+ * Process-local bridge between the visible in-call UI and Android InCallService audio APIs.
  *
  * The service instance is held weakly so the UI never owns the Telecom service lifecycle.
  */
@@ -69,31 +69,47 @@ public final class CallAudioController {
     }
 
     public boolean setSpeakerEnabled(boolean enabled) {
-        CallSecureInCallService service = serviceReference.get();
-        if (service == null) {
+        CallAudioState state = latestAudioState;
+        if (enabled) {
+            return setAudioRoute(CallAudioState.ROUTE_SPEAKER);
+        }
+
+        if (state == null) {
             return false;
         }
 
+        int supported = state.getSupportedRouteMask();
+        if ((supported & CallAudioState.ROUTE_EARPIECE) != 0) {
+            return setAudioRoute(CallAudioState.ROUTE_EARPIECE);
+        }
+        if ((supported & CallAudioState.ROUTE_WIRED_HEADSET) != 0) {
+            return setAudioRoute(CallAudioState.ROUTE_WIRED_HEADSET);
+        }
+        if ((supported & CallAudioState.ROUTE_BLUETOOTH) != 0) {
+            return setAudioRoute(CallAudioState.ROUTE_BLUETOOTH);
+        }
+        return false;
+    }
+
+    public boolean setAudioRoute(int route) {
+        CallSecureInCallService service = serviceReference.get();
         CallAudioState state = latestAudioState;
-        if (enabled) {
-            service.setAudioRoute(CallAudioState.ROUTE_SPEAKER);
-            return true;
+        if (service == null || state == null) {
+            return false;
         }
 
-        int fallbackRoute = CallAudioState.ROUTE_EARPIECE;
-        if (state != null) {
-            int supported = state.getSupportedRouteMask();
-            if ((supported & CallAudioState.ROUTE_EARPIECE) == 0
-                    && (supported & CallAudioState.ROUTE_WIRED_HEADSET) != 0) {
-                fallbackRoute = CallAudioState.ROUTE_WIRED_HEADSET;
-            } else if ((supported & CallAudioState.ROUTE_EARPIECE) == 0
-                    && (supported & CallAudioState.ROUTE_BLUETOOTH) != 0) {
-                fallbackRoute = CallAudioState.ROUTE_BLUETOOTH;
-            }
+        int supported = state.getSupportedRouteMask();
+        if ((supported & route) == 0) {
+            return false;
         }
 
-        service.setAudioRoute(fallbackRoute);
+        service.setAudioRoute(route);
         return true;
+    }
+
+    public boolean isRouteSupported(int route) {
+        CallAudioState state = latestAudioState;
+        return state != null && (state.getSupportedRouteMask() & route) != 0;
     }
 
     public void addListener(@NonNull Listener listener) {
