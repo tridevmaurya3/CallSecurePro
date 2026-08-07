@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.tridev.callsecurepro.community.CommunityCallerIdentityRemoteSource;
+import com.tridev.callsecurepro.community.CommunityNetworkProvider;
 import com.tridev.callsecurepro.data.CallSecureDatabase;
 import com.tridev.callsecurepro.data.identity.CallerIdentityDao;
 import com.tridev.callsecurepro.data.identity.CallerIdentityEntity;
@@ -28,7 +30,7 @@ import java.util.List;
  * Resolution priority:
  * 1) a real contact saved on the device,
  * 2) a still-valid cached identity from a real prior source,
- * 3) an optional authenticated remote source,
+ * 3) an optional authenticated community/cloud source,
  * 4) unknown identity with the local protection assessment only.
  *
  * This repository never invents a caller/business name.
@@ -44,7 +46,12 @@ public final class CallerIdentityRepository {
     private final CallerIdentityRemoteSource remoteSource;
 
     public CallerIdentityRepository(@NonNull Context context) {
-        this(context, new NoOpCallerIdentityRemoteSource());
+        this(
+                context,
+                new CommunityCallerIdentityRemoteSource(
+                        CommunityNetworkProvider.get(context.getApplicationContext())
+                )
+        );
     }
 
     public CallerIdentityRepository(
