@@ -18,12 +18,14 @@ import androidx.fragment.app.FragmentManager;
 
 import com.tridev.callsecurepro.databinding.ActivityMainBinding;
 import com.tridev.callsecurepro.theme.AppVisualThemeManager;
+import com.tridev.callsecurepro.theme.DialVisualStyler;
 import com.tridev.callsecurepro.theme.ThemePreferences;
 import com.tridev.callsecurepro.ui.calls.CallsFragment;
 import com.tridev.callsecurepro.ui.contacts.ContactsFragment;
 import com.tridev.callsecurepro.ui.dial.DialFragment;
 import com.tridev.callsecurepro.ui.home.HomeFragment;
 import com.tridev.callsecurepro.ui.protection.ProtectionFragment;
+import com.tridev.callsecurepro.ui.theme.ThemeStudioActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,7 +65,9 @@ public class MainActivity extends AppCompatActivity {
                             @NonNull android.view.View view,
                             @Nullable Bundle savedInstanceState
                     ) {
-                        if (!(fragment instanceof DialFragment)) {
+                        if (fragment instanceof DialFragment) {
+                            DialVisualStyler.apply(MainActivity.this, view);
+                        } else {
                             AppVisualThemeManager.applyRoot(MainActivity.this, view);
                         }
                     }
@@ -225,9 +229,18 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment current = getSupportFragmentManager()
                 .findFragmentById(R.id.mainFragmentContainer);
-        if (current != null && !(current instanceof DialFragment) && current.getView() != null) {
-            AppVisualThemeManager.applyRoot(this, current.getView());
+        if (current != null && current.getView() != null) {
+            if (current instanceof DialFragment) {
+                DialVisualStyler.apply(this, current.getView());
+            } else {
+                AppVisualThemeManager.applyRoot(this, current.getView());
+            }
         }
+    }
+
+    /** Invoked by the Dial overflow menu's android:onClick hook. */
+    public void openThemeStudioMenuItem(@NonNull MenuItem item) {
+        startActivity(new Intent(this, ThemeStudioActivity.class));
     }
 
     @Override
