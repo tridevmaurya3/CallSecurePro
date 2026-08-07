@@ -17,6 +17,9 @@ import java.util.Locale;
  */
 public final class NumberIntelligenceAnalyzer {
 
+    private static final String UNKNOWN_REGION_CODE = "ZZ";
+    private static final String NON_GEO_REGION_CODE = "001";
+
     public enum Validity {
         VALID,
         POSSIBLE,
@@ -137,7 +140,7 @@ public final class NumberIntelligenceAnalyzer {
 
         String defaultRegion = Locale.getDefault().getCountry();
         if (defaultRegion == null || defaultRegion.trim().isEmpty()) {
-            defaultRegion = PhoneNumberUtil.UNKNOWN_REGION;
+            defaultRegion = UNKNOWN_REGION_CODE;
         }
 
         try {
@@ -153,7 +156,7 @@ public final class NumberIntelligenceAnalyzer {
 
             String regionCode = phoneNumberUtil.getRegionCodeForNumber(parsed);
             if (regionCode == null || regionCode.trim().isEmpty()) {
-                regionCode = PhoneNumberUtil.UNKNOWN_REGION;
+                regionCode = UNKNOWN_REGION_CODE;
             }
 
             String regionName = regionDisplayName(regionCode);
@@ -182,8 +185,8 @@ public final class NumberIntelligenceAnalyzer {
 
     @NonNull
     private String regionDisplayName(@NonNull String regionCode) {
-        if (PhoneNumberUtil.UNKNOWN_REGION.equals(regionCode)
-                || PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY.equals(regionCode)
+        if (UNKNOWN_REGION_CODE.equals(regionCode)
+                || NON_GEO_REGION_CODE.equals(regionCode)
                 || regionCode.length() != 2) {
             return "";
         }
@@ -246,7 +249,7 @@ public final class NumberIntelligenceAnalyzer {
         return new Result(
                 Validity.INVALID,
                 NumberType.UNKNOWN,
-                PhoneNumberUtil.UNKNOWN_REGION,
+                UNKNOWN_REGION_CODE,
                 "",
                 "",
                 "",
