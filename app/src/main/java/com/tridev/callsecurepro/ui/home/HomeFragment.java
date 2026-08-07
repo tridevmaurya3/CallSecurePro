@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.provider.CallLog;
 import android.text.InputType;
 import android.text.format.DateUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +86,17 @@ public class HomeFragment extends Fragment {
         binding.numberLookupInput.setSingleLine(true);
         binding.numberLookupInput.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 
+        // Material outlined fields need enough vertical room for the floating label and entered
+        // text. The previous fixed 48dp edit-text height could clip digits on some font scales.
+        ViewGroup.LayoutParams inputLayoutParams = binding.numberLookupInput.getLayoutParams();
+        if (inputLayoutParams != null) {
+            inputLayoutParams.height = dpToPx(56);
+            binding.numberLookupInput.setLayoutParams(inputLayoutParams);
+        }
+        binding.numberLookupInput.setMinHeight(dpToPx(56));
+        binding.numberLookupInput.setGravity(Gravity.CENTER_VERTICAL);
+        binding.numberLookupInput.setIncludeFontPadding(false);
+
         binding.numberLookupButton.setOnClickListener(view -> performLookup());
 
         binding.numberLookupInput.setOnEditorActionListener((textView, actionId, event) -> {
@@ -94,6 +106,11 @@ public class HomeFragment extends Fragment {
             }
             return false;
         });
+    }
+
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 
     private void setupDashboardActions() {
