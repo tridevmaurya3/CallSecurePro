@@ -17,6 +17,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/globalDialButton"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="14dp"
+        android:contentDescription="@string/home_action_dial_title"
+        app:backgroundTint="@color/csp_primary"
+        app:elevation="6dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationSurface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_nav_dial"
+        app:tint="@color/csp_on_primary" />
+
     <FrameLayout
         android:id="@+id/bottomNavigationSurface"
         android:layout_width="0dp"
