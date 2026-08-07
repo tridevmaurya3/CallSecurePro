@@ -13,6 +13,7 @@
     <string name="theme_studio_dialer_body">The keypad keeps the same familiar layout while its surface style changes.</string>
     <string name="theme_studio_call_button_title">Calling button style</string>
     <string name="theme_studio_call_button_body">Choose the phone button shape and color shown under the keypad.</string>
+    <string name="theme_studio_saved_body">Use the dropdowns to change each visual layer. Every choice is saved locally and is applied across the app.</string>
     <string name="theme_studio_reset">Reset to default</string>
     <string name="theme_studio_reset_done">Default visual theme restored.</string>
     <string name="theme_studio_saved">Theme saved</string>
