@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="community_title">Community Number Network</string>
+    <string name="community_subtitle">Build trustworthy caller intelligence with explicit community reports.</string>
+    <string name="community_back">Back</string>
+    <string name="community_cloud_title">Cloud identity network</string>
+    <string name="community_cloud_ready">Cloud sync available</string>
+    <string name="community_cloud_unavailable">Cloud backend not configured</string>
+    <string name="community_cloud_unavailable_body">Reports stay safely queued on this device until an authenticated Call Secure backend is configured.</string>
+    <string name="community_pending">Pending</string>
+    <string name="community_sent">Sent</string>
+    <string name="community_number_hint">Phone number</string>
+    <string name="community_category_hint">Report category</string>
+    <string name="community_submit">Save report</string>
+    <string name="community_sync">Sync now</string>
+    <string name="community_recent_title">Recent reports</string>
+    <string name="community_recent_empty">No community reports saved yet.</string>
+    <string name="community_privacy_note">Privacy: only the normalized phone number and selected category are prepared for community sync. Contacts, call audio, messages and call-log contents are not uploaded by this feature.</string>
+    <string name="community_number_required">Enter a valid phone number.</string>
+    <string name="community_category_required">Choose a report category.</string>
+    <string name="community_confirm_title">Save this community report?</string>
+    <string name="community_confirm_body">The report will be stored locally now and may sync later when a real authenticated Call Secure backend is enabled.</string>
+    <string name="community_saved_pending">Report saved to the local pending queue.</string>
+    <string name="community_duplicate">The same category for this number was already reported in the last 24 hours.</string>
+    <string name="community_sync_unavailable">Cloud sync is not configured yet.</string>
+    <string name="community_sync_requested">Community sync requested.</string>
+    <string name="community_report_status">%1$s • %2$s</string>
+    <string name="community_report_meta">%1$s • %2$s</string>
+    <string name="community_status_pending">Pending</string>
+    <string name="community_status_sent">Sent</string>
+    <string name="community_category_spam">Spam</string>
+    <string name="community_category_scam">Scam / Fraud</string>
+    <string name="community_category_telemarketing">Telemarketing</string>
+    <string name="community_category_business">Business</string>
+    <string name="community_category_safe">Safe / Legitimate</string>
+    <string name="community_category_other">Other</string>
+    <string name="lookup_community_report">Community report</string>
+</resources>
