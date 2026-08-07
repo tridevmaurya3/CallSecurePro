@@ -77,11 +77,22 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             AppVisualThemeManager.applyRoot(MainActivity.this, view);
                         }
+                        hideLegacyFragmentDialButton(view);
                         updateGlobalDialVisibility(fragment);
                     }
                 },
                 true
         );
+    }
+
+    private void hideLegacyFragmentDialButton(@Nullable View fragmentView) {
+        if (fragmentView == null) {
+            return;
+        }
+        View legacyButton = fragmentView.findViewById(R.id.floatingDialButton);
+        if (legacyButton != null) {
+            legacyButton.setVisibility(View.GONE);
+        }
     }
 
     private void updateGlobalDialVisibility(@Nullable Fragment fragment) {
@@ -255,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 AppVisualThemeManager.applyRoot(this, current.getView());
             }
+            hideLegacyFragmentDialButton(current.getView());
             updateGlobalDialVisibility(current);
         }
     }
