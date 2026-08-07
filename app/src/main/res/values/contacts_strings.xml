@@ -18,4 +18,5 @@
     <string name="contacts_profile_more_numbers">+%1$d more</string>
     <string name="contacts_message">Message contact</string>
     <string name="contacts_open_profile">Open contact profile</string>
+    <string name="contacts_sorted_smart">Favorites first • A–Z</string>
 </resources>
