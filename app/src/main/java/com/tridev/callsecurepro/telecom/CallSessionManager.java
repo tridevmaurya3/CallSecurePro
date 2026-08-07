@@ -14,9 +14,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * Process-local registry and user-action gateway for active Telecom calls.
+ * Process-local registry and explicit user-action gateway for active Telecom calls.
  *
- * All state-changing methods are called only from explicit in-call UI actions.
+ * Every state-changing method is intended to be called only from the visible in-call UI.
  */
 public final class CallSessionManager {
 
@@ -49,6 +49,14 @@ public final class CallSessionManager {
         public void onChildrenChanged(
                 @NonNull Call call,
                 @NonNull List<Call> children
+        ) {
+            notifyListeners();
+        }
+
+        @Override
+        public void onConferenceableCallsChanged(
+                @NonNull Call call,
+                @NonNull List<Call> conferenceableCalls
         ) {
             notifyListeners();
         }
@@ -126,6 +134,17 @@ public final class CallSessionManager {
         return activeCalls.get(0);
     }
 
+    @Nullable
+    public Call getSecondaryCall() {
+        Call primary = getPrimaryCall();
+        for (Call call : activeCalls) {
+            if (call != primary && call.getState() != Call.STATE_DISCONNECTED) {
+                return call;
+            }
+        }
+        return null;
+    }
+
     public boolean answerPrimaryCall() {
         Call call = getPrimaryCall();
         if (call == null || call.getState() != Call.STATE_RINGING) {
@@ -155,15 +174,7 @@ public final class CallSessionManager {
 
     public boolean setPrimaryCallHeld(boolean held) {
         Call call = getPrimaryCall();
-        if (call == null) {
-            return false;
-        }
-
-        Call.Details details = call.getDetails();
-        boolean canHold = details != null
-                && (details.can(Call.Details.CAPABILITY_HOLD)
-                || details.can(Call.Details.CAPABILITY_SUPPORT_HOLD));
-        if (!canHold) {
+        if (call == null || !canHold(call)) {
             return false;
         }
 
@@ -182,12 +193,103 @@ public final class CallSessionManager {
 
     public boolean canPrimaryCallHold() {
         Call call = getPrimaryCall();
-        if (call == null || call.getDetails() == null) {
+        return call != null && canHold(call);
+    }
+
+    public boolean canSwapCalls() {
+        Call active = findCallInState(Call.STATE_ACTIVE);
+        Call held = findCallInState(Call.STATE_HOLDING);
+        return active != null && held != null && canHold(active) && canHold(held);
+    }
+
+    public boolean swapActiveAndHeldCalls() {
+        Call active = findCallInState(Call.STATE_ACTIVE);
+        Call held = findCallInState(Call.STATE_HOLDING);
+        if (active == null || held == null || !canHold(active) || !canHold(held)) {
             return false;
         }
+
+        active.hold();
+        held.unhold();
+        return true;
+    }
+
+    public boolean canMergePrimaryCall() {
+        Call call = getPrimaryCall();
+        if (call == null) {
+            return false;
+        }
+
         Call.Details details = call.getDetails();
-        return details.can(Call.Details.CAPABILITY_HOLD)
-                || details.can(Call.Details.CAPABILITY_SUPPORT_HOLD);
+        if (details != null && details.can(Call.Details.CAPABILITY_MERGE_CONFERENCE)) {
+            return true;
+        }
+
+        List<Call> conferenceableCalls = call.getConferenceableCalls();
+        return conferenceableCalls != null && !conferenceableCalls.isEmpty();
+    }
+
+    public boolean mergePrimaryCall() {
+        Call call = getPrimaryCall();
+        if (call == null) {
+            return false;
+        }
+
+        Call.Details details = call.getDetails();
+        if (details != null && details.can(Call.Details.CAPABILITY_MERGE_CONFERENCE)) {
+            call.mergeConference();
+            return true;
+        }
+
+        List<Call> conferenceableCalls = call.getConferenceableCalls();
+        if (conferenceableCalls != null && !conferenceableCalls.isEmpty()) {
+            call.conference(conferenceableCalls.get(0));
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean playPrimaryDtmfTone(char digit) {
+        if (!isValidDtmfDigit(digit)) {
+            return false;
+        }
+
+        Call call = getPrimaryCall();
+        if (call == null || call.getState() != Call.STATE_ACTIVE) {
+            return false;
+        }
+
+        call.playDtmfTone(digit);
+        return true;
+    }
+
+    public void stopPrimaryDtmfTone() {
+        Call call = getPrimaryCall();
+        if (call != null) {
+            call.stopDtmfTone();
+        }
+    }
+
+    private boolean canHold(@NonNull Call call) {
+        Call.Details details = call.getDetails();
+        return details != null
+                && (details.can(Call.Details.CAPABILITY_HOLD)
+                || details.can(Call.Details.CAPABILITY_SUPPORT_HOLD));
+    }
+
+    @Nullable
+    private Call findCallInState(int state) {
+        for (Call call : activeCalls) {
+            if (call.getState() == state) {
+                return call;
+            }
+        }
+        return null;
+    }
+
+    private boolean isValidDtmfDigit(char digit) {
+        return (digit >= '0' && digit <= '9') || digit == '*' || digit == '#';
     }
 
     private void notifyListeners() {
