@@ -1,12 +1,15 @@
 package com.tridev.callsecurepro.telecom;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
 import android.telecom.InCallService;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.tridev.callsecurepro.calls.CallReminderScheduler;
 import com.tridev.callsecurepro.ui.incall.InCallActivity;
 
 /**
@@ -32,8 +35,13 @@ public class CallSecureInCallService extends InCallService {
 
     @Override
     public void onCallRemoved(@NonNull Call call) {
+        String number = extractPhoneNumber(call.getDetails());
+        long endedAt = System.currentTimeMillis();
+
         callSessionManager.unregisterCall(call);
         super.onCallRemoved(call);
+
+        CallReminderScheduler.schedulePostCallPrompt(this, number, endedAt);
     }
 
     @Override
@@ -55,6 +63,19 @@ public class CallSecureInCallService extends InCallService {
         } catch (RuntimeException ignored) {
             // Telecom remains functional even if a device temporarily blocks background UI launch.
         }
+    }
+
+    @Nullable
+    private String extractPhoneNumber(@Nullable Call.Details details) {
+        if (details == null) {
+            return null;
+        }
+        Uri handle = details.getHandle();
+        if (handle == null || handle.getSchemeSpecificPart() == null) {
+            return null;
+        }
+        String number = handle.getSchemeSpecificPart().trim();
+        return number.isEmpty() ? null : number;
     }
 
     @Override
