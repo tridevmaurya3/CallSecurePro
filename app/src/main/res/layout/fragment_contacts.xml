@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_fluent_page"
+    android:paddingStart="@dimen/csp_page_horizontal"
+    android:paddingTop="@dimen/csp_page_top"
+    android:paddingEnd="@dimen/csp_page_horizontal"
+    tools:context=".ui.contacts.ContactsFragment">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/headerCard"
+        style="@style/Widget.CallSecurePro.Card.Mint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/csp_card_padding">
+
+            <FrameLayout
+                android:layout_width="@dimen/csp_icon_tile_large"
+                android:layout_height="@dimen/csp_icon_tile_large"
+                android:background="@drawable/bg_contact_avatar">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/contacts_title"
+                    android:src="@drawable/ic_nav_contacts" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/csp_space_12"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/contacts_title"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.PageTitle" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_2"
+                    android:text="@string/contacts_real_subtitle"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/permissionCard"
+        style="@style/Widget.CallSecurePro.Card.Peach"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/csp_space_12"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerCard">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/csp_card_padding">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/contacts_permission_title"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_4"
+                android:text="@string/contacts_permission_body"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Body" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/allowContactsButton"
+                style="@style/Widget.CallSecurePro.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_12"
+                android:text="@string/contacts_permission_action" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/searchInputLayout"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/csp_space_12"
+        android:hint="@string/contacts_search_hint"
+        app:boxBackgroundColor="@color/csp_surface"
+        app:boxCornerRadiusBottomEnd="@dimen/csp_radius_medium"
+        app:boxCornerRadiusBottomStart="@dimen/csp_radius_medium"
+        app:boxCornerRadiusTopEnd="@dimen/csp_radius_medium"
+        app:boxCornerRadiusTopStart="@dimen/csp_radius_medium"
+        app:boxStrokeColor="@color/csp_outline"
+        app:endIconMode="clear_text"
+        app:startIconDrawable="@drawable/ic_home_search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/permissionCard">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/searchInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/listMetaRow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/csp_space_10"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchInputLayout">
+
+        <TextView
+            android:id="@+id/contactCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/contacts_count_zero"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.Label" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/contacts_sorted_label"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/contactsRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/csp_space_8"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/csp_page_bottom"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/listMetaRow" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/loadingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:indicatorColor="@color/csp_tertiary"
+        app:layout_constraintBottom_toBottomOf="@id/contactsRecyclerView"
+        app:layout_constraintEnd_toEndOf="@id/contactsRecyclerView"
+        app:layout_constraintStart_toStartOf="@id/contactsRecyclerView"
+        app:layout_constraintTop_toTopOf="@id/contactsRecyclerView" />
+
+    <LinearLayout
+        android:id="@+id/emptyState"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/csp_space_24"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/contactsRecyclerView"
+        app:layout_constraintEnd_toEndOf="@id/contactsRecyclerView"
+        app:layout_constraintStart_toStartOf="@id/contactsRecyclerView"
+        app:layout_constraintTop_toTopOf="@id/contactsRecyclerView">
+
+        <TextView
+            android:layout_width="@dimen/csp_icon_tile_large"
+            android:layout_height="@dimen/csp_icon_tile_large"
+            android:background="@drawable/bg_contact_avatar"
+            android:gravity="center"
+            android:text="@string/contacts_empty_icon"
+            android:textColor="@color/csp_tertiary"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/emptyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_12"
+            android:gravity="center"
+            android:text="@string/contacts_empty_title"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
+
+        <TextView
+            android:id="@+id/emptyBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_4"
+            android:gravity="center"
+            android:text="@string/contacts_empty_body"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.Body" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
