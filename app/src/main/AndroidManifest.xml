@@ -28,6 +28,14 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".ui.incall.InCallActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
@@ -65,15 +73,14 @@
             </intent-filter>
         </service>
 
-        <!--
-            Telecom bridge for the future Call Secure Pro in-call experience.
-            The default Phone role is intentionally not requested until the full in-call UI
-            (answer/reject/end/audio/conference/emergency-safe behavior) is available.
-        -->
+        <!-- Android Telecom bridge for the Call Secure Pro in-call experience. -->
         <service
             android:name=".telecom.CallSecureInCallService"
             android:exported="true"
             android:permission="android.permission.BIND_INCALL_SERVICE">
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_UI"
+                android:value="true" />
             <intent-filter>
                 <action android:name="android.telecom.InCallService" />
             </intent-filter>
