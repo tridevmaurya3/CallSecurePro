@@ -1,0 +1,76 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function validNumberHash(value) {
+      return value is string
+        && value.size() == 64
+        && value.matches('^[0-9a-f]{64}$');
+    }
+
+    function validCategory(value) {
+      return value in [
+        'SPAM',
+        'SCAM_FRAUD',
+        'TELEMARKETING',
+        'BUSINESS',
+        'SAFE_LEGITIMATE',
+        'OTHER'
+      ];
+    }
+
+    // Published caller identities are readable only by exact document ID.
+    // Mobile clients cannot list, create, update, or delete aggregate identities.
+    match /caller_directory/{numberHash} {
+      allow get: if signedIn()
+        && validNumberHash(numberHash)
+        && resource.data.status == 'PUBLISHED'
+        && resource.data.displayName is string
+        && resource.data.displayName.size() > 0
+        && resource.data.displayName.size() <= 120
+        && resource.data.source is string
+        && resource.data.source.size() > 0
+        && resource.data.source.size() <= 80
+        && resource.data.confidence is int
+        && resource.data.confidence >= 0
+        && resource.data.confidence <= 100
+        && resource.data.expiresAt is timestamp
+        && resource.data.expiresAt > request.time;
+      allow list, create, update, delete: if false;
+    }
+
+    // A client may only create its own immutable report submission.
+    // Raw phone numbers are not accepted; only the SHA-256 number hash is stored.
+    match /community_report_submissions/{userId}/reports/{reportId} {
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && validNumberHash(reportId)
+        && request.resource.data.keys().hasOnly([
+          'numberHash',
+          'category',
+          'createdAt',
+          'appVersion',
+          'schemaVersion',
+          'client'
+        ])
+        && validNumberHash(request.resource.data.numberHash)
+        && validCategory(request.resource.data.category)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.appVersion is string
+        && request.resource.data.appVersion.size() > 0
+        && request.resource.data.appVersion.size() <= 32
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.client == 'ANDROID';
+      allow read, update, delete: if false;
+    }
+
+    // Deny everything that has not been explicitly allowed above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
