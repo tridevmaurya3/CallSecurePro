@@ -26,6 +26,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.tridev.callsecurepro.R;
 import com.tridev.callsecurepro.databinding.ActivityInCallBinding;
+import com.tridev.callsecurepro.protection.CallerAssessment;
+import com.tridev.callsecurepro.protection.CallerIntelligenceEngine;
 import com.tridev.callsecurepro.telecom.CallAudioController;
 import com.tridev.callsecurepro.telecom.CallSessionManager;
 
@@ -38,7 +40,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * User-facing Telecom call screen.
  *
- * Every state-changing call action is triggered only by an explicit user tap.
+ * Every state-changing call action is triggered only by an explicit user tap. Caller risk is
+ * calculated from the same explainable local intelligence used by CallScreeningService.
  */
 public class InCallActivity extends AppCompatActivity
         implements CallSessionManager.Listener, CallAudioController.Listener {
@@ -50,6 +53,8 @@ public class InCallActivity extends AppCompatActivity
     private final AtomicInteger identityGeneration = new AtomicInteger();
 
     private ExecutorService contactLookupExecutor;
+    private CallerIntelligenceEngine intelligenceEngine;
+
     @Nullable
     private Call primaryCall;
     private long fallbackActiveSince;
@@ -77,6 +82,7 @@ public class InCallActivity extends AppCompatActivity
         setContentView(binding.getRoot());
 
         contactLookupExecutor = Executors.newSingleThreadExecutor();
+        intelligenceEngine = new CallerIntelligenceEngine(this);
 
         applySystemInsets();
         setupActions();
@@ -228,26 +234,66 @@ public class InCallActivity extends AppCompatActivity
         ) == PackageManager.PERMISSION_GRANTED;
         binding.identityNote.setVisibility(contactsAllowed ? View.GONE : View.VISIBLE);
 
-        if (!contactsAllowed
-                || number.isEmpty()
-                || contactLookupExecutor == null
-                || contactLookupExecutor.isShutdown()) {
+        ExecutorService executor = contactLookupExecutor;
+        CallerIntelligenceEngine engine = intelligenceEngine;
+        if (executor == null || executor.isShutdown() || engine == null) {
             return;
         }
 
         int generation = identityGeneration.incrementAndGet();
-        contactLookupExecutor.execute(() -> {
-            String contactName = queryContactName(number);
-            if (contactName == null || generation != identityGeneration.get()) {
+        executor.execute(() -> {
+            CallerAssessment assessment = engine.assess(number);
+            String contactName = contactsAllowed ? queryContactName(number) : null;
+
+            if (generation != identityGeneration.get()) {
                 return;
             }
 
             runOnUiThread(() -> {
-                if (binding != null && generation == identityGeneration.get()) {
+                if (binding == null || generation != identityGeneration.get()) {
+                    return;
+                }
+                if (contactName != null) {
                     applyCallerName(contactName);
                 }
+                renderCallerAssessment(assessment);
             });
         });
+    }
+
+    private void renderCallerAssessment(@NonNull CallerAssessment assessment) {
+        int labelRes;
+        int foreground;
+        int background;
+
+        switch (assessment.getLevel()) {
+            case SAFE:
+                labelRes = R.string.protection_result_safe;
+                foreground = ContextCompat.getColor(this, R.color.csp_safe);
+                background = ContextCompat.getColor(this, R.color.csp_safe_container);
+                break;
+            case SUSPICIOUS:
+                labelRes = R.string.protection_result_suspicious;
+                foreground = ContextCompat.getColor(this, R.color.csp_unknown);
+                background = ContextCompat.getColor(this, R.color.csp_unknown_container);
+                break;
+            case SPAM:
+                labelRes = R.string.protection_result_spam;
+                foreground = ContextCompat.getColor(this, R.color.csp_spam);
+                background = ContextCompat.getColor(this, R.color.csp_spam_container);
+                break;
+            case UNKNOWN:
+            default:
+                labelRes = R.string.protection_result_unknown;
+                foreground = ContextCompat.getColor(this, R.color.csp_business);
+                background = ContextCompat.getColor(this, R.color.csp_business_container);
+                break;
+        }
+
+        binding.callerRiskChip.setText(labelRes);
+        binding.callerRiskChip.setTextColor(foreground);
+        binding.callerRiskChip.setChipBackgroundColor(ColorStateList.valueOf(background));
+        binding.callerRiskReason.setText(assessment.getReason());
     }
 
     @NonNull
@@ -422,6 +468,7 @@ public class InCallActivity extends AppCompatActivity
             contactLookupExecutor = null;
         }
 
+        intelligenceEngine = null;
         binding = null;
         super.onDestroy();
     }
