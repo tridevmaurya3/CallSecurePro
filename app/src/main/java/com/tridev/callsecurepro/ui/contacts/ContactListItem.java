@@ -2,6 +2,9 @@ package com.tridev.callsecurepro.ui.contacts;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 public class ContactListItem {
@@ -10,18 +13,18 @@ public class ContactListItem {
     @NonNull
     private final String displayName;
     @NonNull
-    private final String phoneNumber;
+    private final List<String> phoneNumbers;
     private final boolean favorite;
 
     public ContactListItem(
             long contactId,
             @NonNull String displayName,
-            @NonNull String phoneNumber,
+            @NonNull List<String> phoneNumbers,
             boolean favorite
     ) {
         this.contactId = contactId;
         this.displayName = displayName;
-        this.phoneNumber = phoneNumber;
+        this.phoneNumbers = Collections.unmodifiableList(new ArrayList<>(phoneNumbers));
         this.favorite = favorite;
     }
 
@@ -35,8 +38,17 @@ public class ContactListItem {
     }
 
     @NonNull
+    public List<String> getPhoneNumbers() {
+        return phoneNumbers;
+    }
+
+    @NonNull
     public String getPhoneNumber() {
-        return phoneNumber;
+        return phoneNumbers.isEmpty() ? "" : phoneNumbers.get(0);
+    }
+
+    public int getAdditionalNumberCount() {
+        return Math.max(0, phoneNumbers.size() - 1);
     }
 
     public boolean isFavorite() {
