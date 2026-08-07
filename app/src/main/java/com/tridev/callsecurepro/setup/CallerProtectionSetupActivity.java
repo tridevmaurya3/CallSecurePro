@@ -46,6 +46,12 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
                     granted -> refreshSetupStatus()
             );
 
+    private final ActivityResultLauncher<String> phoneStatePermissionLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(),
+                    granted -> refreshSetupStatus()
+            );
+
     private final ActivityResultLauncher<Intent> callerRoleLauncher =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -107,6 +113,12 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
             }
         });
 
+        binding.simPermissionButton.setOnClickListener(view -> {
+            if (hasTelephonyFeature() && !hasPermission(Manifest.permission.READ_PHONE_STATE)) {
+                phoneStatePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE);
+            }
+        });
+
         binding.callerRoleButton.setOnClickListener(view -> requestCallerScreeningRole());
         binding.defaultPhoneRoleButton.setOnClickListener(view -> requestDefaultPhoneRole());
     }
@@ -156,8 +168,29 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
             );
             callPermissionReady = callGranted;
         }
-
         if (callPermissionReady) {
+            completedItems++;
+        }
+
+        boolean simPermissionReady;
+        if (!hasTelephonyFeature()) {
+            setUnavailableStatus(
+                    binding.simStatusChip,
+                    binding.simPermissionButton,
+                    R.string.setup_status_no_telephony
+            );
+            simPermissionReady = true;
+        } else {
+            boolean phoneStateGranted = hasPermission(Manifest.permission.READ_PHONE_STATE);
+            updatePermissionStatus(
+                    binding.simStatusChip,
+                    binding.simPermissionButton,
+                    phoneStateGranted,
+                    R.string.setup_sim_action
+            );
+            simPermissionReady = phoneStateGranted;
+        }
+        if (simPermissionReady) {
             completedItems++;
         }
 
@@ -167,7 +200,7 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
         }
 
         binding.setupProgressText.setText(
-                getString(R.string.setup_progress_format, completedItems, 4)
+                getString(R.string.setup_progress_format, completedItems, 5)
         );
     }
 
