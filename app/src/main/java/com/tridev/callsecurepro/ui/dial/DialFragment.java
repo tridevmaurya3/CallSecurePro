@@ -31,10 +31,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DialFragment extends Fragment {
 
+    private static final String ARG_PHONE_NUMBER = "arg_phone_number";
+
     private FragmentDialBinding binding;
     private ExecutorService contactLookupExecutor;
     private final AtomicInteger lookupGeneration = new AtomicInteger();
     private boolean formattingNumber;
+
+    @NonNull
+    public static DialFragment newInstance(@Nullable String phoneNumber) {
+        DialFragment fragment = new DialFragment();
+        Bundle arguments = new Bundle();
+        if (phoneNumber != null) {
+            arguments.putString(ARG_PHONE_NUMBER, phoneNumber);
+        }
+        fragment.setArguments(arguments);
+        return fragment;
+    }
 
     @Nullable
     @Override
@@ -57,6 +70,7 @@ public class DialFragment extends Fragment {
         setupKeypad();
         setupActions();
         refreshContactPermissionState();
+        applyInitialNumberFromArguments();
     }
 
     @Override
@@ -144,6 +158,20 @@ public class DialFragment extends Fragment {
         });
 
         binding.callButton.setOnClickListener(view -> placeCall());
+    }
+
+    private void applyInitialNumberFromArguments() {
+        Bundle arguments = getArguments();
+        if (arguments == null) {
+            return;
+        }
+
+        String initialNumber = arguments.getString(ARG_PHONE_NUMBER);
+        if (initialNumber == null || initialNumber.trim().isEmpty()) {
+            return;
+        }
+
+        setDialNumber(initialNumber.trim());
     }
 
     private void appendDialCharacter(@NonNull String character) {
