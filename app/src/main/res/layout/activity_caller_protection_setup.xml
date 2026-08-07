@@ -111,7 +111,7 @@
                     android:layout_marginTop="@dimen/csp_space_12"
                     android:text="@string/setup_progress_initial"
                     android:textAppearance="@style/TextAppearance.CallSecurePro.Label"
-                    tools:text="0 of 4 setup items ready" />
+                    tools:text="0 of 5 setup items ready" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -320,6 +320,73 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/csp_space_8"
                     android:text="@string/setup_call_action" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.CallSecurePro.Card.Peach"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_12">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/csp_card_padding">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="@dimen/csp_icon_tile"
+                        android:layout_height="@dimen/csp_icon_tile"
+                        android:background="@drawable/bg_icon_tile_blue"
+                        android:gravity="center"
+                        android:text="4"
+                        android:textColor="@color/csp_warning"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/csp_space_12"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/setup_sim_title"
+                            android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/csp_space_4"
+                            android:text="@string/setup_sim_body"
+                            android:textAppearance="@style/TextAppearance.CallSecurePro.Body" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/simStatusChip"
+                    style="@style/Widget.CallSecurePro.Chip.Unknown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_12"
+                    android:text="@string/setup_status_checking" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/simPermissionButton"
+                    style="@style/Widget.CallSecurePro.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_8"
+                    android:text="@string/setup_sim_action" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
