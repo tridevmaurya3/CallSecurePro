@@ -1,6 +1,7 @@
 package com.tridev.callsecurepro.telecom;
 
 import android.net.Uri;
+import android.os.Build;
 import android.telecom.Call;
 import android.telecom.CallScreeningService;
 
@@ -76,20 +77,30 @@ public class CallSecureScreeningService extends CallScreeningService {
                     }
                 }
 
-                CallResponse response = new CallResponse.Builder()
-                        .setDisallowCall(shouldBlock)
-                        .setRejectCall(shouldBlock)
-                        .setSilenceCall(!shouldBlock && shouldSilence)
-                        .setSkipCallLog(false)
-                        .setSkipNotification(false)
-                        .build();
+                boolean appliedSilence = !shouldBlock
+                        && shouldSilence
+                        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 
-                respondToCall(callDetails, response);
-                recordHistory(rawNumber, assessment, shouldBlock, shouldSilence, reason);
+                respondToCall(callDetails, buildResponse(shouldBlock, appliedSilence));
+                recordHistory(rawNumber, assessment, shouldBlock, appliedSilence, reason);
             } catch (RuntimeException ignored) {
                 respondAllow(callDetails);
             }
         });
+    }
+
+    @NonNull
+    private CallResponse buildResponse(boolean block, boolean silence) {
+        CallResponse.Builder builder = new CallResponse.Builder()
+                .setDisallowCall(block)
+                .setRejectCall(block)
+                .setSkipCallLog(false)
+                .setSkipNotification(false);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            builder.setSilenceCall(!block && silence);
+        }
+        return builder.build();
     }
 
     private void recordHistory(
@@ -137,14 +148,7 @@ public class CallSecureScreeningService extends CallScreeningService {
     }
 
     private void respondAllow(@NonNull Call.Details callDetails) {
-        CallResponse response = new CallResponse.Builder()
-                .setDisallowCall(false)
-                .setRejectCall(false)
-                .setSilenceCall(false)
-                .setSkipCallLog(false)
-                .setSkipNotification(false)
-                .build();
-        respondToCall(callDetails, response);
+        respondToCall(callDetails, buildResponse(false, false));
     }
 
     @Override
