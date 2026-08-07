@@ -17,3 +17,8 @@ app/google-services.json
 google-services.json
 *.jks
 *.keystore
+functions/node_modules/
+functions/.env
+functions/.env.*
+functions/.runtimeconfig.json
+firebase.local.properties
