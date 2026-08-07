@@ -24,6 +24,7 @@
     <string name="dial_sim_permission_denied">SIM details are unavailable. System default calling remains active.</string>
     <string name="dial_sim_no_telephony">This device does not support cellular calling.</string>
     <string name="dial_sim_no_accounts">No enabled voice SIM account was detected. Android system default will be used.</string>
+    <string name="dial_sim_legacy_system_default">This Android version does not expose a reliable public SIM-to-call-account mapping, so Android system default is used to avoid selecting the wrong SIM.</string>
     <string name="dial_sim_ready_one">1 voice SIM available</string>
     <string name="dial_sim_ready_many">%1$d voice SIMs available</string>
     <string name="dial_sim_remember_number">Remember this SIM for this number</string>
