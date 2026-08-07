@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+    implementation(libs.recyclerview)
 
     // Lifecycle and architecture
     implementation(libs.lifecycle.viewmodel)
