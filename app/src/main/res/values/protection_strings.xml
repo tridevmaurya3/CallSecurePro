@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="protection_real_title">Smart Protection</string>
+    <string name="protection_real_subtitle">Explainable caller risk, local rules and safe call screening</string>
+    <string name="protection_status_active">Caller screening intelligence ready</string>
+    <string name="protection_status_body">Unknown callers are allowed by default. Strong actions use your explicit rules and local report evidence.</string>
+
+    <string name="protection_stat_blocked">Blocked</string>
+    <string name="protection_stat_trusted">Trusted</string>
+    <string name="protection_stat_reports">Reports</string>
+
+    <string name="protection_settings_title">Smart screening controls</string>
+    <string name="protection_auto_block_title">Auto-block high-risk spam</string>
+    <string name="protection_auto_block_body">Off by default. When enabled, only numbers classified Spam from local report evidence are auto-blocked. Saved contacts are protected from this automatic rule.</string>
+    <string name="protection_silence_title">Silence suspicious callers</string>
+    <string name="protection_silence_body">Off by default. When enabled, suspicious or spam calls can ring silently unless you explicitly blocked them.</string>
+
+    <string name="protection_analyze_title">Analyze a number</string>
+    <string name="protection_analyze_body">Check a number against saved contacts and your local protection data.</string>
+    <string name="protection_number_hint">Phone number</string>
+    <string name="protection_analyze_action">Analyze</string>
+    <string name="protection_number_required">Enter a valid phone number</string>
+
+    <string name="protection_result_safe">Safe</string>
+    <string name="protection_result_unknown">Unknown</string>
+    <string name="protection_result_suspicious">Suspicious</string>
+    <string name="protection_result_spam">Spam</string>
+    <string name="protection_risk_score_format">Risk score: %1$d/100</string>
+    <string name="protection_reports_format">Local reports: %1$d</string>
+    <string name="protection_block">Block number</string>
+    <string name="protection_unblock">Unblock number</string>
+    <string name="protection_trust">Mark trusted</string>
+    <string name="protection_untrust">Remove trusted</string>
+    <string name="protection_report">Report spam</string>
+    <string name="protection_rule_updated">Protection rule updated</string>
+    <string name="protection_report_added">Spam report added on this device</string>
+
+    <string name="protection_privacy_note">Protection data in this step stays on this device. No number is uploaded and no community reputation is claimed without a verified backend source.</string>
+</resources>
