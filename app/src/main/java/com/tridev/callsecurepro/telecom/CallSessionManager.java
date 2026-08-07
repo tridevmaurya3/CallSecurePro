@@ -115,20 +115,31 @@ public final class CallSessionManager {
             return null;
         }
 
-        for (Call call : activeCalls) {
-            int state = call.getState();
-            if (state == Call.STATE_RINGING
-                    || state == Call.STATE_DIALING
-                    || state == Call.STATE_CONNECTING
-                    || state == Call.STATE_ACTIVE) {
-                return call;
-            }
+        // Call waiting safety: a ringing call must take UI priority over an already-active call
+        // so Answer/Reject always target the incoming call the user can currently see.
+        Call ringing = findCallInState(Call.STATE_RINGING);
+        if (ringing != null) {
+            return ringing;
         }
 
-        for (Call call : activeCalls) {
-            if (call.getState() == Call.STATE_HOLDING) {
-                return call;
-            }
+        Call dialing = findCallInState(Call.STATE_DIALING);
+        if (dialing != null) {
+            return dialing;
+        }
+
+        Call connecting = findCallInState(Call.STATE_CONNECTING);
+        if (connecting != null) {
+            return connecting;
+        }
+
+        Call active = findCallInState(Call.STATE_ACTIVE);
+        if (active != null) {
+            return active;
+        }
+
+        Call holding = findCallInState(Call.STATE_HOLDING);
+        if (holding != null) {
+            return holding;
         }
 
         return activeCalls.get(0);
