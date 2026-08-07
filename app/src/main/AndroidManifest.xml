@@ -2,9 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Step 7: request only permissions needed by the setup flow. -->
+    <!-- Permissions are requested only from explicit user actions in their feature screens. -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
 
     <!-- Keep installation possible on Wi-Fi tablets/foldables while telephony features stay conditional. -->
     <uses-feature
