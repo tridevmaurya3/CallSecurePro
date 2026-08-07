@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/incallRoot"
@@ -7,221 +7,517 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_fluent_page"
     android:clipToPadding="false"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingStart="@dimen/csp_page_horizontal"
-    android:paddingTop="@dimen/csp_page_top"
-    android:paddingEnd="@dimen/csp_page_horizontal"
-    android:paddingBottom="@dimen/csp_page_bottom"
+    android:fillViewport="true"
+    android:overScrollMode="never"
     tools:context=".ui.incall.InCallActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/incall_title"
-            android:textAppearance="@style/TextAppearance.CallSecurePro.SectionTitle" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/callCountChip"
-            style="@style/Widget.CallSecurePro.Chip.Business"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/incall_single_call" />
-    </LinearLayout>
-
-    <com.google.android.material.card.MaterialCardView
-        style="@style/Widget.CallSecurePro.Card.Header"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/csp_space_16"
-        android:layout_weight="1">
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/csp_page_horizontal"
+        android:paddingTop="@dimen/csp_page_top"
+        android:paddingEnd="@dimen/csp_page_horizontal"
+        android:paddingBottom="@dimen/csp_page_bottom">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="@dimen/csp_card_padding">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/callerAvatarInitial"
-                android:layout_width="92dp"
-                android:layout_height="92dp"
-                android:background="@drawable/bg_contact_avatar"
-                android:gravity="center"
-                android:text="#"
-                android:textColor="@color/csp_tertiary"
-                android:textSize="34sp"
-                android:textStyle="bold"
-                tools:text="R" />
-
-            <TextView
-                android:id="@+id/callerName"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/csp_space_16"
-                android:ellipsize="end"
-                android:gravity="center"
-                android:maxLines="2"
-                android:text="@string/incall_unknown_caller"
-                android:textAppearance="@style/TextAppearance.CallSecurePro.PageTitle"
-                tools:text="Rahul Sharma" />
-
-            <TextView
-                android:id="@+id/callerNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/csp_space_4"
-                android:ellipsize="end"
-                android:gravity="center"
-                android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.CallSecurePro.Body"
-                tools:text="+91 98765 43210" />
+                android:layout_weight="1"
+                android:text="@string/incall_title"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.SectionTitle" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/callerRiskChip"
-                style="@style/Widget.CallSecurePro.Chip.Unknown"
+                android:id="@+id/callCountChip"
+                style="@style/Widget.CallSecurePro.Chip.Business"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/csp_space_10"
-                android:text="@string/protection_result_unknown"
-                tools:text="Safe" />
-
-            <TextView
-                android:id="@+id/callerRiskReason"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/csp_space_4"
-                android:gravity="center"
-                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
-                tools:text="Saved in your contacts" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/callStateChip"
-                style="@style/Widget.CallSecurePro.Chip.Safe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/csp_space_12"
-                android:text="@string/incall_call_state"
-                tools:text="Call in progress" />
-
-            <TextView
-                android:id="@+id/callTimer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/csp_space_10"
-                android:text="@string/incall_timer_zero"
-                android:textAppearance="@style/TextAppearance.CallSecurePro.Number"
-                android:textSize="28sp" />
-
-            <TextView
-                android:id="@+id/identityNote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/csp_space_12"
-                android:gravity="center"
-                android:text="@string/incall_contact_lookup_note"
-                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
+                android:text="@string/incall_single_call" />
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
 
-    <LinearLayout
-        android:id="@+id/utilityControls"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/csp_space_12"
-        android:orientation="horizontal">
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.CallSecurePro.Card.Header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_16">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/csp_card_padding">
+
+                <TextView
+                    android:id="@+id/callerAvatarInitial"
+                    android:layout_width="82dp"
+                    android:layout_height="82dp"
+                    android:background="@drawable/bg_contact_avatar"
+                    android:gravity="center"
+                    android:text="#"
+                    android:textColor="@color/csp_tertiary"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    tools:text="R" />
+
+                <TextView
+                    android:id="@+id/callerName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_12"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:text="@string/incall_unknown_caller"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.PageTitle"
+                    tools:text="Rahul Sharma" />
+
+                <TextView
+                    android:id="@+id/callerNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_4"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Body"
+                    tools:text="+91 98765 43210" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/callerRiskChip"
+                    style="@style/Widget.CallSecurePro.Chip.Unknown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_8"
+                    android:text="@string/protection_result_unknown"
+                    tools:text="Safe" />
+
+                <TextView
+                    android:id="@+id/callerRiskReason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_4"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                    tools:text="Saved in your contacts" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/callStateChip"
+                    style="@style/Widget.CallSecurePro.Chip.Safe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_10"
+                    android:text="@string/incall_call_state"
+                    tools:text="Call in progress" />
+
+                <TextView
+                    android:id="@+id/callTimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_8"
+                    android:text="@string/incall_timer_zero"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Number"
+                    android:textSize="26sp" />
+
+                <TextView
+                    android:id="@+id/identityNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_8"
+                    android:gravity="center"
+                    android:text="@string/incall_contact_lookup_note"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/multiCallCard"
+            style="@style/Widget.CallSecurePro.Card.Lavender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_10"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/csp_card_padding_compact">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/incall_multi_call_title"
+                        android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
+
+                    <TextView
+                        android:id="@+id/secondaryCallText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/csp_space_2"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                        tools:text="+91 98765 43210 • On hold" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/swapCallsButton"
+                    style="@style/Widget.CallSecurePro.Button.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="@dimen/csp_space_8"
+                    android:text="@string/incall_swap"
+                    app:icon="@drawable/ic_incall_swap"
+                    app:iconGravity="textStart" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:id="@+id/utilityControls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_12"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/muteButton"
+                style="@style/Widget.CallSecurePro.InCall.Utility"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="@string/incall_mute"
+                app:icon="@drawable/ic_incall_mute"
+                app:iconGravity="textStart" />
+
+            <Space
+                android:layout_width="@dimen/csp_space_8"
+                android:layout_height="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/speakerButton"
+                style="@style/Widget.CallSecurePro.InCall.Utility"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="@string/incall_speaker"
+                app:icon="@drawable/ic_incall_speaker"
+                app:iconGravity="textStart" />
+
+            <Space
+                android:layout_width="@dimen/csp_space_8"
+                android:layout_height="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/holdButton"
+                style="@style/Widget.CallSecurePro.InCall.Utility"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="@string/incall_hold"
+                app:icon="@drawable/ic_incall_hold"
+                app:iconGravity="textStart" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/advancedControls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_8"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/keypadButton"
+                    style="@style/Widget.CallSecurePro.InCall.Utility"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:text="@string/incall_keypad"
+                    app:icon="@drawable/ic_incall_keypad"
+                    app:iconGravity="textStart" />
+
+                <Space
+                    android:layout_width="@dimen/csp_space_8"
+                    android:layout_height="1dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/audioRouteButton"
+                    style="@style/Widget.CallSecurePro.InCall.Utility"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:text="@string/incall_audio_route"
+                    app:icon="@drawable/ic_incall_speaker"
+                    app:iconGravity="textStart" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_8"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/addCallButton"
+                    style="@style/Widget.CallSecurePro.InCall.Utility"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:text="@string/incall_add_call"
+                    app:icon="@drawable/ic_incall_add_call"
+                    app:iconGravity="textStart" />
+
+                <Space
+                    android:layout_width="@dimen/csp_space_8"
+                    android:layout_height="1dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/mergeButton"
+                    style="@style/Widget.CallSecurePro.InCall.Utility"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:text="@string/incall_merge"
+                    app:icon="@drawable/ic_incall_merge"
+                    app:iconGravity="textStart" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/dtmfCard"
+            style="@style/Widget.CallSecurePro.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_10"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/csp_card_padding_compact">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/incall_dtmf_title"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_2"
+                    android:text="@string/incall_dtmf_hint"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_10"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKey1"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="1" />
+
+                    <Space android:layout_width="@dimen/csp_space_8" android:layout_height="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKey2"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="2" />
+
+                    <Space android:layout_width="@dimen/csp_space_8" android:layout_height="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKey3"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="3" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_8"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKey4"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="4" />
+
+                    <Space android:layout_width="@dimen/csp_space_8" android:layout_height="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKey5"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="5" />
+
+                    <Space android:layout_width="@dimen/csp_space_8" android:layout_height="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKey6"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="6" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_8"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKey7"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="7" />
+
+                    <Space android:layout_width="@dimen/csp_space_8" android:layout_height="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKey8"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="8" />
+
+                    <Space android:layout_width="@dimen/csp_space_8" android:layout_height="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKey9"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="9" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_8"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKeyStar"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="*" />
+
+                    <Space android:layout_width="@dimen/csp_space_8" android:layout_height="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKey0"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="0" />
+
+                    <Space android:layout_width="@dimen/csp_space_8" android:layout_height="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/dtmfKeyHash"
+                        style="@style/Widget.CallSecurePro.DialKey"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="#" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:id="@+id/incomingActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_12"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/rejectButton"
+                style="@style/Widget.CallSecurePro.InCall.Danger"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="@string/incall_reject"
+                app:icon="@drawable/ic_incall_end"
+                app:iconGravity="textStart" />
+
+            <Space
+                android:layout_width="@dimen/csp_space_12"
+                android:layout_height="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/answerButton"
+                style="@style/Widget.CallSecurePro.InCall.Answer"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="@string/incall_answer"
+                app:icon="@drawable/ic_incall_answer"
+                app:iconGravity="textStart" />
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/muteButton"
-            style="@style/Widget.CallSecurePro.InCall.Utility"
-            android:layout_width="0dp"
-            android:layout_height="58dp"
-            android:layout_weight="1"
-            android:text="@string/incall_mute"
-            app:icon="@drawable/ic_incall_mute"
-            app:iconGravity="textStart" />
-
-        <Space
-            android:layout_width="@dimen/csp_space_8"
-            android:layout_height="1dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/speakerButton"
-            style="@style/Widget.CallSecurePro.InCall.Utility"
-            android:layout_width="0dp"
-            android:layout_height="58dp"
-            android:layout_weight="1"
-            android:text="@string/incall_speaker"
-            app:icon="@drawable/ic_incall_speaker"
-            app:iconGravity="textStart" />
-
-        <Space
-            android:layout_width="@dimen/csp_space_8"
-            android:layout_height="1dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/holdButton"
-            style="@style/Widget.CallSecurePro.InCall.Utility"
-            android:layout_width="0dp"
-            android:layout_height="58dp"
-            android:layout_weight="1"
-            android:text="@string/incall_hold"
-            app:icon="@drawable/ic_incall_hold"
-            app:iconGravity="textStart" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/incomingActions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/csp_space_12"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/rejectButton"
+            android:id="@+id/endCallButton"
             style="@style/Widget.CallSecurePro.InCall.Danger"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_weight="1"
-            android:text="@string/incall_reject"
+            android:layout_marginTop="@dimen/csp_space_12"
+            android:text="@string/incall_end"
+            android:visibility="gone"
             app:icon="@drawable/ic_incall_end"
-            app:iconGravity="textStart" />
+            app:iconGravity="textStart"
+            tools:visibility="visible" />
 
-        <Space
-            android:layout_width="@dimen/csp_space_12"
-            android:layout_height="1dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/answerButton"
-            style="@style/Widget.CallSecurePro.InCall.Answer"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight="1"
-            android:text="@string/incall_answer"
-            app:icon="@drawable/ic_incall_answer"
-            app:iconGravity="textStart" />
     </LinearLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/endCallButton"
-        style="@style/Widget.CallSecurePro.InCall.Danger"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="@dimen/csp_space_12"
-        android:text="@string/incall_end"
-        android:visibility="gone"
-        app:icon="@drawable/ic_incall_end"
-        app:iconGravity="textStart"
-        tools:visibility="visible" />
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>
