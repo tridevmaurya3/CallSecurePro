@@ -13,7 +13,9 @@
     <string name="dial_no_phone_app">No phone app is available on this device.</string>
     <string name="dial_no_telephony">Cellular calling is not available on this device.</string>
     <string name="dial_contacts_permission_note">Allow Contacts access from Setup to see saved-contact matches while dialling.</string>
-    <string name="dial_key_1">1</string>
+
+    <!-- Keep every dial key on the same two-line baseline so the number row never jumps. -->
+    <string name="dial_key_1">1\n </string>
     <string name="dial_key_2">2\nABC</string>
     <string name="dial_key_3">3\nDEF</string>
     <string name="dial_key_4">4\nGHI</string>
@@ -22,7 +24,7 @@
     <string name="dial_key_7">7\nPQRS</string>
     <string name="dial_key_8">8\nTUV</string>
     <string name="dial_key_9">9\nWXYZ</string>
-    <string name="dial_key_star">*</string>
+    <string name="dial_key_star">*\n </string>
     <string name="dial_key_0">0\n+</string>
-    <string name="dial_key_hash">#</string>
+    <string name="dial_key_hash">#\n </string>
 </resources>
