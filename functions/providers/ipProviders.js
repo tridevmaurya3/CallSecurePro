@@ -16,6 +16,42 @@ function normalizeIp(value) {
   return ip;
 }
 
+async function rirRdapLookup(ipAddress) {
+  const ip = normalizeIp(ipAddress);
+  const data = await fetchJson(
+    `https://rdap.db.ripe.net/ip/${encodeURIComponent(ip)}`,
+    {
+      headers: {
+        Accept: "application/rdap+json, application/json"
+      }
+    },
+    4500
+  );
+
+  const notices = Array.isArray(data.notices) ? data.notices : [];
+  const links = Array.isArray(data.links) ? data.links : [];
+  const selfLink = links.find((item) => item && item.rel === "self");
+
+  return compactObject({
+    source: "RIR_RDAP",
+    status: "OK",
+    handle: nonEmpty(data.handle),
+    networkName: nonEmpty(data.name),
+    networkType: nonEmpty(data.type),
+    countryCode: nonEmpty(data.country),
+    startAddress: nonEmpty(data.startAddress),
+    endAddress: nonEmpty(data.endAddress),
+    ipVersion: nonEmpty(data.ipVersion),
+    parentHandle: nonEmpty(data.parentHandle),
+    registrationStatus: Array.isArray(data.status) ? data.status.slice(0, 5) : [],
+    authoritativeRecord: selfLink ? nonEmpty(selfLink.href) : null,
+    noticeTitles: notices
+      .map((item) => item && item.title)
+      .filter((value) => typeof value === "string" && value.trim())
+      .slice(0, 5)
+  });
+}
+
 async function reverseDns(ipAddress) {
   const ip = normalizeIp(ipAddress);
   try {
@@ -236,6 +272,7 @@ async function abuseIpDbLookup(ipAddress, config = {}) {
 
 async function runIpProviders(ipAddress, providerConfig = {}) {
   const jobs = [
+    ["RIR_RDAP", () => rirRdapLookup(ipAddress)],
     ["DNS_PTR", () => reverseDns(ipAddress)],
     ["IPINFO", () => ipinfoLookup(ipAddress, providerConfig.ipinfo || {})],
     ["MAXMIND_GEOIP", () => maxMindLookup(ipAddress, providerConfig.maxmind || {})],
