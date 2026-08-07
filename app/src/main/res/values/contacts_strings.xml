@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="contacts_profile_title">Contact profile</string>
+    <string name="contacts_profile_back">Back</string>
     <string name="contacts_profile_numbers">Phone numbers</string>
     <string name="contacts_profile_number_count">%1$d numbers</string>
     <string name="contacts_profile_one_number">1 number</string>
