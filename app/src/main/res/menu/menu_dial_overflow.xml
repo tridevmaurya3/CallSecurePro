@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menuDialPaste"
+        android:title="@string/dial_menu_paste" />
+    <item
+        android:id="@+id/menuDialClear"
+        android:title="@string/dial_menu_clear" />
+    <item
+        android:id="@+id/menuDialLookup"
+        android:title="@string/dial_menu_lookup" />
+    <item
+        android:id="@+id/menuDialContact"
+        android:title="@string/dial_menu_add_contact" />
+    <item
+        android:id="@+id/menuDialChooseSim"
+        android:title="@string/dial_menu_choose_sim" />
+    <item
+        android:id="@+id/menuDialEnableSim"
+        android:title="@string/dial_menu_enable_sim" />
+    <item
+        android:id="@+id/menuDialRememberSim"
+        android:title="@string/dial_menu_remember_sim" />
+</menu>
