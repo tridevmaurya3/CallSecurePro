@@ -4,26 +4,25 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-/**
- * Single integration point for the Call Secure cloud backend.
- *
- * Step 28 intentionally returns the safe no-op gateway. A later backend step can replace only
- * this provider wiring with an authenticated implementation without changing UI, Room, or caller
- * identity resolution code.
- */
+/** Selects the real Firebase gateway when local project configuration exists. */
 public final class CommunityNetworkProvider {
 
     private static volatile CommunityNetworkGateway gateway;
+    private static volatile boolean configuredState;
 
     private CommunityNetworkProvider() {
     }
 
     @NonNull
     public static CommunityNetworkGateway get(@NonNull Context context) {
-        if (gateway == null) {
+        boolean configured = FirebaseCommunityConfig.isConfigured();
+        if (gateway == null || configuredState != configured) {
             synchronized (CommunityNetworkProvider.class) {
-                if (gateway == null) {
-                    gateway = new NoOpCommunityNetworkGateway();
+                if (gateway == null || configuredState != configured) {
+                    configuredState = configured;
+                    gateway = configured
+                            ? new FirebaseCommunityNetworkGateway(context.getApplicationContext())
+                            : new NoOpCommunityNetworkGateway();
                 }
             }
         }
