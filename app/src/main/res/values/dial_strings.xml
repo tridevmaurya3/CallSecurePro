@@ -14,6 +14,27 @@
     <string name="dial_no_telephony">Cellular calling is not available on this device.</string>
     <string name="dial_contacts_permission_note">Allow Contacts access from Setup to see saved-contact matches while dialling.</string>
 
+    <!-- Smart dual-SIM calling -->
+    <string name="dial_sim_title">Smart SIM selection</string>
+    <string name="dial_sim_subtitle">Choose the outgoing SIM, remember preferences and safely fall back if a SIM becomes unavailable.</string>
+    <string name="dial_sim_status_system">System default</string>
+    <string name="dial_sim_permission_title">SIM details access is optional</string>
+    <string name="dial_sim_permission_body">Allow Phone access to show enabled voice SIMs and carrier labels. Without it, calls still use Android\'s default SIM selection.</string>
+    <string name="dial_sim_permission_action">Enable SIM access</string>
+    <string name="dial_sim_permission_denied">SIM details are unavailable. System default calling remains active.</string>
+    <string name="dial_sim_no_telephony">This device does not support cellular calling.</string>
+    <string name="dial_sim_no_accounts">No enabled voice SIM account was detected. Android system default will be used.</string>
+    <string name="dial_sim_ready_one">1 voice SIM available</string>
+    <string name="dial_sim_ready_many">%1$d voice SIMs available</string>
+    <string name="dial_sim_remember_number">Remember this SIM for this number</string>
+    <string name="dial_sim_remember_hint">When enabled, this number will prefer the selected SIM next time if that SIM is still available.</string>
+    <string name="dial_sim_saved_for_number">Number-specific SIM preference active</string>
+    <string name="dial_sim_global_preference">Using your last SIM preference</string>
+    <string name="dial_sim_system_preference">Android will choose the outgoing SIM</string>
+    <string name="dial_sim_unavailable_fallback">The preferred SIM is no longer available. Android system default will be used.</string>
+    <string name="dial_sim_emergency_system_route">Android will choose the safest available route for this emergency call.</string>
+    <string name="dial_sim_loading">Checking SIMs…</string>
+
     <!-- Keep every dial key on the same two-line baseline so the number row never jumps. -->
     <string name="dial_key_1">1\n </string>
     <string name="dial_key_2">2\nABC</string>
