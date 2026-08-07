@@ -1,124 +1,106 @@
 # Step 30 — Authentic Multi-Source Intelligence Pack
 
-## Goal
+## Current decision: Spark-only
 
-Call Secure Pro must not depend on a single caller/IP database. This pack adds a provider-based authenticated backend that can combine multiple independent sources while keeping all third-party credentials out of the Android APK and GitHub repository.
+Call Secure Pro currently uses a **Spark-only** production path. Cloud Functions and third-party
+provider calls are intentionally not part of the Android runtime. The optional `functions/`
+source pack stays in the repository only as a future reference if the project later moves to a
+server-backed paid architecture.
+
+`firebase.json` deploys Firestore rules only, and the Android app does not include the Firebase
+Functions SDK.
+
+## Active phone intelligence sources
+
+1. Device Contacts — local, highest-confidence user-owned identity source.
+2. Call Secure local identity cache — local and offline-first.
+3. Firebase `caller_directory` — authenticated Spark-compatible cloud identity directory.
+4. Google libphonenumber — offline numbering-plan validation, country/region, formatting and
+   line-type metadata.
+5. Verified Public & Business Directory bulk import — admin-only import into `caller_directory`.
+6. Community reports — hashed, authenticated submissions that can later support reputation
+   aggregation without uploading a raw phone number in the report payload.
+
+## Active IP intelligence
+
+1. Local IPv4/IPv6 parser and public/private/reserved classification.
+2. Device network transport and local interface address information already shown by the app.
+
+The optional `functions/providers/` pack contains future adapters for RIR RDAP, DNS PTR, IPinfo,
+MaxMind, IP2Location, DB-IP, GreyNoise and AbuseIPDB. They are **not active in Spark-only mode**
+because secret-bearing provider calls must not be made directly from the Android APK.
 
 ## Privacy boundary
 
-The backend intentionally does **not** request private subscriber/KYC identity data. Phone lookups are limited to validation, carrier, line type, country/region, formatting, portability and risk metadata that a configured provider is allowed to return. IP lookups are network intelligence only: registration range, ASN/ISP, approximate city/region, reverse DNS, proxy/noise/abuse reputation. IP data must never be presented as a person's exact physical location.
+- Bulk directory import is for public/business/service numbers only.
+- The importer rejects `PERSON` identities so it cannot be used as a private subscriber/KYC
+  database loader.
+- Third-party provider secrets are never stored in the Android APK or GitHub source.
+- IP intelligence must never be presented as a person's exact physical location.
+- Community report payloads use SHA-256 phone-number keys and controlled categories.
 
-## Phone intelligence sources
+## Canonical directory key
 
-1. Device Contacts — local, highest-confidence user-owned identity source.
-2. Call Secure local identity cache — local, offline-first.
-3. Firebase `caller_directory` — authenticated Call Secure cloud identity directory.
-4. Google libphonenumber — offline numbering-plan validation, country and line-type metadata already used by the app.
-5. Twilio Lookup v2 — Basic Lookup plus optional paid Line Type Intelligence. Server-side credentials only.
-6. Telesign Phone ID — phone type, carrier and registration intelligence. Server-side credentials only.
-7. Veriphone v3 — validation, carrier, line type and optional current-carrier/portability intelligence. Server-side credentials only.
-8. Abstract Phone Validation — validation, carrier, line type, country and registered-region intelligence. Server-side credentials only.
+New directory records use:
 
-The backend does not call Twilio Caller Name or Telesign identity add-ons that could expose private subscriber identity.
+`SHA-256(E.164 canonical phone number)`
 
-## IP intelligence sources
+Example conceptually:
 
-1. Existing local IP analyzer — IPv4/IPv6 validity and public/private/reserved scope.
-2. RIR RDAP — authoritative internet-resource registration data via official RDAP infrastructure; no API key required.
-3. DNS PTR — reverse-DNS hostnames when the network owner has published them; no API key required.
-4. IPinfo — network/geolocation/ASN-style enrichment when configured.
-5. MaxMind GeoIP — country/city/network/ISP intelligence when configured.
-6. IP2Location.io — country/region/city/ASN/proxy intelligence when configured.
-7. DB-IP — geolocation, ASN/ISP, connection/proxy/threat metadata when configured.
-8. GreyNoise — internet-scanner/business-service intelligence; Community lookup can work without a paid key within provider limits, and full v3 can use a configured key.
-9. AbuseIPDB — abuse confidence, ISP/domain and report metadata when configured.
+`national input -> E.164 -> SHA-256 -> caller_directory/{hash}`
 
-## Backend security model
+The Android lookup layer also checks legacy national-format hashes so existing Step 29 test data
+continues to resolve while the directory migrates to canonical E.164 keys.
 
-- Android never contains Twilio/Telesign/Veriphone/Abstract/IPinfo/MaxMind/IP2Location/DB-IP/GreyNoise/AbuseIPDB credentials.
-- Both callable functions require Firebase Authentication.
-- Provider credentials are stored in one Firebase Secret Manager secret named `CALLSECURE_PROVIDER_CONFIG`.
-- Firebase App Check enforcement stays off during initial backend bring-up and should be enabled after Play Integrity is configured and valid traffic is verified.
-- The current functions region is `asia-south1`.
-- Provider failures are isolated: one source failing does not fail the complete lookup.
-- Each provider returns evidence with its source name so UI/logic can retain provenance instead of pretending all data came from one database.
+## Spark-only admin import tool
 
-## Provider secret JSON schema
+Location:
 
-Store the following structure in Firebase Secret Manager. Only include providers you actually configure. Never commit the real values to GitHub.
+`tools/directory-import/`
 
-```json
-{
-  "twilio": {
-    "accountSid": "YOUR_ACCOUNT_SID",
-    "authToken": "YOUR_AUTH_TOKEN",
-    "lineTypeEnabled": false
-  },
-  "telesign": {
-    "customerId": "YOUR_CUSTOMER_ID",
-    "apiKey": "YOUR_API_KEY"
-  },
-  "veriphone": {
-    "apiKey": "YOUR_API_KEY",
-    "currentCarrierEnabled": false
-  },
-  "abstractPhone": {
-    "apiKey": "YOUR_API_KEY"
-  },
-  "ipinfo": {
-    "token": "YOUR_TOKEN"
-  },
-  "maxmind": {
-    "accountId": "YOUR_ACCOUNT_ID",
-    "licenseKey": "YOUR_LICENSE_KEY"
-  },
-  "ip2location": {
-    "apiKey": "YOUR_API_KEY"
-  },
-  "dbip": {
-    "apiKey": "YOUR_API_KEY"
-  },
-  "greynoise": {
-    "apiKey": "YOUR_API_KEY"
-  },
-  "abuseipdb": {
-    "apiKey": "YOUR_API_KEY"
-  }
-}
-```
+The importer supports CSV validation and controlled Firestore writes. Important safeguards:
 
-An empty `{}` value is valid for initial deployment; key-free RIR RDAP, DNS PTR and GreyNoise Community paths can still be available subject to provider limits.
+- dry-run is the default;
+- Google libphonenumber normalization before hashing;
+- duplicate canonical-number detection;
+- only `BUSINESS` and `UNKNOWN` identity types are accepted;
+- source evidence must use an HTTPS URL;
+- official source class is required;
+- expiry is mandatory or generated with a bounded default;
+- commit mode requires an exact project confirmation;
+- existing records are protected unless `--overwrite` is explicitly supplied;
+- Firebase Admin credentials and input data folders are ignored by Git.
 
-## Firebase callable functions
+Public client-readable documents are stored in `caller_directory`. Source evidence/audit metadata
+is stored separately in `caller_directory_admin`; normal mobile clients cannot read that collection
+under the existing deny-by-default Firestore rules.
 
-- `lookupPhoneIntelligence`
-- `lookupIpIntelligence`
+## CSV columns
 
-Both functions return:
+`phoneNumber,country,displayName,category,identityType,verificationLevel,source,confidence,sourceClass,sourceUrl,expiresAt`
 
-- `evidence`: successful source responses only.
-- `providerStatus`: source-by-source status including `OK`, `NOT_CONFIGURED`, `NO_RESULT`, or `ERROR`.
-- `configuredSources`: sources that were actually attempted/configured.
+Allowed source classes:
 
-The Android `CloudIntelligenceClient` is already prepared to call these functions using the same named Firebase app and authenticated user session as the existing community backend.
+- `GOVERNMENT_OFFICIAL`
+- `REGULATOR_OFFICIAL`
+- `ORGANIZATION_OFFICIAL`
+- `BUSINESS_OFFICIAL`
+- `PUBLIC_SERVICE_OFFICIAL`
 
-## Deployment requirement
+## Current next activation sequence
 
-Firebase Cloud Functions deployment requires the Firebase project to use the Blaze pay-as-you-go plan. The Android app remains fully usable without Functions because the existing local/Firebase caller identity path is independent.
+1. Pull and build the Spark-only Android changes.
+2. Re-test the existing Firebase caller-directory number to verify legacy hash fallback.
+3. Create an admin credential outside the repository when bulk import is actually needed.
+4. Run the importer in dry-run mode against a small verified CSV.
+5. Import a small batch and verify Number Lookup from both national and `+country-code` formats.
+6. Build curated official/public source datasets and import them in controlled batches.
+7. Add local caching and community reputation aggregation before considering any paid backend.
 
-## Cost controls
+## Future optional provider pack
 
-- Twilio paid Line Type Intelligence defaults to disabled until explicitly enabled in the secret config.
-- Veriphone current-carrier mode defaults to disabled because it consumes more credits than static validation.
-- Only enable paid provider options after reviewing the provider's current pricing and coverage.
-- Keep provider result caching in the app/backend to reduce repeat paid queries.
-
-## Next activation sequence
-
-1. Upgrade Firebase project to Blaze only when ready to deploy Cloud Functions.
-2. Create `CALLSECURE_PROVIDER_CONFIG` in Firebase Secret Manager, initially `{}` or with selected provider credentials.
-3. Install Functions dependencies and deploy `lookupPhoneIntelligence` and `lookupIpIntelligence`.
-4. Test authenticated calls with key-free sources first.
-5. Add provider credentials one source at a time and verify each source status.
-6. Wire the prepared Android client into Number Lookup and IP Intelligence UI after backend deployment is confirmed.
-7. Configure Play Integrity App Check and then enable callable App Check enforcement.
+The repository still contains server-side adapters for Twilio Lookup, Telesign Phone ID,
+Veriphone, Abstract Phone Validation, RIR RDAP, DNS PTR, IPinfo, MaxMind, IP2Location, DB-IP,
+GreyNoise and AbuseIPDB. They are intentionally dormant while the project remains Spark-only.
+If a future server-backed plan is adopted, those adapters must remain behind authenticated server
+infrastructure; provider credentials must never be moved into the mobile client.
