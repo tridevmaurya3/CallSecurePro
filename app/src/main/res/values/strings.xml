@@ -55,9 +55,43 @@
     <string name="home_activity_open_calls">Open Calls</string>
 
     <string name="home_setup_title">Complete caller protection setup</string>
-    <string name="home_setup_body">Caller ID, spam screening and calling permissions will be configured step by step without requesting unnecessary access.</string>
+    <string name="home_setup_body">Caller ID, spam screening and calling permissions are configured step by step without requesting unnecessary access.</string>
     <string name="home_setup_action">Start setup</string>
-    <string name="home_setup_placeholder_message">Permission and caller-screening setup will be added in the onboarding step.</string>
+
+    <!-- Caller protection setup -->
+    <string name="setup_back">Back</string>
+    <string name="setup_title">Caller Protection Setup</string>
+    <string name="setup_subtitle">Enable only the access needed for caller identity and calling</string>
+    <string name="setup_header_title">Private, clear and under your control</string>
+    <string name="setup_header_body">Each permission is requested only after you choose it. Call Secure Pro does not silently enable access or block calls during this setup step.</string>
+    <string name="setup_progress_initial">Checking setup status…</string>
+    <string name="setup_progress_format">%1$d of %2$d setup items ready</string>
+    <string name="setup_section_required">Required setup</string>
+
+    <string name="setup_screening_title">Caller ID &amp; spam role</string>
+    <string name="setup_screening_body">On Android 10 and newer, select Call Secure Pro as the system caller ID and spam screening app. The current screening service safely allows every call until the protection engine is added.</string>
+    <string name="setup_screening_action">Enable caller ID &amp; spam</string>
+
+    <string name="setup_contacts_title">Contacts access</string>
+    <string name="setup_contacts_body">Allows Call Secure Pro to match incoming numbers with contacts already saved on this device. Contacts are not made public by this permission.</string>
+    <string name="setup_contacts_action">Allow contacts access</string>
+
+    <string name="setup_call_title">Place phone calls</string>
+    <string name="setup_call_body">Allows the Dial Pad to start a phone call after you choose a number. This permission is not needed on devices without cellular telephony.</string>
+    <string name="setup_call_action">Allow calling access</string>
+
+    <string name="setup_status_checking">Checking…</string>
+    <string name="setup_status_required">Required</string>
+    <string name="setup_status_active">Active</string>
+    <string name="setup_status_allowed">Allowed</string>
+    <string name="setup_status_not_available">Not available on this device</string>
+    <string name="setup_status_android_10_required">Android 10+ feature</string>
+    <string name="setup_status_no_telephony">No cellular calling on this device</string>
+    <string name="setup_action_done">Done</string>
+    <string name="setup_action_not_needed">No action needed</string>
+
+    <string name="setup_privacy_note">Privacy note: this step does not request call-log access, upload contacts, or enable automatic blocking. Those capabilities will be added only when their real feature is implemented and explained.</string>
+    <string name="setup_finish">Finish setup</string>
 
     <!-- Legacy Home shell strings retained for compatibility -->
     <string name="home_title">Call Secure Pro</string>
