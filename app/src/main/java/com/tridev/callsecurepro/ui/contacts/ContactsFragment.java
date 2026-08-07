@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.telephony.PhoneNumberUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -29,8 +30,10 @@ import com.tridev.callsecurepro.databinding.FragmentContactsBinding;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -73,7 +76,22 @@ public class ContactsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         contactLoader = Executors.newSingleThreadExecutor();
-        contactsAdapter = new ContactsAdapter(this::openDialerForContact);
+        contactsAdapter = new ContactsAdapter(new ContactsAdapter.Listener() {
+            @Override
+            public void onOpenProfile(@NonNull ContactListItem contact) {
+                openContactProfile(contact);
+            }
+
+            @Override
+            public void onCall(@NonNull ContactListItem contact) {
+                openDialerForContact(contact);
+            }
+
+            @Override
+            public void onMessage(@NonNull ContactListItem contact) {
+                openMessageForContact(contact);
+            }
+        });
 
         binding.contactsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.contactsRecyclerView.setAdapter(contactsAdapter);
@@ -191,7 +209,7 @@ public class ContactsFragment extends Fragment {
 
     @NonNull
     private List<ContactListItem> queryDeviceContacts() {
-        Map<Long, ContactListItem> uniqueContacts = new LinkedHashMap<>();
+        Map<Long, MutableContact> contactMap = new LinkedHashMap<>();
 
         String[] projection = new String[]{
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
@@ -231,10 +249,6 @@ public class ContactsFragment extends Fragment {
                 }
 
                 long contactId = cursor.getLong(contactIdIndex);
-                if (uniqueContacts.containsKey(contactId)) {
-                    continue;
-                }
-
                 String number = cursor.getString(numberIndex);
                 if (number == null || number.trim().isEmpty()) {
                     continue;
@@ -246,26 +260,33 @@ public class ContactsFragment extends Fragment {
                 }
 
                 boolean favorite = starredIndex >= 0 && cursor.getInt(starredIndex) == 1;
-
-                uniqueContacts.put(
-                        contactId,
-                        new ContactListItem(
-                                contactId,
-                                name.trim(),
-                                number.trim(),
-                                favorite
-                        )
-                );
+                MutableContact mutableContact = contactMap.get(contactId);
+                if (mutableContact == null) {
+                    mutableContact = new MutableContact(contactId, name.trim(), favorite);
+                    contactMap.put(contactId, mutableContact);
+                } else if (favorite) {
+                    mutableContact.favorite = true;
+                }
+                mutableContact.addNumber(number.trim());
             }
         } catch (SecurityException ignored) {
             return new ArrayList<>();
         }
 
-        List<ContactListItem> contacts = new ArrayList<>(uniqueContacts.values());
-        contacts.sort(Comparator.comparing(
-                ContactListItem::getDisplayName,
-                String.CASE_INSENSITIVE_ORDER
-        ));
+        List<ContactListItem> contacts = new ArrayList<>();
+        for (MutableContact mutableContact : contactMap.values()) {
+            if (!mutableContact.numbers.isEmpty()) {
+                contacts.add(mutableContact.toItem());
+            }
+        }
+
+        contacts.sort(
+                Comparator.comparing(ContactListItem::isFavorite).reversed()
+                        .thenComparing(
+                                ContactListItem::getDisplayName,
+                                String.CASE_INSENSITIVE_ORDER
+                        )
+        );
         return contacts;
     }
 
@@ -292,10 +313,37 @@ public class ContactsFragment extends Fragment {
         }
     }
 
+    private void openContactProfile(@NonNull ContactListItem contact) {
+        Intent intent = new Intent(requireContext(), ContactProfileActivity.class);
+        intent.putExtra(ContactProfileActivity.EXTRA_CONTACT_ID, contact.getContactId());
+        startActivity(intent);
+    }
+
     private void openDialerForContact(@NonNull ContactListItem contact) {
+        openDialer(contact.getPhoneNumber());
+    }
+
+    private void openMessageForContact(@NonNull ContactListItem contact) {
+        String number = contact.getPhoneNumber();
+        if (number.isEmpty()) {
+            return;
+        }
+
+        Intent messageIntent = new Intent(
+                Intent.ACTION_SENDTO,
+                Uri.fromParts("smsto", number, null)
+        );
+        try {
+            startActivity(messageIntent);
+        } catch (ActivityNotFoundException exception) {
+            Toast.makeText(requireContext(), R.string.contacts_dial_error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openDialer(@NonNull String number) {
         Intent dialIntent = new Intent(
                 Intent.ACTION_DIAL,
-                Uri.fromParts("tel", contact.getPhoneNumber(), null)
+                Uri.fromParts("tel", number, null)
         );
 
         try {
@@ -319,5 +367,35 @@ public class ContactsFragment extends Fragment {
         contactsAdapter = null;
         binding = null;
         super.onDestroyView();
+    }
+
+    private static final class MutableContact {
+        private final long contactId;
+        @NonNull
+        private final String name;
+        private boolean favorite;
+        @NonNull
+        private final List<String> numbers = new ArrayList<>();
+        @NonNull
+        private final Set<String> normalizedNumbers = new LinkedHashSet<>();
+
+        private MutableContact(long contactId, @NonNull String name, boolean favorite) {
+            this.contactId = contactId;
+            this.name = name;
+            this.favorite = favorite;
+        }
+
+        private void addNumber(@NonNull String number) {
+            String normalized = PhoneNumberUtils.normalizeNumber(number);
+            String key = normalized == null || normalized.isEmpty() ? number : normalized;
+            if (normalizedNumbers.add(key)) {
+                numbers.add(number);
+            }
+        }
+
+        @NonNull
+        private ContactListItem toItem() {
+            return new ContactListItem(contactId, name, numbers, favorite);
+        }
     }
 }
