@@ -152,7 +152,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/contacts_sorted_label"
+            android:text="@string/contacts_sorted_smart"
             android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
     </LinearLayout>
 
