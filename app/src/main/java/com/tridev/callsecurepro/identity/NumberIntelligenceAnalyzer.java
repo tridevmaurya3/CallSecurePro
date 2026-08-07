@@ -156,11 +156,7 @@ public final class NumberIntelligenceAnalyzer {
                 regionCode = PhoneNumberUtil.UNKNOWN_REGION;
             }
 
-            Locale displayLocale = Locale.getDefault();
-            String regionName = PhoneNumberUtil.UNKNOWN_REGION.equals(regionCode)
-                    ? ""
-                    : new Locale.Builder().setRegion(regionCode).build().getDisplayCountry(displayLocale);
-
+            String regionName = regionDisplayName(regionCode);
             String international = safeFormat(
                     parsed,
                     PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL
@@ -181,6 +177,23 @@ public final class NumberIntelligenceAnalyzer {
             );
         } catch (NumberParseException | IllegalArgumentException ignored) {
             return invalidResult();
+        }
+    }
+
+    @NonNull
+    private String regionDisplayName(@NonNull String regionCode) {
+        if (PhoneNumberUtil.UNKNOWN_REGION.equals(regionCode)
+                || PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY.equals(regionCode)
+                || regionCode.length() != 2) {
+            return "";
+        }
+        try {
+            return new Locale.Builder()
+                    .setRegion(regionCode)
+                    .build()
+                    .getDisplayCountry(Locale.getDefault());
+        } catch (RuntimeException ignored) {
+            return "";
         }
     }
 
