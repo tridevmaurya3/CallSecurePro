@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setup_phone_integration_section">Advanced phone integration</string>
+    <string name="setup_default_phone_title">Default Phone app</string>
+    <string name="setup_default_phone_body">Call Secure Pro is being prepared for Android Telecom integration. The default Phone role will be enabled only after the complete in-call screen is ready, including answer, reject, end call, speaker, mute, hold and multi-call safety.</string>
+    <string name="setup_default_phone_active">Default phone</string>
+    <string name="setup_default_phone_ready">Foundation ready</string>
+    <string name="setup_default_phone_waiting">In-call UI required</string>
+    <string name="setup_default_phone_action_locked">Enable after call UI</string>
+    <string name="setup_default_phone_no_telephony">No cellular phone role</string>
+    <string name="setup_default_phone_android_managed">Android Telecom ready</string>
+</resources>
