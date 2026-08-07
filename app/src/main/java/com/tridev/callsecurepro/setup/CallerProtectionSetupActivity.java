@@ -2,6 +2,7 @@ package com.tridev.callsecurepro.setup;
 
 import android.Manifest;
 import android.app.role.RoleManager;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -27,9 +28,7 @@ import com.tridev.callsecurepro.databinding.ActivityCallerProtectionSetupBinding
 /**
  * Step-by-step setup for Call Secure Pro.
  *
- * Permissions and the Android caller-screening role are requested only after an explicit
- * user tap. Default Phone app status is shown here, but its role request intentionally
- * stays locked until the complete in-call UI is implemented.
+ * Every permission and Android role is requested only after an explicit user tap.
  */
 public class CallerProtectionSetupActivity extends AppCompatActivity {
 
@@ -48,6 +47,12 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
             );
 
     private final ActivityResultLauncher<Intent> callerRoleLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> refreshSetupStatus()
+            );
+
+    private final ActivityResultLauncher<Intent> defaultPhoneRoleLauncher =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> refreshSetupStatus()
@@ -103,9 +108,7 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
         });
 
         binding.callerRoleButton.setOnClickListener(view -> requestCallerScreeningRole());
-
-        // Intentionally locked until the full user-facing in-call screen is complete.
-        binding.defaultPhoneRoleButton.setEnabled(false);
+        binding.defaultPhoneRoleButton.setOnClickListener(view -> requestDefaultPhoneRole());
     }
 
     @Override
@@ -158,10 +161,13 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
             completedItems++;
         }
 
-        updateDefaultPhoneIntegrationStatus();
+        boolean defaultPhoneReady = updateDefaultPhoneIntegrationStatus();
+        if (defaultPhoneReady) {
+            completedItems++;
+        }
 
         binding.setupProgressText.setText(
-                getString(R.string.setup_progress_format, completedItems, 3)
+                getString(R.string.setup_progress_format, completedItems, 4)
         );
     }
 
@@ -221,29 +227,98 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
         );
     }
 
-    private void updateDefaultPhoneIntegrationStatus() {
+    private boolean updateDefaultPhoneIntegrationStatus() {
         if (!hasTelephonyFeature()) {
             setUnavailableStatus(
                     binding.defaultPhoneStatusChip,
                     binding.defaultPhoneRoleButton,
                     R.string.setup_default_phone_no_telephony
             );
-            return;
+            return true;
         }
 
-        if (isDefaultPhoneApp()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            RoleManager roleManager = getSystemService(RoleManager.class);
+            if (roleManager == null || !roleManager.isRoleAvailable(RoleManager.ROLE_DIALER)) {
+                setUnavailableStatus(
+                        binding.defaultPhoneStatusChip,
+                        binding.defaultPhoneRoleButton,
+                        R.string.setup_default_phone_unavailable
+                );
+                return true;
+            }
+
+            if (roleManager.isRoleHeld(RoleManager.ROLE_DIALER)) {
+                setGrantedStatus(
+                        binding.defaultPhoneStatusChip,
+                        binding.defaultPhoneRoleButton,
+                        R.string.setup_default_phone_active
+                );
+                return true;
+            }
+
+            setPreparedStatus(
+                    binding.defaultPhoneStatusChip,
+                    binding.defaultPhoneRoleButton
+            );
+            return false;
+        }
+
+        TelecomManager telecomManager =
+                (TelecomManager) getSystemService(TELECOM_SERVICE);
+        if (telecomManager == null) {
+            setUnavailableStatus(
+                    binding.defaultPhoneStatusChip,
+                    binding.defaultPhoneRoleButton,
+                    R.string.setup_default_phone_unavailable
+            );
+            return true;
+        }
+
+        if (getPackageName().equals(telecomManager.getDefaultDialerPackage())) {
             setGrantedStatus(
                     binding.defaultPhoneStatusChip,
                     binding.defaultPhoneRoleButton,
                     R.string.setup_default_phone_active
             );
-            return;
+            return true;
         }
 
         setPreparedStatus(
                 binding.defaultPhoneStatusChip,
                 binding.defaultPhoneRoleButton
         );
+        return false;
+    }
+
+    private void requestDefaultPhoneRole() {
+        if (!hasTelephonyFeature() || isDefaultPhoneApp()) {
+            refreshSetupStatus();
+            return;
+        }
+
+        Intent requestIntent;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            RoleManager roleManager = getSystemService(RoleManager.class);
+            if (roleManager == null || !roleManager.isRoleAvailable(RoleManager.ROLE_DIALER)) {
+                refreshSetupStatus();
+                return;
+            }
+            requestIntent = roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER);
+        } else {
+            requestIntent = new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER);
+            requestIntent.putExtra(
+                    TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
+                    getPackageName()
+            );
+        }
+
+        try {
+            defaultPhoneRoleLauncher.launch(requestIntent);
+        } catch (ActivityNotFoundException exception) {
+            refreshSetupStatus();
+        }
     }
 
     private boolean isDefaultPhoneApp() {
@@ -322,8 +397,8 @@ public class CallerProtectionSetupActivity extends AppCompatActivity {
         statusChip.setTextColor(foreground);
         statusChip.setChipBackgroundColor(ColorStateList.valueOf(background));
 
-        actionButton.setText(R.string.setup_default_phone_action_locked);
-        actionButton.setEnabled(false);
+        actionButton.setText(R.string.setup_default_phone_action);
+        actionButton.setEnabled(true);
     }
 
     private void setUnavailableStatus(
