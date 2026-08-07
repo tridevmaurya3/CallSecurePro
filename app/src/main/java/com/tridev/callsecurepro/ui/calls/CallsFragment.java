@@ -2,6 +2,7 @@ package com.tridev.callsecurepro.ui.calls;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -132,9 +133,11 @@ public class CallsFragment extends Fragment {
         );
         binding.refreshButton.setOnClickListener(view1 -> loadCallHistory());
 
+        setupFollowUpInbox();
         setupPostCallPrompt();
         setupSearch();
         setupFilters();
+        refreshFollowUpInbox();
         refreshPermissionAndData();
     }
 
@@ -143,8 +146,45 @@ public class CallsFragment extends Fragment {
         super.onResume();
         if (binding != null) {
             refreshPostCallPromptState();
+            refreshFollowUpInbox();
             refreshPermissionAndData();
         }
+    }
+
+    private void setupFollowUpInbox() {
+        View.OnClickListener listener = view -> openFollowUpCenter();
+        binding.followUpInboxCard.setOnClickListener(listener);
+        binding.followUpInboxButton.setOnClickListener(listener);
+    }
+
+    private void refreshFollowUpInbox() {
+        ExecutorService executor = callLogExecutor;
+        CallNoteRepository repository = callNoteRepository;
+        if (!isAdded() || executor == null || executor.isShutdown() || repository == null) {
+            return;
+        }
+
+        Context appContext = requireContext().getApplicationContext();
+        executor.execute(() -> {
+            repository.reconcilePendingFollowUps(appContext);
+            CallNoteRepository.FollowUpStats stats = repository.getFollowUpStats();
+            if (!isAdded()) {
+                return;
+            }
+            requireActivity().runOnUiThread(() -> {
+                if (binding != null) {
+                    binding.followUpInboxBody.setText(getString(
+                            R.string.calls_follow_up_card_body,
+                            stats.overdue,
+                            stats.upcoming
+                    ));
+                }
+            });
+        });
+    }
+
+    private void openFollowUpCenter() {
+        startActivity(new Intent(requireContext(), FollowUpCenterActivity.class));
     }
 
     private void setupPostCallPrompt() {
@@ -578,6 +618,7 @@ public class CallsFragment extends Fragment {
             callLogExecutor = null;
         }
         callNoteRepository = null;
+        callsAdapter = null;
         binding = null;
         super.onDestroyView();
     }
