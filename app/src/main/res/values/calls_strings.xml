@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="calls_real_title">Recent Calls</string>
+    <string name="calls_real_subtitle">Smart call history with filters, search and quick actions</string>
+    <string name="calls_permission_title">Allow call history access</string>
+    <string name="calls_permission_body">Call Secure Pro reads your device call history only to show recent calls, missed calls and call details inside this app.</string>
+    <string name="calls_permission_action">Allow call history</string>
+    <string name="calls_search_hint">Search name or phone number</string>
+    <string name="calls_filter_all">All</string>
+    <string name="calls_filter_incoming">Incoming</string>
+    <string name="calls_filter_outgoing">Outgoing</string>
+    <string name="calls_filter_missed">Missed</string>
+    <string name="calls_filter_blocked">Blocked</string>
+    <string name="calls_summary_today">Today</string>
+    <string name="calls_summary_missed">Missed</string>
+    <string name="calls_summary_duration">Talk time</string>
+    <string name="calls_count_format">%1$d calls</string>
+    <string name="calls_duration_minutes_format">%1$d min</string>
+    <string name="calls_duration_seconds_format">%1$d sec</string>
+    <string name="calls_duration_hours_format">%1$dh %2$dm</string>
+    <string name="calls_empty_title">No calls to show</string>
+    <string name="calls_empty_body">Your recent device calls will appear here.</string>
+    <string name="calls_search_empty_title">No matching calls</string>
+    <string name="calls_search_empty_body">Try another name, number or filter.</string>
+    <string name="calls_unknown_number">Unknown caller</string>
+    <string name="calls_incoming">Incoming</string>
+    <string name="calls_outgoing">Outgoing</string>
+    <string name="calls_missed">Missed</string>
+    <string name="calls_blocked">Blocked</string>
+    <string name="calls_rejected">Rejected</string>
+    <string name="calls_other">Call</string>
+    <string name="calls_callback">Call back</string>
+    <string name="calls_refresh">Refresh</string>
+    <string name="calls_today">Today</string>
+    <string name="calls_yesterday">Yesterday</string>
+    <string name="calls_no_phone_app">No phone app is available on this device.</string>
+    <string name="calls_privacy_note">Call history stays on this device in this step. No call-log data is uploaded.</string>
+</resources>
