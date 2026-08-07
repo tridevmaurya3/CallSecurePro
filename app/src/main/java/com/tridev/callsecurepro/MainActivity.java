@@ -1,6 +1,7 @@
 package com.tridev.callsecurepro;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.IdRes;
@@ -88,7 +89,17 @@ public class MainActivity extends AppCompatActivity {
             );
         }
 
-        binding.bottomNavigation.setSelectedItemId(selectedItemId);
+        MenuItem selectedItem = binding.bottomNavigation.getMenu().findItem(selectedItemId);
+        if (selectedItem != null) {
+            selectedItem.setChecked(true);
+        }
+
+        Fragment restoredFragment = getSupportFragmentManager()
+                .findFragmentById(R.id.mainFragmentContainer);
+
+        if (savedInstanceState == null || restoredFragment == null) {
+            openMainSection(selectedItemId);
+        }
     }
 
     /**
