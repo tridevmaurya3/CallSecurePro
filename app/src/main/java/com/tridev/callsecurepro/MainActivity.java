@@ -1,9 +1,11 @@
 package com.tridev.callsecurepro;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.IdRes;
@@ -51,8 +53,13 @@ public class MainActivity extends AppCompatActivity {
         registerFragmentThemeCallbacks();
         captureExternalDialIntent(getIntent());
         applySystemBarInsets();
+        setupGlobalDialButton();
         setupBottomNavigation(savedInstanceState);
         applyVisualTheme();
+    }
+
+    private void setupGlobalDialButton() {
+        binding.globalDialButton.setOnClickListener(view -> openDialPad());
     }
 
     private void registerFragmentThemeCallbacks() {
@@ -62,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onFragmentViewCreated(
                             @NonNull FragmentManager fragmentManager,
                             @NonNull Fragment fragment,
-                            @NonNull android.view.View view,
+                            @NonNull View view,
                             @Nullable Bundle savedInstanceState
                     ) {
                         if (fragment instanceof DialFragment) {
@@ -70,16 +77,22 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             AppVisualThemeManager.applyRoot(MainActivity.this, view);
                         }
+                        updateGlobalDialVisibility(fragment);
                     }
                 },
                 true
         );
     }
 
-    /**
-     * Keeps page content clear of status bars and display cut-outs while allowing the
-     * bottom navigation surface to extend behind the system navigation area.
-     */
+    private void updateGlobalDialVisibility(@Nullable Fragment fragment) {
+        if (binding == null) {
+            return;
+        }
+        binding.globalDialButton.setVisibility(
+                fragment instanceof DialFragment ? View.GONE : View.VISIBLE
+        );
+    }
+
     private void applySystemBarInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.main, (view, windowInsets) -> {
             Insets systemBars = windowInsets.getInsets(
@@ -133,6 +146,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null || restoredFragment == null) {
             openMainSection(selectedItemId);
+        } else {
+            updateGlobalDialVisibility(restoredFragment);
         }
 
         if (pendingDialRequest) {
@@ -140,10 +155,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Dashboard actions can continue using nav_dial internally even though Dial is no longer
-     * a visible bottom-navigation item.
-     */
     public void selectMainSection(@IdRes int itemId) {
         if (binding == null) {
             return;
@@ -166,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
                 ? new DialFragment()
                 : DialFragment.newInstance(phoneNumber.trim());
 
+        binding.globalDialButton.setVisibility(View.GONE);
         getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
@@ -200,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
 
+        binding.globalDialButton.setVisibility(View.VISIBLE);
         getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
@@ -228,6 +241,12 @@ public class MainActivity extends AppCompatActivity {
                 binding.bottomNavigation
         );
 
+        int accent = AppVisualThemeManager.accentColor(this);
+        binding.globalDialButton.setBackgroundTintList(ColorStateList.valueOf(accent));
+        binding.globalDialButton.setImageTintList(ColorStateList.valueOf(
+                AppVisualThemeManager.contrastOn(accent)
+        ));
+
         Fragment current = getSupportFragmentManager()
                 .findFragmentById(R.id.mainFragmentContainer);
         if (current != null && current.getView() != null) {
@@ -236,10 +255,10 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 AppVisualThemeManager.applyRoot(this, current.getView());
             }
+            updateGlobalDialVisibility(current);
         }
     }
 
-    /** Invoked by the Dial overflow menu's android:onClick hook. */
     public void openThemeStudioMenuItem(@NonNull MenuItem item) {
         startActivity(new Intent(this, ThemeStudioActivity.class));
     }
