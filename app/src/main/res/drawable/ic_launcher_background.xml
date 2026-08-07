@@ -6,26 +6,29 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
+    <!-- Smart Calls blue gradient background -->
     <path android:pathData="M0,0h108v108h-108z">
         <aapt:attr name="android:fillColor">
             <gradient
-                android:startX="12"
-                android:startY="10"
-                android:endX="96"
-                android:endY="100"
+                android:startX="18"
+                android:startY="12"
+                android:endX="92"
+                android:endY="102"
                 android:type="linear">
-                <item android:offset="0" android:color="#1A8CFF" />
-                <item android:offset="0.5" android:color="#0B5AC8" />
-                <item android:offset="1" android:color="#10285D" />
+                <item android:offset="0" android:color="#2C91FF" />
+                <item android:offset="0.48" android:color="#0868DC" />
+                <item android:offset="1" android:color="#082D78" />
             </gradient>
         </aapt:attr>
     </path>
 
+    <!-- Soft upper highlight -->
     <path
-        android:fillColor="#18FFFFFF"
-        android:pathData="M98,18a25,25 0,1 1,-50,0a25,25 0,1 1,50,0" />
+        android:fillColor="#1CFFFFFF"
+        android:pathData="M17,12C38,3 67,4 88,17C69,15 45,21 28,35C21,30 17,22 17,12Z" />
 
+    <!-- Subtle lower depth -->
     <path
-        android:fillColor="#0DFFFFFF"
-        android:pathData="M61,104a43,43 0,1 1,-86,0a43,43 0,1 1,86,0" />
+        android:fillColor="#10001A52"
+        android:pathData="M0,76C28,65 57,72 108,56V108H0Z" />
 </vector>
