@@ -121,6 +121,24 @@
     <string name="contacts_feature_body">The Contacts page will show phone contacts with search, categories, availability labels and call or message shortcuts.</string>
     <string name="contacts_icon_text">P</string>
 
+    <!-- Real contacts module -->
+    <string name="contacts_real_subtitle">Your saved phone contacts, searchable and ready to call</string>
+    <string name="contacts_permission_title">Allow contacts to show your saved people</string>
+    <string name="contacts_permission_body">Call Secure Pro reads contacts only from this device so it can show names and match phone numbers. This step does not upload your contacts.</string>
+    <string name="contacts_permission_action">Allow contacts access</string>
+    <string name="contacts_search_hint">Search name or phone number</string>
+    <string name="contacts_count_zero">0 contacts</string>
+    <string name="contacts_count_format">%1$d contacts</string>
+    <string name="contacts_sorted_label">A–Z</string>
+    <string name="contacts_empty_icon">P</string>
+    <string name="contacts_empty_title">No contacts found</string>
+    <string name="contacts_empty_body">Contacts saved with a phone number will appear here.</string>
+    <string name="contacts_search_empty_title">No matching contacts</string>
+    <string name="contacts_search_empty_body">Try another name or phone number.</string>
+    <string name="contacts_favorite">Favorite contact</string>
+    <string name="contacts_call">Call contact</string>
+    <string name="contacts_dial_error">No phone app is available to dial this number.</string>
+
     <!-- Protection -->
     <string name="protection_title">Spam Protection</string>
     <string name="protection_subtitle">Warnings, blocking rules and community reports</string>
