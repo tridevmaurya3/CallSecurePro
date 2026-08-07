@@ -2,6 +2,17 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+fun quotedBuildConfig(value: String): String =
+    "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+
+val firebaseApiKey = providers.gradleProperty("CALLSECURE_FIREBASE_API_KEY").orNull.orEmpty()
+val firebaseAppId = providers.gradleProperty("CALLSECURE_FIREBASE_APP_ID").orNull.orEmpty()
+val firebaseProjectId = providers.gradleProperty("CALLSECURE_FIREBASE_PROJECT_ID").orNull.orEmpty()
+val firebaseAppCheckEnabled = providers.gradleProperty("CALLSECURE_FIREBASE_APP_CHECK_ENABLED")
+    .orNull
+    ?.equals("true", ignoreCase = true)
+    ?: false
+
 android {
     namespace = "com.tridev.callsecurepro"
 
@@ -19,6 +30,11 @@ android {
 
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "FIREBASE_API_KEY", quotedBuildConfig(firebaseApiKey))
+        buildConfigField("String", "FIREBASE_APP_ID", quotedBuildConfig(firebaseAppId))
+        buildConfigField("String", "FIREBASE_PROJECT_ID", quotedBuildConfig(firebaseProjectId))
+        buildConfigField("boolean", "FIREBASE_APP_CHECK_ENABLED", firebaseAppCheckEnabled.toString())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -75,6 +91,12 @@ dependencies {
 
     // Reliable background work
     implementation(libs.work.runtime)
+
+    // Firebase community backend. Configuration comes from local Gradle properties, never source.
+    implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
 
     // Local unit tests
     testImplementation(libs.junit)
