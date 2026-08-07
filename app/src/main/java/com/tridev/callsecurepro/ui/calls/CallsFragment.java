@@ -134,6 +134,7 @@ public class CallsFragment extends Fragment {
         binding.refreshButton.setOnClickListener(view1 -> loadCallHistory());
 
         setupFollowUpInbox();
+        setupMissedAssistant();
         setupPostCallPrompt();
         setupSearch();
         setupFilters();
@@ -155,6 +156,13 @@ public class CallsFragment extends Fragment {
         View.OnClickListener listener = view -> openFollowUpCenter();
         binding.followUpInboxCard.setOnClickListener(listener);
         binding.followUpInboxButton.setOnClickListener(listener);
+    }
+
+    private void setupMissedAssistant() {
+        View summaryContent = (View) binding.missedCallsValue.getParent();
+        summaryContent.setClickable(true);
+        summaryContent.setFocusable(true);
+        summaryContent.setOnClickListener(view -> openMissedAssistant());
     }
 
     private void refreshFollowUpInbox() {
@@ -185,6 +193,10 @@ public class CallsFragment extends Fragment {
 
     private void openFollowUpCenter() {
         startActivity(new Intent(requireContext(), FollowUpCenterActivity.class));
+    }
+
+    private void openMissedAssistant() {
+        startActivity(new Intent(requireContext(), MissedCallAssistantActivity.class));
     }
 
     private void setupPostCallPrompt() {
