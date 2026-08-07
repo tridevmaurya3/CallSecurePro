@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_dashboard_live_loading">Checking</string>
+    <string name="home_dashboard_loading">Loading live data…</string>
+    <string name="home_dashboard_loading_short">Loading…</string>
+    <string name="home_dashboard_live_ready">Live</string>
+    <string name="home_dashboard_live_setup">Setup</string>
+
+    <string name="home_lookup_smart_title">Smart lookup</string>
+    <string name="home_lookup_smart_hint">Phone • IP</string>
+    <string name="home_lookup_phone_ip_hint">Phone number or IP address</string>
+
+    <string name="home_calls_missed_today">%1$d missed today</string>
+    <string name="home_calls_none_missed">No missed today</string>
+    <string name="home_calls_access_needed">Call access needed</string>
+    <string name="home_contacts_count_short">%1$d saved</string>
+    <string name="home_contacts_access_needed">Allow access</string>
+    <string name="home_protection_blocked_short">%1$d blocked</string>
+
+    <string name="home_live_blocked_label">Blocked</string>
+    <string name="home_live_silenced_label">Silenced</string>
+    <string name="home_live_reports_label">Reports</string>
+    <string name="home_protection_live_summary">%1$d trusted • %2$d blocked rules • %3$d follow-ups</string>
+    <string name="home_protection_live_active">Active</string>
+    <string name="home_protection_live_setup">Setup</string>
+
+    <string name="home_recent_access_title">Call history access needed</string>
+    <string name="home_recent_access_body">Open Calls to enable real recent activity</string>
+    <string name="home_recent_empty_title">No calls yet</string>
+    <string name="home_recent_empty_body">Recent call activity will appear here</string>
+    <string name="home_recent_unknown">Unknown caller</string>
+    <string name="home_recent_incoming">Incoming</string>
+    <string name="home_recent_outgoing">Outgoing</string>
+    <string name="home_recent_missed">Missed</string>
+    <string name="home_recent_rejected">Rejected</string>
+    <string name="home_recent_blocked">Blocked</string>
+    <string name="home_recent_other">Call</string>
+    <string name="home_recent_detail">%1$s • %2$s • %3$d follow-ups</string>
+    <string name="home_recent_detail_no_time">%1$s • %2$d follow-ups</string>
+
+    <string name="home_setup_complete_title">Caller protection setup complete</string>
+    <string name="home_setup_progress_short">%1$d/%2$d ready</string>
+    <string name="home_setup_complete_body">All required calling and protection setup items are ready</string>
+    <string name="home_setup_review_action">Review</string>
+</resources>
