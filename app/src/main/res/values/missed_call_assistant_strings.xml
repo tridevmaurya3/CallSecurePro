@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="missed_assistant_title">Missed Call Assistant</string>
+    <string name="missed_assistant_subtitle">Recent missed and rejected callers, grouped by number</string>
+    <string name="missed_assistant_back">Back</string>
+    <string name="missed_assistant_search_hint">Search name or number</string>
+    <string name="missed_assistant_stat_callers">Callers</string>
+    <string name="missed_assistant_stat_repeat">Repeat</string>
+    <string name="missed_assistant_stat_events">Events</string>
+    <string name="missed_assistant_count_30">%1$d in 30 days</string>
+    <string name="missed_assistant_count_7">%1$d in 7 days</string>
+    <string name="missed_assistant_priority_high">High attention</string>
+    <string name="missed_assistant_priority_repeat">Repeat caller</string>
+    <string name="missed_assistant_priority_recent">Recent</string>
+    <string name="missed_assistant_call">Call</string>
+    <string name="missed_assistant_reply">Reply</string>
+    <string name="missed_assistant_remind">Remind</string>
+    <string name="missed_assistant_empty_title">No missed callers</string>
+    <string name="missed_assistant_empty_body">Missed or rejected calls from the last 30 days will appear here.</string>
+    <string name="missed_assistant_no_match">No matching caller</string>
+    <string name="missed_assistant_no_match_body">Try another name or number.</string>
+    <string name="missed_assistant_permission_title">Call history access needed</string>
+    <string name="missed_assistant_permission_body">Allow Call history access to build this on-device missed-call list.</string>
+    <string name="missed_assistant_permission_action">Allow access</string>
+    <string name="missed_assistant_no_phone_app">No phone app is available on this device.</string>
+    <string name="missed_assistant_no_message_app">No messaging app is available on this device.</string>
+    <string name="missed_assistant_reply_title">Quick reply</string>
+    <string name="missed_assistant_reply_1">Can’t talk right now. I’ll call you back.</string>
+    <string name="missed_assistant_reply_2">I’m busy right now. Please text me.</string>
+    <string name="missed_assistant_reply_3">I’ll get back to you soon.</string>
+    <string name="missed_assistant_remind_title">Set follow-up</string>
+    <string name="missed_assistant_remind_2_hours">In 2 hours</string>
+    <string name="missed_assistant_remind_tomorrow">Tomorrow</string>
+    <string name="missed_assistant_remind_3_days">In 3 days</string>
+    <string name="missed_assistant_reminder_saved">Follow-up saved</string>
+    <string name="missed_assistant_reminder_saved_notifications_off">Follow-up saved. Notifications are currently off.</string>
+    <string name="missed_assistant_private_note">Quick replies open your messaging app with text prefilled. Call Secure Pro does not silently send messages.</string>
+</resources>
