@@ -35,6 +35,46 @@
                 android:layout_marginTop="@dimen/csp_space_4"
                 android:text="@string/calls_real_subtitle"
                 android:textAppearance="@style/TextAppearance.CallSecurePro.Body" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/csp_space_12"
+                android:background="@color/csp_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_10"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/calls_post_call_prompt_title"
+                        android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/csp_space_2"
+                        android:text="@string/calls_post_call_prompt_body"
+                        android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
+                </LinearLayout>
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/postCallPromptSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/csp_space_12" />
+            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
