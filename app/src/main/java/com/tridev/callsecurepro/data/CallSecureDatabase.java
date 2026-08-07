@@ -17,15 +17,18 @@ import com.tridev.callsecurepro.data.identity.LookupHistoryDao;
 import com.tridev.callsecurepro.data.identity.LookupHistoryEntity;
 import com.tridev.callsecurepro.data.protection.ProtectionRuleDao;
 import com.tridev.callsecurepro.data.protection.ProtectionRuleEntity;
+import com.tridev.callsecurepro.data.protection.ScreeningEventDao;
+import com.tridev.callsecurepro.data.protection.ScreeningEventEntity;
 
 @Database(
         entities = {
                 ProtectionRuleEntity.class,
                 CallerIdentityEntity.class,
                 LookupHistoryEntity.class,
-                CallNoteEntity.class
+                CallNoteEntity.class,
+                ScreeningEventEntity.class
         },
-        version = 3,
+        version = 4,
         exportSchema = false
 )
 public abstract class CallSecureDatabase extends RoomDatabase {
@@ -99,6 +102,31 @@ public abstract class CallSecureDatabase extends RoomDatabase {
         }
     };
 
+    private static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `screening_events` (" +
+                            "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                            "`normalizedNumber` TEXT NOT NULL, " +
+                            "`displayNumber` TEXT NOT NULL, " +
+                            "`action` TEXT NOT NULL, " +
+                            "`reason` TEXT NOT NULL, " +
+                            "`riskLevel` TEXT NOT NULL, " +
+                            "`riskScore` INTEGER NOT NULL, " +
+                            "`screenedAt` INTEGER NOT NULL)"
+            );
+            database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_screening_events_screenedAt` " +
+                            "ON `screening_events` (`screenedAt`)"
+            );
+            database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_screening_events_action` " +
+                            "ON `screening_events` (`action`)"
+            );
+        }
+    };
+
     @NonNull
     public static CallSecureDatabase getInstance(@NonNull Context context) {
         if (INSTANCE == null) {
@@ -109,7 +137,7 @@ public abstract class CallSecureDatabase extends RoomDatabase {
                                     CallSecureDatabase.class,
                                     "call_secure_pro.db"
                             )
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                             .build();
                 }
             }
@@ -124,4 +152,6 @@ public abstract class CallSecureDatabase extends RoomDatabase {
     public abstract LookupHistoryDao lookupHistoryDao();
 
     public abstract CallNoteDao callNoteDao();
+
+    public abstract ScreeningEventDao screeningEventDao();
 }
