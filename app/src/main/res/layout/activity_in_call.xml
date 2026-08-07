@@ -86,6 +86,24 @@
                 tools:text="+91 98765 43210" />
 
             <com.google.android.material.chip.Chip
+                android:id="@+id/callerRiskChip"
+                style="@style/Widget.CallSecurePro.Chip.Unknown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_10"
+                android:text="@string/protection_result_unknown"
+                tools:text="Safe" />
+
+            <TextView
+                android:id="@+id/callerRiskReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_4"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                tools:text="Saved in your contacts" />
+
+            <com.google.android.material.chip.Chip
                 android:id="@+id/callStateChip"
                 style="@style/Widget.CallSecurePro.Chip.Safe"
                 android:layout_width="wrap_content"
