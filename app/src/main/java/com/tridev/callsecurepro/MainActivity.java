@@ -14,8 +14,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.tridev.callsecurepro.databinding.ActivityMainBinding;
+import com.tridev.callsecurepro.theme.AppVisualThemeManager;
+import com.tridev.callsecurepro.theme.ThemePreferences;
 import com.tridev.callsecurepro.ui.calls.CallsFragment;
 import com.tridev.callsecurepro.ui.contacts.ContactsFragment;
 import com.tridev.callsecurepro.ui.dial.DialFragment;
@@ -31,26 +34,47 @@ public class MainActivity extends AppCompatActivity {
     private boolean pendingDialRequest;
     @Nullable
     private String pendingDialNumber;
+    @NonNull
+    private String appliedThemeSignature = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        appliedThemeSignature = ThemePreferences.signature(this);
+        registerFragmentThemeCallbacks();
         captureExternalDialIntent(getIntent());
         applySystemBarInsets();
         setupBottomNavigation(savedInstanceState);
+        applyVisualTheme();
+    }
+
+    private void registerFragmentThemeCallbacks() {
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentViewCreated(
+                            @NonNull FragmentManager fragmentManager,
+                            @NonNull Fragment fragment,
+                            @NonNull android.view.View view,
+                            @Nullable Bundle savedInstanceState
+                    ) {
+                        if (!(fragment instanceof DialFragment)) {
+                            AppVisualThemeManager.applyRoot(MainActivity.this, view);
+                        }
+                    }
+                },
+                true
+        );
     }
 
     /**
      * Keeps page content clear of status bars and display cut-outs while allowing the
-     * bottom navigation surface to extend behind the system navigation area. The bottom
-     * inset is applied only inside the navigation surface, so icons and labels are never
-     * compressed or clipped on gesture-navigation and three-button-navigation devices.
+     * bottom navigation surface to extend behind the system navigation area.
      */
     private void applySystemBarInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.main, (view, windowInsets) -> {
@@ -79,24 +103,20 @@ public class MainActivity extends AppCompatActivity {
         ViewCompat.requestApplyInsets(binding.main);
     }
 
-    private void setupBottomNavigation(Bundle savedInstanceState) {
+    private void setupBottomNavigation(@Nullable Bundle savedInstanceState) {
         binding.bottomNavigation.setOnItemSelectedListener(item ->
                 openMainSection(item.getItemId())
         );
 
-        binding.bottomNavigation.setOnItemReselectedListener(item -> {
-            if (item.getItemId() == R.id.nav_dial && pendingDialRequest) {
-                openMainSection(R.id.nav_dial);
-            }
-        });
-
-        int selectedItemId = pendingDialRequest ? R.id.nav_dial : R.id.nav_home;
-
-        if (savedInstanceState != null && !pendingDialRequest) {
-            selectedItemId = savedInstanceState.getInt(
+        int selectedItemId = R.id.nav_home;
+        if (savedInstanceState != null) {
+            int restored = savedInstanceState.getInt(
                     STATE_SELECTED_NAVIGATION_ITEM,
                     R.id.nav_home
             );
+            if (isVisibleNavigationItem(restored)) {
+                selectedItemId = restored;
+            }
         }
 
         MenuItem selectedItem = binding.bottomNavigation.getMenu().findItem(selectedItemId);
@@ -107,19 +127,53 @@ public class MainActivity extends AppCompatActivity {
         Fragment restoredFragment = getSupportFragmentManager()
                 .findFragmentById(R.id.mainFragmentContainer);
 
-        if (savedInstanceState == null || restoredFragment == null || pendingDialRequest) {
+        if (savedInstanceState == null || restoredFragment == null) {
             openMainSection(selectedItemId);
+        }
+
+        if (pendingDialRequest) {
+            openPendingDialPad();
         }
     }
 
     /**
-     * Lets dashboard actions open one of the five primary sections through the same
-     * BottomNavigationView state used by direct tab touches.
+     * Dashboard actions can continue using nav_dial internally even though Dial is no longer
+     * a visible bottom-navigation item.
      */
     public void selectMainSection(@IdRes int itemId) {
-        if (binding != null) {
+        if (binding == null) {
+            return;
+        }
+        if (itemId == R.id.nav_dial) {
+            openDialPad();
+            return;
+        }
+        if (isVisibleNavigationItem(itemId)) {
             binding.bottomNavigation.setSelectedItemId(itemId);
         }
+    }
+
+    public void openDialPad() {
+        openDialPad(null);
+    }
+
+    private void openDialPad(@Nullable String phoneNumber) {
+        Fragment fragment = phoneNumber == null || phoneNumber.trim().isEmpty()
+                ? new DialFragment()
+                : DialFragment.newInstance(phoneNumber.trim());
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.mainFragmentContainer, fragment, "dial")
+                .commit();
+    }
+
+    private void openPendingDialPad() {
+        String number = pendingDialNumber;
+        pendingDialRequest = false;
+        pendingDialNumber = null;
+        openDialPad(number);
     }
 
     private boolean openMainSection(int itemId) {
@@ -132,15 +186,6 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemId == R.id.nav_calls) {
             fragment = new CallsFragment();
             fragmentTag = "calls";
-        } else if (itemId == R.id.nav_dial) {
-            if (pendingDialRequest) {
-                fragment = DialFragment.newInstance(pendingDialNumber);
-                pendingDialRequest = false;
-                pendingDialNumber = null;
-            } else {
-                fragment = new DialFragment();
-            }
-            fragmentTag = "dial";
         } else if (itemId == R.id.nav_contacts) {
             fragment = new ContactsFragment();
             fragmentTag = "contacts";
@@ -160,20 +205,50 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private boolean isVisibleNavigationItem(@IdRes int itemId) {
+        return itemId == R.id.nav_home
+                || itemId == R.id.nav_calls
+                || itemId == R.id.nav_contacts
+                || itemId == R.id.nav_protection;
+    }
+
+    private void applyVisualTheme() {
+        if (binding == null) {
+            return;
+        }
+        binding.main.setBackground(AppVisualThemeManager.createBackground(this));
+        AppVisualThemeManager.applyMainNavigation(
+                this,
+                binding.bottomNavigationSurface,
+                binding.bottomNavigation
+        );
+
+        Fragment current = getSupportFragmentManager()
+                .findFragmentById(R.id.mainFragmentContainer);
+        if (current != null && !(current instanceof DialFragment) && current.getView() != null) {
+            AppVisualThemeManager.applyRoot(this, current.getView());
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String currentSignature = ThemePreferences.signature(this);
+        if (!currentSignature.equals(appliedThemeSignature)) {
+            appliedThemeSignature = currentSignature;
+            recreate();
+            return;
+        }
+        applyVisualTheme();
+    }
+
     @Override
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
 
-        if (!captureExternalDialIntent(intent) || binding == null) {
-            return;
-        }
-
-        int currentItemId = binding.bottomNavigation.getSelectedItemId();
-        binding.bottomNavigation.setSelectedItemId(R.id.nav_dial);
-
-        if (currentItemId == R.id.nav_dial && pendingDialRequest) {
-            openMainSection(R.id.nav_dial);
+        if (captureExternalDialIntent(intent) && binding != null) {
+            openPendingDialPad();
         }
     }
 
@@ -202,11 +277,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(
-                STATE_SELECTED_NAVIGATION_ITEM,
-                binding.bottomNavigation.getSelectedItemId()
-        );
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        int selected = binding == null
+                ? R.id.nav_home
+                : binding.bottomNavigation.getSelectedItemId();
+        if (!isVisibleNavigationItem(selected)) {
+            selected = R.id.nav_home;
+        }
+        outState.putInt(STATE_SELECTED_NAVIGATION_ITEM, selected);
         super.onSaveInstanceState(outState);
     }
 
