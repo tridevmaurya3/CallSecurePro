@@ -18,16 +18,19 @@
         tools:visibility="visible" />
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/callCard"
         style="@style/Widget.CallSecurePro.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/csp_space_8">
+        android:layout_marginBottom="@dimen/csp_space_8"
+        android:clickable="true"
+        android:focusable="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="76dp"
+            android:minHeight="82dp"
             android:orientation="horizontal"
             android:paddingStart="@dimen/csp_space_12"
             android:paddingTop="@dimen/csp_space_10"
@@ -77,6 +80,36 @@
                     android:maxLines="1"
                     android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
                     tools:text="Incoming • 8:17 AM • 2 min 18 sec" />
+
+                <LinearLayout
+                    android:id="@+id/smartBadges"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_6"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/noteChip"
+                        style="@style/Widget.CallSecurePro.Chip.Business"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/call_detail_note_indicator"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/followUpChip"
+                        style="@style/Widget.CallSecurePro.Chip.Unknown"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/csp_space_6"
+                        android:text="@string/call_detail_followup_indicator"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+                </LinearLayout>
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
