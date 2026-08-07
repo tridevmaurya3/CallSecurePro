@@ -7,12 +7,33 @@
     <string name="dial_no_contact_match">No saved contact match</string>
     <string name="dial_clear">Clear</string>
     <string name="dial_backspace">Delete last digit</string>
+    <string name="dial_more_options">More dial options</string>
     <string name="dial_call">Call</string>
     <string name="dial_empty_number">Enter a phone number first</string>
     <string name="dial_call_permission_fallback">Calling permission is not enabled, so the number was opened in the system phone app.</string>
     <string name="dial_no_phone_app">No phone app is available on this device.</string>
     <string name="dial_no_telephony">Cellular calling is not available on this device.</string>
     <string name="dial_contacts_permission_note">Allow Contacts access from Setup to see saved-contact matches while dialling.</string>
+
+    <!-- Compact overflow actions -->
+    <string name="dial_menu_paste">Paste number</string>
+    <string name="dial_menu_clear">Clear number</string>
+    <string name="dial_menu_lookup">Caller lookup</string>
+    <string name="dial_menu_add_contact">Add to contacts</string>
+    <string name="dial_menu_view_contact">View saved contact</string>
+    <string name="dial_menu_choose_sim">Choose outgoing SIM</string>
+    <string name="dial_menu_enable_sim">Enable SIM access</string>
+    <string name="dial_menu_remember_sim">Remember this SIM for this number</string>
+    <string name="dial_menu_remove_saved_sim">Remove saved SIM for this number</string>
+    <string name="dial_clipboard_empty">No phone number is available on the clipboard.</string>
+    <string name="dial_contact_app_unavailable">No contacts app is available on this device.</string>
+    <string name="dial_lookup_number_first">Enter a phone number before opening caller lookup.</string>
+    <string name="dial_contact_number_first">Enter a phone number before opening contacts.</string>
+    <string name="dial_sim_number_first">Enter a phone number before saving a SIM preference.</string>
+    <string name="dial_sim_saved_confirmation">SIM preference saved for this number.</string>
+    <string name="dial_sim_removed_confirmation">Saved SIM preference removed for this number.</string>
+    <string name="dial_sim_access_needed">Enable SIM access to choose a specific outgoing SIM.</string>
+    <string name="dial_sim_selection_title">Choose outgoing SIM</string>
 
     <!-- Smart dual-SIM calling -->
     <string name="dial_sim_title">Smart SIM selection</string>
