@@ -209,9 +209,14 @@ public final class CallSessionManager {
             return false;
         }
 
-        active.hold();
-        held.unhold();
-        return true;
+        try {
+            // Telecom/carrier coordinates the complementary active->held transition when the
+            // held call is resumed. This avoids racing two asynchronous state changes.
+            held.unhold();
+            return true;
+        } catch (RuntimeException ignored) {
+            return false;
+        }
     }
 
     public boolean canMergePrimaryCall() {
@@ -235,16 +240,20 @@ public final class CallSessionManager {
             return false;
         }
 
-        Call.Details details = call.getDetails();
-        if (details != null && details.can(Call.Details.CAPABILITY_MERGE_CONFERENCE)) {
-            call.mergeConference();
-            return true;
-        }
+        try {
+            Call.Details details = call.getDetails();
+            if (details != null && details.can(Call.Details.CAPABILITY_MERGE_CONFERENCE)) {
+                call.mergeConference();
+                return true;
+            }
 
-        List<Call> conferenceableCalls = call.getConferenceableCalls();
-        if (conferenceableCalls != null && !conferenceableCalls.isEmpty()) {
-            call.conference(conferenceableCalls.get(0));
-            return true;
+            List<Call> conferenceableCalls = call.getConferenceableCalls();
+            if (conferenceableCalls != null && !conferenceableCalls.isEmpty()) {
+                call.conference(conferenceableCalls.get(0));
+                return true;
+            }
+        } catch (RuntimeException ignored) {
+            return false;
         }
 
         return false;
@@ -260,14 +269,22 @@ public final class CallSessionManager {
             return false;
         }
 
-        call.playDtmfTone(digit);
-        return true;
+        try {
+            call.playDtmfTone(digit);
+            return true;
+        } catch (RuntimeException ignored) {
+            return false;
+        }
     }
 
     public void stopPrimaryDtmfTone() {
         Call call = getPrimaryCall();
         if (call != null) {
-            call.stopDtmfTone();
+            try {
+                call.stopDtmfTone();
+            } catch (RuntimeException ignored) {
+                // Call may have ended while the short tone was playing.
+            }
         }
     }
 
