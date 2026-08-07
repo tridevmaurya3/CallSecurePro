@@ -1,10 +1,9 @@
 package com.tridev.callsecurepro.ui.theme;
 
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,8 +15,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 import com.tridev.callsecurepro.R;
 import com.tridev.callsecurepro.databinding.ActivityThemeStudioBinding;
 import com.tridev.callsecurepro.theme.AppVisualThemeManager;
@@ -38,7 +35,8 @@ public class ThemeStudioActivity extends AppCompatActivity {
         applyInsets();
         binding.backButton.setOnClickListener(view -> finish());
         binding.resetButton.setOnClickListener(view -> resetTheme());
-        rebuildSelectors();
+        setupDropdowns();
+        updateSelections();
         updatePreview();
     }
 
@@ -59,94 +57,98 @@ public class ThemeStudioActivity extends AppCompatActivity {
         ViewCompat.requestApplyInsets(binding.themeStudioRoot);
     }
 
-    private void rebuildSelectors() {
-        binding.backgroundThemeGroup.removeAllViews();
-        binding.accentPaletteGroup.removeAllViews();
-        binding.dialerThemeGroup.removeAllViews();
-        binding.callButtonStyleGroup.removeAllViews();
+    private void setupDropdowns() {
+        ThemePreferences.BackgroundTheme[] backgrounds = ThemePreferences.BackgroundTheme.values();
+        String[] backgroundLabels = labelsForBackgrounds(backgrounds);
+        binding.backgroundThemeDropdown.setAdapter(new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_list_item_1,
+                backgroundLabels
+        ));
+        binding.backgroundThemeDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            ThemePreferences.setBackgroundTheme(this, backgrounds[position]);
+            onThemeChanged();
+        });
 
-        for (ThemePreferences.BackgroundTheme value : ThemePreferences.BackgroundTheme.values()) {
-            addChip(
-                    binding.backgroundThemeGroup,
-                    getString(backgroundLabel(value)),
-                    value == ThemePreferences.getBackgroundTheme(this),
-                    () -> {
-                        ThemePreferences.setBackgroundTheme(this, value);
-                        updatePreview();
-                    }
-            );
-        }
+        ThemePreferences.AccentPalette[] accents = ThemePreferences.AccentPalette.values();
+        String[] accentLabels = labelsForAccents(accents);
+        binding.accentPaletteDropdown.setAdapter(new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_list_item_1,
+                accentLabels
+        ));
+        binding.accentPaletteDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            ThemePreferences.setAccentPalette(this, accents[position]);
+            onThemeChanged();
+        });
 
-        for (ThemePreferences.AccentPalette value : ThemePreferences.AccentPalette.values()) {
-            addChip(
-                    binding.accentPaletteGroup,
-                    getString(accentLabel(value)),
-                    value == ThemePreferences.getAccentPalette(this),
-                    () -> {
-                        ThemePreferences.setAccentPalette(this, value);
-                        updatePreview();
-                    }
-            );
-        }
+        ThemePreferences.DialerTheme[] dialers = ThemePreferences.DialerTheme.values();
+        String[] dialerLabels = labelsForDialers(dialers);
+        binding.dialerThemeDropdown.setAdapter(new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_list_item_1,
+                dialerLabels
+        ));
+        binding.dialerThemeDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            ThemePreferences.setDialerTheme(this, dialers[position]);
+            onThemeChanged();
+        });
 
-        for (ThemePreferences.DialerTheme value : ThemePreferences.DialerTheme.values()) {
-            addChip(
-                    binding.dialerThemeGroup,
-                    getString(dialerLabel(value)),
-                    value == ThemePreferences.getDialerTheme(this),
-                    () -> {
-                        ThemePreferences.setDialerTheme(this, value);
-                        updatePreview();
-                    }
-            );
-        }
-
-        for (ThemePreferences.CallButtonStyle value : ThemePreferences.CallButtonStyle.values()) {
-            addChip(
-                    binding.callButtonStyleGroup,
-                    getString(callButtonLabel(value)),
-                    value == ThemePreferences.getCallButtonStyle(this),
-                    () -> {
-                        ThemePreferences.setCallButtonStyle(this, value);
-                        updatePreview();
-                    }
-            );
-        }
+        ThemePreferences.CallButtonStyle[] callButtons = ThemePreferences.CallButtonStyle.values();
+        String[] callButtonLabels = labelsForCallButtons(callButtons);
+        binding.callButtonStyleDropdown.setAdapter(new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_list_item_1,
+                callButtonLabels
+        ));
+        binding.callButtonStyleDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            ThemePreferences.setCallButtonStyle(this, callButtons[position]);
+            onThemeChanged();
+        });
     }
 
-    private void addChip(
-            @NonNull ChipGroup group,
-            @NonNull String label,
-            boolean checked,
-            @NonNull Runnable onSelected
-    ) {
-        Chip chip = new Chip(this);
-        chip.setId(View.generateViewId());
-        chip.setText(label);
-        chip.setCheckable(true);
-        chip.setChecked(checked);
-        chip.setTextSize(13f);
-        chip.setOnClickListener(view -> {
-            if (chip.isChecked()) {
-                onSelected.run();
-                Toast.makeText(this, R.string.theme_studio_saved, Toast.LENGTH_SHORT).show();
-            }
-        });
-        group.addView(chip);
+    private void onThemeChanged() {
+        updateSelections();
+        updatePreview();
+        Toast.makeText(this, R.string.theme_studio_saved, Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateSelections() {
+        binding.backgroundThemeDropdown.setText(
+                getString(backgroundLabel(ThemePreferences.getBackgroundTheme(this))),
+                false
+        );
+        binding.accentPaletteDropdown.setText(
+                getString(accentLabel(ThemePreferences.getAccentPalette(this))),
+                false
+        );
+        binding.dialerThemeDropdown.setText(
+                getString(dialerLabel(ThemePreferences.getDialerTheme(this))),
+                false
+        );
+        binding.callButtonStyleDropdown.setText(
+                getString(callButtonLabel(ThemePreferences.getCallButtonStyle(this))),
+                false
+        );
     }
 
     private void updatePreview() {
+        AppVisualThemeManager.applyRoot(this, binding.themeStudioRoot);
+        AppVisualThemeManager.applyWindowChrome(this);
         binding.previewSurface.setBackground(AppVisualThemeManager.createBackground(this));
 
         int accent = AppVisualThemeManager.accentColor(this);
         int textColor = AppVisualThemeManager.isDarkBackground(this)
                 ? Color.WHITE
                 : Color.rgb(25, 30, 38);
-        int secondary = AppVisualThemeManager.isDarkBackground(this)
-                ? Color.rgb(210, 216, 226)
-                : Color.rgb(92, 103, 118);
 
         binding.previewTitle.setTextColor(textColor);
+        binding.previewTitle.setText(
+                getString(backgroundLabel(ThemePreferences.getBackgroundTheme(this)))
+                        + " • "
+                        + getString(dialerLabel(ThemePreferences.getDialerTheme(this)))
+        );
+
         stylePreviewKey(binding.previewKey1, accent, textColor);
         stylePreviewKey(binding.previewKey2, accent, textColor);
         DialVisualStyler.styleCallButton(
@@ -154,22 +156,6 @@ public class ThemeStudioActivity extends AppCompatActivity {
                 binding.previewCallButton,
                 ThemePreferences.getCallButtonStyle(this)
         );
-
-        binding.previewTitle.setText(
-                getString(backgroundLabel(ThemePreferences.getBackgroundTheme(this)))
-                        + " • "
-                        + getString(dialerLabel(ThemePreferences.getDialerTheme(this)))
-        );
-        binding.previewKey1.setTextColor(textColor);
-        binding.previewKey2.setTextColor(textColor);
-        binding.previewKey1.setAlpha(0.95f);
-        binding.previewKey2.setAlpha(0.95f);
-
-        if (binding.previewSurface instanceof View) {
-            binding.previewSurface.setContentDescription(
-                    getString(themePreviewDescriptionResource(), secondary)
-            );
-        }
     }
 
     private void stylePreviewKey(
@@ -190,15 +176,43 @@ public class ThemeStudioActivity extends AppCompatActivity {
         view.setTextColor(textColor);
     }
 
-    private int themePreviewDescriptionResource() {
-        return R.string.theme_studio_preview_body;
-    }
-
     private void resetTheme() {
         ThemePreferences.reset(this);
-        rebuildSelectors();
+        updateSelections();
         updatePreview();
         Toast.makeText(this, R.string.theme_studio_reset_done, Toast.LENGTH_SHORT).show();
+    }
+
+    private String[] labelsForBackgrounds(ThemePreferences.BackgroundTheme[] values) {
+        String[] labels = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            labels[i] = getString(backgroundLabel(values[i]));
+        }
+        return labels;
+    }
+
+    private String[] labelsForAccents(ThemePreferences.AccentPalette[] values) {
+        String[] labels = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            labels[i] = getString(accentLabel(values[i]));
+        }
+        return labels;
+    }
+
+    private String[] labelsForDialers(ThemePreferences.DialerTheme[] values) {
+        String[] labels = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            labels[i] = getString(dialerLabel(values[i]));
+        }
+        return labels;
+    }
+
+    private String[] labelsForCallButtons(ThemePreferences.CallButtonStyle[] values) {
+        String[] labels = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            labels[i] = getString(callButtonLabel(values[i]));
+        }
+        return labels;
     }
 
     private int backgroundLabel(@NonNull ThemePreferences.BackgroundTheme value) {
