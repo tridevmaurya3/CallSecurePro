@@ -42,7 +42,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupQuickActions() {
-        binding.actionDialCard.setOnClickListener(view -> openSection(R.id.nav_dial));
+        binding.floatingDialButton.setOnClickListener(view -> openSection(R.id.nav_dial));
         binding.actionCallsCard.setOnClickListener(view -> openSection(R.id.nav_calls));
         binding.actionContactsCard.setOnClickListener(view -> openSection(R.id.nav_contacts));
         binding.actionProtectionCard.setOnClickListener(view -> openSection(R.id.nav_protection));
