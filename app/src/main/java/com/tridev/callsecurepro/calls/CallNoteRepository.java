@@ -1,11 +1,15 @@
 package com.tridev.callsecurepro.calls;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.telephony.PhoneNumberUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.tridev.callsecurepro.data.CallSecureDatabase;
 import com.tridev.callsecurepro.data.calls.CallNoteDao;
@@ -21,6 +25,8 @@ public final class CallNoteRepository {
     private static final int MAX_FOLLOW_UP_CENTER_ITEMS = 300;
     private static final String RECONCILE_PREFS = "call_follow_up_reconciliation";
     private static final String KEY_RECONCILED_V1 = "pending_follow_ups_reconciled_v1";
+    private static final String KEY_RECONCILED_WITH_NOTIFICATIONS =
+            "pending_follow_ups_reconciled_with_notifications";
 
     private final CallNoteDao callNoteDao;
 
@@ -73,14 +79,33 @@ public final class CallNoteRepository {
                 RECONCILE_PREFS,
                 Context.MODE_PRIVATE
         );
-        if (preferences.getBoolean(KEY_RECONCILED_V1, false)) {
+
+        boolean notificationsReady = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                || ContextCompat.checkSelfPermission(
+                appContext,
+                Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED;
+        boolean reconciled = preferences.getBoolean(KEY_RECONCILED_V1, false);
+        boolean previouslyReady = preferences.getBoolean(
+                KEY_RECONCILED_WITH_NOTIFICATIONS,
+                false
+        );
+
+        if (reconciled && (!notificationsReady || previouslyReady)) {
             return;
         }
 
         for (CallNoteEntity note : getPendingFollowUps()) {
-            CallReminderScheduler.syncFollowUp(appContext, note);
+            try {
+                CallReminderScheduler.syncFollowUp(appContext, note);
+            } catch (RuntimeException ignored) {
+                // A scheduling failure must not block access to saved follow-up metadata.
+            }
         }
-        preferences.edit().putBoolean(KEY_RECONCILED_V1, true).apply();
+        preferences.edit()
+                .putBoolean(KEY_RECONCILED_V1, true)
+                .putBoolean(KEY_RECONCILED_WITH_NOTIFICATIONS, notificationsReady)
+                .apply();
     }
 
     public void save(
