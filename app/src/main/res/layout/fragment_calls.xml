@@ -79,11 +79,60 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/followUpInboxCard"
+        style="@style/Widget.CallSecurePro.Card.Header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/csp_space_8"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/csp_space_10">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/calls_follow_up_card_title"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
+
+                <TextView
+                    android:id="@+id/followUpInboxBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_2"
+                    android:text="@string/calls_follow_up_card_body"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                    tools:text="2 overdue • 3 upcoming" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/followUpInboxButton"
+                style="@style/Widget.CallSecurePro.Button.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:layout_marginStart="@dimen/csp_space_8"
+                android:minHeight="44dp"
+                android:text="@string/calls_follow_up_card_open" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/permissionCard"
         style="@style/Widget.CallSecurePro.Card.Peach"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/csp_space_16"
+        android:layout_marginTop="@dimen/csp_space_12"
         android:visibility="gone"
         tools:visibility="visible">
 
