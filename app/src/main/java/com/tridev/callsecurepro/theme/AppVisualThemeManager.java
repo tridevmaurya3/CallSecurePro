@@ -15,8 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.tridev.callsecurepro.R;
@@ -58,6 +60,10 @@ public final class AppVisualThemeManager {
             applyRoot(activity, content);
         }
 
+        applyWindowChrome(activity);
+    }
+
+    public static void applyWindowChrome(@NonNull Activity activity) {
         boolean dark = isDarkBackground(activity);
         @ColorInt int barColor = dark ? Color.rgb(13, 17, 24) : Color.TRANSPARENT;
         activity.getWindow().setStatusBarColor(barColor);
@@ -68,6 +74,7 @@ public final class AppVisualThemeManager {
 
     public static void applyRoot(@NonNull Context context, @NonNull View root) {
         root.setBackground(createBackground(context));
+        styleAccentTree(context, root);
         if (isDarkBackground(context)) {
             styleDarkTree(context, root);
         }
@@ -221,6 +228,40 @@ public final class AppVisualThemeManager {
         return Color.luminance(color) > 0.55f ? Color.rgb(20, 24, 31) : Color.WHITE;
     }
 
+    private static void styleAccentTree(@NonNull Context context, @NonNull View view) {
+        int accent = accentColor(context);
+        int defaultPrimary = ContextCompat.getColor(context, R.color.csp_primary);
+
+        if (view instanceof FloatingActionButton) {
+            FloatingActionButton fab = (FloatingActionButton) view;
+            fab.setBackgroundTintList(ColorStateList.valueOf(accent));
+            fab.setImageTintList(ColorStateList.valueOf(contrastOn(accent)));
+        } else if (view instanceof MaterialButton) {
+            MaterialButton button = (MaterialButton) view;
+            ColorStateList tint = button.getBackgroundTintList();
+            boolean primaryFill = tint != null && tint.getDefaultColor() == defaultPrimary;
+            if (primaryFill) {
+                button.setBackgroundTintList(ColorStateList.valueOf(accent));
+                button.setTextColor(contrastOn(accent));
+                if (button.getIcon() != null) {
+                    button.setIconTint(ColorStateList.valueOf(contrastOn(accent)));
+                }
+            } else if (button.getCurrentTextColor() == defaultPrimary) {
+                button.setTextColor(accent);
+                if (button.getIcon() != null) {
+                    button.setIconTint(ColorStateList.valueOf(accent));
+                }
+            }
+        }
+
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int index = 0; index < group.getChildCount(); index++) {
+                styleAccentTree(context, group.getChildAt(index));
+            }
+        }
+    }
+
     private static void styleDarkTree(@NonNull Context context, @NonNull View view) {
         if (view instanceof MaterialCardView) {
             MaterialCardView card = (MaterialCardView) view;
@@ -239,7 +280,9 @@ public final class AppVisualThemeManager {
             TextInputEditText editText = (TextInputEditText) view;
             editText.setTextColor(DARK_TEXT);
             editText.setHintTextColor(DARK_TEXT_SECONDARY);
-        } else if (view instanceof TextView && !(view instanceof Chip)) {
+        } else if (view instanceof TextView
+                && !(view instanceof Chip)
+                && !(view instanceof MaterialButton)) {
             TextView textView = (TextView) view;
             int current = textView.getCurrentTextColor();
             if (!isSemanticColor(context, current)) {
