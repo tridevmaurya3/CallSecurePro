@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.CallSecurePro.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/csp_space_8"
-    style="@style/Widget.CallSecurePro.Card">
+    android:clickable="true"
+    android:focusable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="68dp"
+        android:minHeight="72dp"
         android:padding="@dimen/csp_card_padding_compact">
 
         <TextView
@@ -37,6 +39,18 @@
             app:layout_constraintStart_toEndOf="@id/contactInitial"
             app:layout_constraintTop_toTopOf="@id/contactInitial" />
 
+        <ImageView
+            android:id="@+id/favoriteIcon"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginStart="@dimen/csp_space_4"
+            android:contentDescription="@string/contacts_favorite"
+            android:src="@drawable/ic_contact_favorite"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/contactName"
+            app:layout_constraintEnd_toStartOf="@id/messageAction"
+            app:layout_constraintTop_toTopOf="@id/contactName" />
+
         <TextView
             android:id="@+id/contactNumber"
             android:layout_width="0dp"
@@ -46,30 +60,44 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
-            app:layout_constraintBottom_toBottomOf="@id/contactInitial"
-            app:layout_constraintEnd_toStartOf="@id/callAction"
+            app:layout_constraintEnd_toStartOf="@id/messageAction"
             app:layout_constraintStart_toEndOf="@id/contactInitial"
             app:layout_constraintTop_toBottomOf="@id/contactName" />
 
-        <ImageView
-            android:id="@+id/favoriteIcon"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:layout_marginStart="@dimen/csp_space_6"
-            android:contentDescription="@string/contacts_favorite"
-            android:src="@drawable/ic_contact_favorite"
+        <TextView
+            android:id="@+id/moreNumbers"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/csp_space_12"
+            android:layout_marginTop="2dp"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+            android:textColor="@color/csp_primary"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/contactName"
+            app:layout_constraintBottom_toBottomOf="@id/contactInitial"
+            app:layout_constraintEnd_toStartOf="@id/messageAction"
+            app:layout_constraintStart_toEndOf="@id/contactInitial"
+            app:layout_constraintTop_toBottomOf="@id/contactNumber" />
+
+        <ImageButton
+            android:id="@+id/messageAction"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_icon_tile_blue"
+            android:contentDescription="@string/contacts_message"
+            android:padding="9dp"
+            android:src="@drawable/ic_contact_message"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/callAction"
-            app:layout_constraintTop_toTopOf="@id/contactName" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/callAction"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="@dimen/csp_space_6"
             android:background="@drawable/bg_contact_call"
             android:contentDescription="@string/contacts_call"
-            android:padding="10dp"
+            android:padding="9dp"
             android:src="@drawable/ic_contact_call"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
