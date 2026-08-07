@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ip_lookup_title">IP Intelligence</string>
+    <string name="ip_lookup_subtitle">Validate IPv4/IPv6 addresses and understand their network scope locally on this device</string>
+    <string name="ip_lookup_back">Back</string>
+    <string name="ip_lookup_hint">IPv4 or IPv6 address</string>
+    <string name="ip_lookup_analyze">Analyze</string>
+    <string name="ip_lookup_required">Enter an IPv4 or IPv6 address</string>
+    <string name="ip_lookup_invalid">Invalid IP address</string>
+    <string name="ip_lookup_local_title">Local IP analysis</string>
+    <string name="ip_lookup_valid">Valid IP</string>
+    <string name="ip_lookup_invalid_chip">Invalid IP</string>
+    <string name="ip_lookup_version_format">Version: %1$s</string>
+    <string name="ip_lookup_scope_format">Scope: %1$s</string>
+    <string name="ip_lookup_canonical_format">Canonical: %1$s</string>
+    <string name="ip_scope_public">Public Internet</string>
+    <string name="ip_scope_private">Private network</string>
+    <string name="ip_scope_loopback">Loopback</string>
+    <string name="ip_scope_link_local">Link-local</string>
+    <string name="ip_scope_multicast">Multicast</string>
+    <string name="ip_scope_reserved">Reserved</string>
+    <string name="ip_scope_unspecified">Unspecified</string>
+    <string name="ip_scope_invalid">Invalid</string>
+    <string name="ip_version_ipv4">IPv4</string>
+    <string name="ip_version_ipv6">IPv6</string>
+    <string name="ip_version_unknown">Unknown</string>
+    <string name="ip_device_network_title">This device network</string>
+    <string name="ip_device_network_transport_format">Active transport: %1$s</string>
+    <string name="ip_device_network_addresses_title">Local addresses</string>
+    <string name="ip_device_network_none">No active network details are available.</string>
+    <string name="ip_transport_wifi">Wi-Fi</string>
+    <string name="ip_transport_cellular">Cellular</string>
+    <string name="ip_transport_ethernet">Ethernet</string>
+    <string name="ip_transport_vpn">VPN</string>
+    <string name="ip_transport_other">Other / unknown</string>
+    <string name="ip_lookup_privacy_note">This page performs local network analysis only. It does not determine a person’s exact location, GPS position or home address.</string>
+    <string name="ip_home_lookup_hint">Phone number or IP address</string>
+    <string name="ip_home_lookup_empty">Enter a phone number or IP address first</string>
+</resources>
