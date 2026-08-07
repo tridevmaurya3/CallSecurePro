@@ -14,16 +14,15 @@ function normalizePhoneInput(value) {
   return input;
 }
 
-async function twilioLookup(phoneNumber) {
-  const sid = process.env.TWILIO_ACCOUNT_SID;
-  const token = process.env.TWILIO_AUTH_TOKEN;
+async function twilioLookup(phoneNumber, config = {}) {
+  const sid = config.accountSid;
+  const token = config.authToken;
   if (!configured(sid) || !configured(token)) {
     return { source: "TWILIO_LOOKUP", status: "NOT_CONFIGURED" };
   }
 
   const e164 = normalizePhoneInput(phoneNumber);
-  const usePaidLineType = String(process.env.TWILIO_LINE_TYPE_ENABLED || "false")
-    .toLowerCase() === "true";
+  const usePaidLineType = config.lineTypeEnabled === true;
   const query = usePaidLineType ? "?Fields=line_type_intelligence" : "";
   const data = await fetchJson(
     `https://lookups.twilio.com/v2/PhoneNumbers/${encodeURIComponent(e164)}${query}`,
@@ -52,9 +51,9 @@ async function twilioLookup(phoneNumber) {
   });
 }
 
-async function telesignPhoneId(phoneNumber) {
-  const customerId = process.env.TELESIGN_CUSTOMER_ID;
-  const apiKey = process.env.TELESIGN_API_KEY;
+async function telesignPhoneId(phoneNumber, config = {}) {
+  const customerId = config.customerId;
+  const apiKey = config.apiKey;
   if (!configured(customerId) || !configured(apiKey)) {
     return { source: "TELESIGN_PHONE_ID", status: "NOT_CONFIGURED" };
   }
@@ -93,10 +92,10 @@ async function telesignPhoneId(phoneNumber) {
   });
 }
 
-async function runPhoneProviders(phoneNumber) {
+async function runPhoneProviders(phoneNumber, providerConfig = {}) {
   const jobs = [
-    ["TWILIO_LOOKUP", () => twilioLookup(phoneNumber)],
-    ["TELESIGN_PHONE_ID", () => telesignPhoneId(phoneNumber)]
+    ["TWILIO_LOOKUP", () => twilioLookup(phoneNumber, providerConfig.twilio || {})],
+    ["TELESIGN_PHONE_ID", () => telesignPhoneId(phoneNumber, providerConfig.telesign || {})]
   ];
 
   const results = await Promise.all(jobs.map(async ([source, job]) => {
