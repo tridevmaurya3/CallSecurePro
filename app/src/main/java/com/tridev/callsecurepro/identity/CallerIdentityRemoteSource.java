@@ -4,16 +4,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Contract for a future authenticated caller-identity backend.
+ * Contract for a real caller-identity source.
  *
  * Implementations must return only identities backed by a real source. Returning null means
- * no verified remote identity is available. The current app intentionally uses the no-op
- * implementation until a secure backend is configured.
+ * no trustworthy remote identity is available. Multi-source orchestration can pass a lookup mode
+ * so slower providers are used only where their latency is appropriate.
  */
 public interface CallerIdentityRemoteSource {
 
     @Nullable
     RemoteIdentity lookup(@NonNull String normalizedNumber);
+
+    /**
+     * Mode-aware lookup. Existing providers remain compatible through the default implementation.
+     * Providers that need different manual/passive latency policies can override this method.
+     */
+    @Nullable
+    default RemoteIdentity lookup(
+            @NonNull String normalizedNumber,
+            @NonNull CallerIdentityLookupMode mode
+    ) {
+        return lookup(normalizedNumber);
+    }
 
     final class RemoteIdentity {
         @NonNull
