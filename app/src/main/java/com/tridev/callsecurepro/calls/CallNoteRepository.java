@@ -1,6 +1,7 @@
 package com.tridev.callsecurepro.calls;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.telephony.PhoneNumberUtils;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,8 @@ import java.util.Map;
 public final class CallNoteRepository {
 
     private static final int MAX_FOLLOW_UP_CENTER_ITEMS = 300;
+    private static final String RECONCILE_PREFS = "call_follow_up_reconciliation";
+    private static final String KEY_RECONCILED_V1 = "pending_follow_ups_reconciled_v1";
 
     private final CallNoteDao callNoteDao;
 
@@ -65,9 +68,19 @@ public final class CallNoteRepository {
     }
 
     public void reconcilePendingFollowUps(@NonNull Context context) {
-        for (CallNoteEntity note : getPendingFollowUps()) {
-            CallReminderScheduler.syncFollowUp(context, note);
+        Context appContext = context.getApplicationContext();
+        SharedPreferences preferences = appContext.getSharedPreferences(
+                RECONCILE_PREFS,
+                Context.MODE_PRIVATE
+        );
+        if (preferences.getBoolean(KEY_RECONCILED_V1, false)) {
+            return;
         }
+
+        for (CallNoteEntity note : getPendingFollowUps()) {
+            CallReminderScheduler.syncFollowUp(appContext, note);
+        }
+        preferences.edit().putBoolean(KEY_RECONCILED_V1, true).apply();
     }
 
     public void save(
