@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_fluent_page"
@@ -15,10 +16,10 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingStart="@dimen/csp_page_horizontal"
-        android:paddingTop="14dp"
-        android:paddingEnd="@dimen/csp_page_horizontal"
-        android:paddingBottom="18dp">
+        android:paddingStart="20dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,32 +35,32 @@
                 android:layout_weight="1"
                 android:hint="@string/dial_number_hint"
                 app:boxBackgroundColor="@color/csp_surface"
-                app:boxCornerRadiusBottomEnd="@dimen/csp_radius_large"
-                app:boxCornerRadiusBottomStart="@dimen/csp_radius_large"
-                app:boxCornerRadiusTopEnd="@dimen/csp_radius_large"
-                app:boxCornerRadiusTopStart="@dimen/csp_radius_large"
+                app:boxCornerRadiusBottomEnd="28dp"
+                app:boxCornerRadiusBottomStart="28dp"
+                app:boxCornerRadiusTopEnd="28dp"
+                app:boxCornerRadiusTopStart="28dp"
                 app:boxStrokeColor="@color/csp_outline">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/dialNumberInput"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="58dp"
                     android:gravity="center"
                     android:imeOptions="actionDone"
                     android:inputType="phone"
                     android:maxLines="1"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.CallSecurePro.Number"
-                    android:textSize="21sp"
+                    android:textSize="22sp"
                     tools:text="+91 98765 43210" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/moreOptionsButton"
-                style="@style/Widget.CallSecurePro.Button.Secondary"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_marginStart="8dp"
+                style="@style/Widget.CallSecurePro.DialUtilityButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
                 android:contentDescription="@string/dial_more_options"
                 android:minWidth="0dp"
                 android:padding="0dp"
@@ -67,187 +68,181 @@
                 app:icon="@drawable/ic_more_vertical"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
-                app:iconSize="24dp"
-                app:iconTint="@color/csp_text_primary" />
+                app:iconSize="24dp" />
         </LinearLayout>
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="22dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:gravity="center_horizontal"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/key1"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_1" />
 
-            <Space android:layout_width="@dimen/csp_space_10" android:layout_height="1dp" />
+            <Space android:layout_width="28dp" android:layout_height="1dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/key2"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_2" />
 
-            <Space android:layout_width="@dimen/csp_space_10" android:layout_height="1dp" />
+            <Space android:layout_width="28dp" android:layout_height="1dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/key3"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_3" />
         </LinearLayout>
+
+        <Space android:layout_width="1dp" android:layout_height="12dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/csp_space_10"
+            android:gravity="center_horizontal"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/key4"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_4" />
 
-            <Space android:layout_width="@dimen/csp_space_10" android:layout_height="1dp" />
+            <Space android:layout_width="28dp" android:layout_height="1dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/key5"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_5" />
 
-            <Space android:layout_width="@dimen/csp_space_10" android:layout_height="1dp" />
+            <Space android:layout_width="28dp" android:layout_height="1dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/key6"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_6" />
         </LinearLayout>
+
+        <Space android:layout_width="1dp" android:layout_height="12dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/csp_space_10"
+            android:gravity="center_horizontal"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/key7"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_7" />
 
-            <Space android:layout_width="@dimen/csp_space_10" android:layout_height="1dp" />
+            <Space android:layout_width="28dp" android:layout_height="1dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/key8"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_8" />
 
-            <Space android:layout_width="@dimen/csp_space_10" android:layout_height="1dp" />
+            <Space android:layout_width="28dp" android:layout_height="1dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/key9"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_9" />
         </LinearLayout>
+
+        <Space android:layout_width="1dp" android:layout_height="12dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/csp_space_10"
+            android:gravity="center_horizontal"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/keyStar"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_star" />
 
-            <Space android:layout_width="@dimen/csp_space_10" android:layout_height="1dp" />
+            <Space android:layout_width="28dp" android:layout_height="1dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/key0"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_0" />
 
-            <Space android:layout_width="@dimen/csp_space_10" android:layout_height="1dp" />
+            <Space android:layout_width="28dp" android:layout_height="1dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/keyHash"
                 style="@style/Widget.CallSecurePro.DialKey"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:text="@string/dial_key_hash" />
         </LinearLayout>
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <Space
-                android:layout_width="56dp"
-                android:layout_height="1dp" />
+            android:layout_height="82dp"
+            android:layout_marginTop="18dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/callButton"
-                style="@style/Widget.CallSecurePro.DialCallButton"
-                android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:text="@string/dial_call"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/dial_call"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text=""
                 app:icon="@drawable/ic_contact_call"
                 app:iconGravity="textStart"
-                app:iconPadding="8dp" />
+                app:iconPadding="0dp"
+                app:iconSize="28dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/backspaceButton"
                 style="@style/Widget.CallSecurePro.DialUtilityButton"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="12dp"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_gravity="end|center_vertical"
                 android:contentDescription="@string/dial_backspace"
-                android:minWidth="56dp"
+                android:minWidth="54dp"
+                android:padding="0dp"
                 android:text=""
                 app:icon="@drawable/ic_dial_backspace"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="24dp" />
-        </LinearLayout>
+        </FrameLayout>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
