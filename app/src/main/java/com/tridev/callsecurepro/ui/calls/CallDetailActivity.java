@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CallLog;
 import android.telephony.PhoneNumberUtils;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +28,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.tridev.callsecurepro.R;
 import com.tridev.callsecurepro.calls.CallNoteRepository;
+import com.tridev.callsecurepro.calls.CallReminderScheduler;
 import com.tridev.callsecurepro.data.calls.CallNoteEntity;
 import com.tridev.callsecurepro.databinding.ActivityCallDetailBinding;
 import com.tridev.callsecurepro.protection.CallerAssessment;
@@ -57,6 +61,25 @@ public class CallDetailActivity extends AppCompatActivity {
     private boolean suppressFollowUpSelection;
     private boolean followUpSelectionChanged;
     private long selectedFollowUpAt;
+
+    private final ActivityResultLauncher<String> notificationPermissionLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(),
+                    granted -> {
+                        if (granted) {
+                            CallNoteEntity note = loadedNote;
+                            if (note != null) {
+                                CallReminderScheduler.syncFollowUp(this, note);
+                            }
+                        } else {
+                            Toast.makeText(
+                                    this,
+                                    R.string.call_detail_reminder_permission_denied,
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    }
+            );
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -159,6 +182,9 @@ public class CallDetailActivity extends AppCompatActivity {
                 loadedNote = note;
                 setLoading(false);
                 render(detail, note, stats, assessment);
+                if (note != null) {
+                    CallReminderScheduler.syncFollowUp(this, note);
+                }
             });
         });
     }
@@ -304,6 +330,9 @@ public class CallDetailActivity extends AppCompatActivity {
 
         suppressFollowUpSelection = true;
         binding.followUpChipGroup.clearCheck();
+        if (selectedFollowUpAt <= 0L) {
+            binding.followUpNoneChip.setChecked(true);
+        }
         suppressFollowUpSelection = false;
 
         boolean done = note != null && note.followUpDone;
@@ -411,6 +440,14 @@ public class CallDetailActivity extends AppCompatActivity {
                                     ? View.VISIBLE
                                     : View.GONE
                     );
+
+                    if (refreshed == null) {
+                        CallReminderScheduler.cancelFollowUp(this, detail.id);
+                    } else {
+                        CallReminderScheduler.syncFollowUp(this, refreshed);
+                        requestNotificationPermissionForReminderIfNeeded(refreshed);
+                    }
+
                     Toast.makeText(this, R.string.call_detail_saved, Toast.LENGTH_SHORT).show();
                 });
             } catch (RuntimeException exception) {
@@ -426,6 +463,25 @@ public class CallDetailActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void requestNotificationPermissionForReminderIfNeeded(
+            @NonNull CallNoteEntity note
+    ) {
+        if (note.followUpAt <= 0L || note.followUpDone || canPostNotifications()) {
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
+    }
+
+    private boolean canPostNotifications() {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                || ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void markFollowUpDone() {
@@ -452,6 +508,7 @@ public class CallDetailActivity extends AppCompatActivity {
                         refreshed != null && refreshed.followUpDone
                 );
                 binding.markFollowUpDoneButton.setVisibility(View.GONE);
+                CallReminderScheduler.cancelFollowUp(this, detail.id);
             });
         });
     }
