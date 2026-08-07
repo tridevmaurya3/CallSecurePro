@@ -22,3 +22,9 @@ functions/.env
 functions/.env.*
 functions/.runtimeconfig.json
 firebase.local.properties
+tools/directory-import/node_modules/
+tools/directory-import/data/
+tools/directory-import/import-report*.json
+service-account*.json
+firebase-service-account*.json
+*-firebase-adminsdk-*.json
