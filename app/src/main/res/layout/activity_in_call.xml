@@ -176,7 +176,7 @@
             android:layout_height="60dp"
             android:layout_weight="1"
             android:text="@string/incall_reject"
-            app:icon="@drawable/ic_incall_answer"
+            app:icon="@drawable/ic_incall_end"
             app:iconGravity="textStart" />
 
         <Space
@@ -202,7 +202,7 @@
         android:layout_marginTop="@dimen/csp_space_12"
         android:text="@string/incall_end"
         android:visibility="gone"
-        app:icon="@drawable/ic_incall_answer"
+        app:icon="@drawable/ic_incall_end"
         app:iconGravity="textStart"
         tools:visibility="visible" />
 
