@@ -8,8 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.tridev.callsecurepro.theme.AppVisualThemeManager;
+import com.tridev.callsecurepro.theme.GlobalDialButtonManager;
 
-/** Applies the saved visual theme whenever an app activity is created or resumed. */
+/** Applies saved visual settings and the shared dial shortcut across app activities. */
 public class CallSecureApplication extends Application {
 
     @Override
@@ -21,21 +22,19 @@ public class CallSecureApplication extends Application {
                     @NonNull Activity activity,
                     @Nullable Bundle savedInstanceState
             ) {
-                applyTheme(activity);
+                applySharedUi(activity);
             }
 
             @Override
             public void onActivityResumed(@NonNull Activity activity) {
-                applyTheme(activity);
+                applySharedUi(activity);
             }
 
-            private void applyTheme(@NonNull Activity activity) {
-                // MainActivity owns fragment-aware theming so the independently themed dialer
-                // is never overwritten by the global app background renderer.
-                if (activity instanceof MainActivity) {
-                    return;
+            private void applySharedUi(@NonNull Activity activity) {
+                if (!(activity instanceof MainActivity)) {
+                    AppVisualThemeManager.applyActivity(activity);
                 }
-                AppVisualThemeManager.applyActivity(activity);
+                GlobalDialButtonManager.ensure(activity);
             }
 
             @Override
