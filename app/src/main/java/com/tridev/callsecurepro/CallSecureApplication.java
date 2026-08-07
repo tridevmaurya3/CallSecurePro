@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.tridev.callsecurepro.community.CommunityReportRepository;
 import com.tridev.callsecurepro.community.FirebaseCommunityConfig;
 import com.tridev.callsecurepro.theme.AppVisualThemeManager;
 import com.tridev.callsecurepro.theme.GlobalDialButtonManager;
@@ -18,6 +19,7 @@ public class CallSecureApplication extends Application {
     public void onCreate() {
         super.onCreate();
         FirebaseCommunityConfig.warmUp(this);
+        new CommunityReportRepository(this).enqueueSyncIfAvailable();
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(
