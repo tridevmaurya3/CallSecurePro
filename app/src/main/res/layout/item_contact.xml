@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/csp_space_8"
+    style="@style/Widget.CallSecurePro.Card">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="68dp"
+        android:padding="@dimen/csp_card_padding_compact">
+
+        <TextView
+            android:id="@+id/contactInitial"
+            android:layout_width="@dimen/csp_icon_tile"
+            android:layout_height="@dimen/csp_icon_tile"
+            android:background="@drawable/bg_contact_avatar"
+            android:gravity="center"
+            android:textColor="@color/csp_tertiary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/contactName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/csp_space_12"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle"
+            app:layout_constraintEnd_toStartOf="@id/favoriteIcon"
+            app:layout_constraintStart_toEndOf="@id/contactInitial"
+            app:layout_constraintTop_toTopOf="@id/contactInitial" />
+
+        <TextView
+            android:id="@+id/contactNumber"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/csp_space_12"
+            android:layout_marginTop="@dimen/csp_space_4"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+            app:layout_constraintBottom_toBottomOf="@id/contactInitial"
+            app:layout_constraintEnd_toStartOf="@id/callAction"
+            app:layout_constraintStart_toEndOf="@id/contactInitial"
+            app:layout_constraintTop_toBottomOf="@id/contactName" />
+
+        <ImageView
+            android:id="@+id/favoriteIcon"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginStart="@dimen/csp_space_6"
+            android:contentDescription="@string/contacts_favorite"
+            android:src="@drawable/ic_contact_favorite"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/contactName"
+            app:layout_constraintEnd_toStartOf="@id/callAction"
+            app:layout_constraintTop_toTopOf="@id/contactName" />
+
+        <ImageButton
+            android:id="@+id/callAction"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_contact_call"
+            android:contentDescription="@string/contacts_call"
+            android:padding="10dp"
+            android:src="@drawable/ic_contact_call"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
