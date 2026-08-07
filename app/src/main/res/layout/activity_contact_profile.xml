@@ -30,7 +30,7 @@
                 style="@style/Widget.CallSecurePro.Button.Secondary"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:contentDescription="@string/caller_setup_back"
+                android:contentDescription="@string/contacts_profile_back"
                 android:minWidth="0dp"
                 android:padding="0dp"
                 android:text=""
