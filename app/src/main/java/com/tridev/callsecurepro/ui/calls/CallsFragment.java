@@ -24,12 +24,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tridev.callsecurepro.R;
+import com.tridev.callsecurepro.calls.CallNoteRepository;
+import com.tridev.callsecurepro.data.calls.CallNoteEntity;
 import com.tridev.callsecurepro.databinding.FragmentCallsBinding;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,6 +51,7 @@ public class CallsFragment extends Fragment {
     private FragmentCallsBinding binding;
     private CallsAdapter callsAdapter;
     private ExecutorService callLogExecutor;
+    private CallNoteRepository callNoteRepository;
     private final List<CallHistoryItem> allCalls = new ArrayList<>();
     private CallFilter activeFilter = CallFilter.ALL;
     private boolean loadingCalls;
@@ -84,7 +88,18 @@ public class CallsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         callLogExecutor = Executors.newSingleThreadExecutor();
-        callsAdapter = new CallsAdapter(this::openCallbackDialer);
+        callNoteRepository = new CallNoteRepository(requireContext());
+        callsAdapter = new CallsAdapter(new CallsAdapter.Listener() {
+            @Override
+            public void onOpenDetails(@NonNull CallHistoryItem item) {
+                openCallDetails(item);
+            }
+
+            @Override
+            public void onCallBack(@NonNull CallHistoryItem item) {
+                openCallbackDialer(item);
+            }
+        });
 
         binding.callsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.callsRecyclerView.setAdapter(callsAdapter);
@@ -154,7 +169,7 @@ public class CallsFragment extends Fragment {
     private void refreshPermissionAndData() {
         if (hasCallLogPermission()) {
             showCallsContent();
-            if (allCalls.isEmpty() && !loadingCalls) {
+            if (!loadingCalls) {
                 loadCallHistory();
             }
         } else {
@@ -184,7 +199,8 @@ public class CallsFragment extends Fragment {
         if (!hasCallLogPermission()
                 || loadingCalls
                 || callLogExecutor == null
-                || callLogExecutor.isShutdown()) {
+                || callLogExecutor.isShutdown()
+                || callNoteRepository == null) {
             return;
         }
 
@@ -195,6 +211,7 @@ public class CallsFragment extends Fragment {
 
         callLogExecutor.execute(() -> {
             List<CallHistoryItem> loadedCalls = queryCallLog();
+            List<CallHistoryItem> enrichedCalls = enrichWithSmartMetadata(loadedCalls);
 
             if (!isAdded()) {
                 return;
@@ -210,11 +227,45 @@ public class CallsFragment extends Fragment {
                 binding.refreshButton.setEnabled(true);
 
                 allCalls.clear();
-                allCalls.addAll(loadedCalls);
+                allCalls.addAll(enrichedCalls);
                 updateSmartSummary();
                 applyFilters();
             });
         });
+    }
+
+    @NonNull
+    private List<CallHistoryItem> enrichWithSmartMetadata(
+            @NonNull List<CallHistoryItem> calls
+    ) {
+        if (calls.isEmpty() || callNoteRepository == null) {
+            return calls;
+        }
+
+        List<Long> ids = new ArrayList<>(calls.size());
+        for (CallHistoryItem item : calls) {
+            ids.add(item.getId());
+        }
+
+        Map<Long, CallNoteEntity> notes = callNoteRepository.findForCallIds(ids);
+        if (notes.isEmpty()) {
+            return calls;
+        }
+
+        List<CallHistoryItem> result = new ArrayList<>(calls.size());
+        for (CallHistoryItem item : calls) {
+            CallNoteEntity note = notes.get(item.getId());
+            if (note == null) {
+                result.add(item);
+            } else {
+                result.add(item.withNoteMetadata(
+                        note.noteText,
+                        note.followUpAt,
+                        note.followUpDone
+                ));
+            }
+        }
+        return result;
     }
 
     @NonNull
@@ -364,7 +415,10 @@ public class CallsFragment extends Fragment {
             if (!query.isEmpty()) {
                 String title = item.getDisplayTitle().toLowerCase(Locale.getDefault());
                 String number = item.getNumber().toLowerCase(Locale.getDefault());
-                if (!title.contains(query) && !number.contains(query)) {
+                String note = item.getNoteText() == null
+                        ? ""
+                        : item.getNoteText().toLowerCase(Locale.getDefault());
+                if (!title.contains(query) && !number.contains(query) && !note.contains(query)) {
                     continue;
                 }
             }
@@ -409,6 +463,12 @@ public class CallsFragment extends Fragment {
         }
     }
 
+    private void openCallDetails(@NonNull CallHistoryItem item) {
+        Intent intent = new Intent(requireContext(), CallDetailActivity.class);
+        intent.putExtra(CallDetailActivity.EXTRA_CALL_LOG_ID, item.getId());
+        startActivity(intent);
+    }
+
     private void openCallbackDialer(@NonNull CallHistoryItem item) {
         String number = item.getNumber().trim();
         if (number.isEmpty()
@@ -440,6 +500,7 @@ public class CallsFragment extends Fragment {
             callLogExecutor.shutdownNow();
             callLogExecutor = null;
         }
+        callNoteRepository = null;
         binding = null;
         super.onDestroyView();
     }
