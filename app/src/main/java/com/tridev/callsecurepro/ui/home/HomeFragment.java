@@ -1,5 +1,6 @@
 package com.tridev.callsecurepro.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.tridev.callsecurepro.MainActivity;
 import com.tridev.callsecurepro.R;
 import com.tridev.callsecurepro.databinding.FragmentHomeBinding;
+import com.tridev.callsecurepro.setup.CallerProtectionSetupActivity;
 
 public class HomeFragment extends Fragment {
 
@@ -61,11 +63,10 @@ public class HomeFragment extends Fragment {
     private void setupDashboardActions() {
         binding.openCallsButton.setOnClickListener(view -> openSection(R.id.nav_calls));
 
-        binding.startSetupButton.setOnClickListener(view -> Toast.makeText(
-                requireContext(),
-                R.string.home_setup_placeholder_message,
-                Toast.LENGTH_SHORT
-        ).show());
+        binding.startSetupButton.setOnClickListener(view -> {
+            Intent intent = new Intent(requireContext(), CallerProtectionSetupActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void performNumberLookup() {
