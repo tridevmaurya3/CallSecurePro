@@ -28,4 +28,7 @@ public interface CallNoteDao {
 
     @Query("UPDATE call_notes SET followUpDone = 1, updatedAt = :updatedAt WHERE callLogId = :callLogId")
     void markFollowUpDone(long callLogId, long updatedAt);
+
+    @Query("UPDATE call_notes SET followUpAt = :followUpAt, followUpDone = 0, updatedAt = :updatedAt WHERE callLogId = :callLogId")
+    void snoozeFollowUp(long callLogId, long followUpAt, long updatedAt);
 }
