@@ -22,6 +22,7 @@ import com.tridev.callsecurepro.data.identity.LookupHistoryEntity;
 import com.tridev.callsecurepro.databinding.ActivityNumberLookupBinding;
 import com.tridev.callsecurepro.identity.CallerIdentityRepository;
 import com.tridev.callsecurepro.identity.CallerIdentityResult;
+import com.tridev.callsecurepro.identity.NumberIntelligenceAnalyzer;
 import com.tridev.callsecurepro.protection.CallerAssessment;
 import com.tridev.callsecurepro.protection.ProtectionRepository;
 
@@ -37,6 +38,7 @@ public class NumberLookupActivity extends AppCompatActivity {
 
     private ActivityNumberLookupBinding binding;
     private CallerIdentityRepository identityRepository;
+    private NumberIntelligenceAnalyzer numberIntelligenceAnalyzer;
     private LookupHistoryAdapter historyAdapter;
     private ExecutorService lookupExecutor;
     private final AtomicInteger operationGeneration = new AtomicInteger();
@@ -50,6 +52,7 @@ public class NumberLookupActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         identityRepository = new CallerIdentityRepository(this);
+        numberIntelligenceAnalyzer = new NumberIntelligenceAnalyzer();
         lookupExecutor = Executors.newSingleThreadExecutor();
         historyAdapter = new LookupHistoryAdapter(this::selectHistoryItem);
 
@@ -129,7 +132,8 @@ public class NumberLookupActivity extends AppCompatActivity {
 
     private void performLookup(@NonNull String number) {
         ExecutorService executor = lookupExecutor;
-        if (executor == null || executor.isShutdown()) {
+        NumberIntelligenceAnalyzer analyzer = numberIntelligenceAnalyzer;
+        if (executor == null || executor.isShutdown() || analyzer == null) {
             return;
         }
 
@@ -139,6 +143,7 @@ public class NumberLookupActivity extends AppCompatActivity {
         executor.execute(() -> {
             try {
                 CallerIdentityResult result = identityRepository.lookup(number);
+                NumberIntelligenceAnalyzer.Result numberInfo = analyzer.analyze(number);
                 List<LookupHistoryEntity> history = identityRepository.getRecentHistory(20);
 
                 runOnUiThread(() -> {
@@ -146,7 +151,7 @@ public class NumberLookupActivity extends AppCompatActivity {
                         return;
                     }
                     setLoading(false);
-                    renderResult(result);
+                    renderResult(result, numberInfo);
                     renderHistory(history);
                 });
             } catch (RuntimeException exception) {
@@ -161,7 +166,10 @@ public class NumberLookupActivity extends AppCompatActivity {
         });
     }
 
-    private void renderResult(@NonNull CallerIdentityResult result) {
+    private void renderResult(
+            @NonNull CallerIdentityResult result,
+            @NonNull NumberIntelligenceAnalyzer.Result numberInfo
+    ) {
         binding.resultCard.setVisibility(View.VISIBLE);
 
         String displayName = result.hasResolvedName()
@@ -195,6 +203,8 @@ public class NumberLookupActivity extends AppCompatActivity {
             binding.categoryText.setText(getString(R.string.lookup_category_format, category));
         }
 
+        renderNumberIntelligence(numberInfo);
+
         CallerAssessment assessment = result.getAssessment();
         binding.riskChip.setText(getRiskText(assessment.getLevel()));
         binding.riskScoreText.setText(
@@ -202,6 +212,130 @@ public class NumberLookupActivity extends AppCompatActivity {
         );
         binding.riskReasonText.setText(assessment.getReason());
         styleRiskChip(assessment.getLevel());
+    }
+
+    private void renderNumberIntelligence(@NonNull NumberIntelligenceAnalyzer.Result info) {
+        binding.numberValidityChip.setText(getValidityText(info.getValidity()));
+        styleValidityChip(info.getValidity());
+
+        binding.numberTypeText.setText(
+                getString(R.string.lookup_number_type_format, getString(getNumberTypeText(info.getNumberType())))
+        );
+
+        if (info.isParsed()
+                && info.getCountryCallingCode() > 0
+                && !"ZZ".equalsIgnoreCase(info.getRegionCode())) {
+            String regionName = info.getRegionDisplayName().trim().isEmpty()
+                    ? info.getRegionCode()
+                    : info.getRegionDisplayName();
+            binding.numberRegionText.setText(
+                    getString(
+                            R.string.lookup_number_region_format,
+                            getString(
+                                    R.string.lookup_number_region_code_format,
+                                    regionName,
+                                    info.getRegionCode(),
+                                    info.getCountryCallingCode()
+                            )
+                    )
+            );
+        } else {
+            binding.numberRegionText.setText(R.string.lookup_number_region_unknown);
+        }
+
+        setOptionalText(
+                binding.numberInternationalText,
+                info.getInternationalFormat(),
+                R.string.lookup_number_international_format
+        );
+        setOptionalText(
+                binding.numberNationalText,
+                info.getNationalFormat(),
+                R.string.lookup_number_national_format
+        );
+        setOptionalText(
+                binding.numberE164Text,
+                info.getE164Format(),
+                R.string.lookup_number_e164_format
+        );
+    }
+
+    private void setOptionalText(
+            @NonNull android.widget.TextView view,
+            @Nullable String value,
+            int formatRes
+    ) {
+        String safeValue = value == null ? "" : value.trim();
+        if (safeValue.isEmpty()) {
+            view.setVisibility(View.GONE);
+            return;
+        }
+        view.setVisibility(View.VISIBLE);
+        view.setText(getString(formatRes, safeValue));
+    }
+
+    private int getValidityText(@NonNull NumberIntelligenceAnalyzer.Validity validity) {
+        switch (validity) {
+            case VALID:
+                return R.string.lookup_number_valid;
+            case POSSIBLE:
+                return R.string.lookup_number_possible;
+            case INVALID:
+            default:
+                return R.string.lookup_number_invalid_plan;
+        }
+    }
+
+    private int getNumberTypeText(@NonNull NumberIntelligenceAnalyzer.NumberType type) {
+        switch (type) {
+            case MOBILE:
+                return R.string.lookup_number_type_mobile;
+            case FIXED_LINE:
+                return R.string.lookup_number_type_fixed;
+            case FIXED_OR_MOBILE:
+                return R.string.lookup_number_type_fixed_mobile;
+            case TOLL_FREE:
+                return R.string.lookup_number_type_toll_free;
+            case PREMIUM_RATE:
+                return R.string.lookup_number_type_premium;
+            case SHARED_COST:
+                return R.string.lookup_number_type_shared;
+            case VOIP:
+                return R.string.lookup_number_type_voip;
+            case PERSONAL:
+                return R.string.lookup_number_type_personal;
+            case PAGER:
+                return R.string.lookup_number_type_pager;
+            case UAN:
+                return R.string.lookup_number_type_uan;
+            case VOICEMAIL:
+                return R.string.lookup_number_type_voicemail;
+            case UNKNOWN:
+            default:
+                return R.string.lookup_number_type_unknown;
+        }
+    }
+
+    private void styleValidityChip(@NonNull NumberIntelligenceAnalyzer.Validity validity) {
+        int foreground;
+        int background;
+        switch (validity) {
+            case VALID:
+                foreground = ContextCompat.getColor(this, R.color.csp_safe);
+                background = ContextCompat.getColor(this, R.color.csp_safe_container);
+                break;
+            case POSSIBLE:
+                foreground = ContextCompat.getColor(this, R.color.csp_unknown);
+                background = ContextCompat.getColor(this, R.color.csp_unknown_container);
+                break;
+            case INVALID:
+            default:
+                foreground = ContextCompat.getColor(this, R.color.csp_spam);
+                background = ContextCompat.getColor(this, R.color.csp_spam_container);
+                break;
+        }
+        binding.numberValidityChip.setTextColor(foreground);
+        binding.numberValidityChip.setChipBackgroundColor(ColorStateList.valueOf(background));
     }
 
     private int getIdentityTypeText(@NonNull CallerIdentityResult.IdentityType type) {
@@ -349,6 +483,7 @@ public class NumberLookupActivity extends AppCompatActivity {
             lookupExecutor.shutdownNow();
             lookupExecutor = null;
         }
+        numberIntelligenceAnalyzer = null;
         binding = null;
         super.onDestroy();
     }
