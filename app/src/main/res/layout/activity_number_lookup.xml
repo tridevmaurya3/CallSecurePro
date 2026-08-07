@@ -317,6 +317,13 @@
                 android:layout_marginTop="@dimen/csp_space_6"
                 android:textAppearance="@style/TextAppearance.CallSecurePro.Body"
                 tools:text="Saved in your contacts" />
+
+            <com.tridev.callsecurepro.ui.community.CommunityReportButton
+                style="@style/Widget.CallSecurePro.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="@dimen/csp_space_10"
+                android:text="@string/lookup_community_report" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
