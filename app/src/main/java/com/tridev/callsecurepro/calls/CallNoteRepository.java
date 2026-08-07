@@ -17,6 +17,8 @@ import java.util.Map;
 
 public final class CallNoteRepository {
 
+    private static final int MAX_FOLLOW_UP_CENTER_ITEMS = 300;
+
     private final CallNoteDao callNoteDao;
 
     public CallNoteRepository(@NonNull Context context) {
@@ -40,6 +42,32 @@ public final class CallNoteRepository {
             result.put(entity.callLogId, entity);
         }
         return result;
+    }
+
+    @NonNull
+    public List<CallNoteEntity> getFollowUps() {
+        return callNoteDao.getFollowUps(MAX_FOLLOW_UP_CENTER_ITEMS);
+    }
+
+    @NonNull
+    public List<CallNoteEntity> getPendingFollowUps() {
+        return callNoteDao.getPendingFollowUps(MAX_FOLLOW_UP_CENTER_ITEMS);
+    }
+
+    @NonNull
+    public FollowUpStats getFollowUpStats() {
+        long now = System.currentTimeMillis();
+        return new FollowUpStats(
+                callNoteDao.countOverdueFollowUps(now),
+                callNoteDao.countUpcomingFollowUps(now),
+                callNoteDao.countCompletedFollowUps()
+        );
+    }
+
+    public void reconcilePendingFollowUps(@NonNull Context context) {
+        for (CallNoteEntity note : getPendingFollowUps()) {
+            CallReminderScheduler.syncFollowUp(context, note);
+        }
     }
 
     public void save(
@@ -82,5 +110,21 @@ public final class CallNoteRepository {
                 Math.max(System.currentTimeMillis(), followUpAt),
                 System.currentTimeMillis()
         );
+    }
+
+    public static final class FollowUpStats {
+        public final int overdue;
+        public final int upcoming;
+        public final int completed;
+
+        public FollowUpStats(int overdue, int upcoming, int completed) {
+            this.overdue = Math.max(0, overdue);
+            this.upcoming = Math.max(0, upcoming);
+            this.completed = Math.max(0, completed);
+        }
+
+        public int pending() {
+            return overdue + upcoming;
+        }
     }
 }
