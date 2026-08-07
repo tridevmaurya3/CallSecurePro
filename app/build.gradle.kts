@@ -92,10 +92,12 @@ dependencies {
     // Reliable background work
     implementation(libs.work.runtime)
 
-    // Firebase community backend. Configuration comes from local Gradle properties, never source.
+    // Firebase community + authenticated multi-source intelligence backend.
+    // Configuration comes from local Gradle properties, never source.
     implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-functions")
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
 
     // Local unit tests
