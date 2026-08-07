@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="follow_up_center_title">Follow-up Center</string>
+    <string name="follow_up_center_subtitle">Prioritize callbacks and notes from your saved call reminders</string>
+    <string name="follow_up_center_back">Back</string>
+    <string name="follow_up_center_search_hint">Search name, number or note</string>
+    <string name="follow_up_center_filter_all">All</string>
+    <string name="follow_up_center_filter_overdue">Overdue</string>
+    <string name="follow_up_center_filter_upcoming">Upcoming</string>
+    <string name="follow_up_center_filter_done">Done</string>
+    <string name="follow_up_center_overdue">Overdue</string>
+    <string name="follow_up_center_upcoming">Upcoming</string>
+    <string name="follow_up_center_done">Done</string>
+    <string name="follow_up_center_priority">Priority %1$d</string>
+    <string name="follow_up_center_priority_overdue">Overdue reminder</string>
+    <string name="follow_up_center_priority_due_soon">Due within 24 hours</string>
+    <string name="follow_up_center_priority_upcoming">Upcoming reminder</string>
+    <string name="follow_up_center_priority_missed">Missed call needs follow-up</string>
+    <string name="follow_up_center_priority_note">Saved note adds context</string>
+    <string name="follow_up_center_when_format">Follow-up: %1$s</string>
+    <string name="follow_up_center_call_missing">Original call record is no longer available</string>
+    <string name="follow_up_center_unknown_number">Unknown number</string>
+    <string name="follow_up_center_open_detail">Details</string>
+    <string name="follow_up_center_mark_done">Done</string>
+    <string name="follow_up_center_snooze">Snooze 1 day</string>
+    <string name="follow_up_center_marked_done">Follow-up marked done</string>
+    <string name="follow_up_center_snoozed">Follow-up snoozed for 1 day</string>
+    <string name="follow_up_center_empty_title">No follow-ups here</string>
+    <string name="follow_up_center_empty_body">Create a follow-up from any call detail and it will appear here.</string>
+    <string name="follow_up_center_no_match">No matching follow-ups</string>
+    <string name="follow_up_center_no_match_body">Try another name, number or note.</string>
+    <string name="follow_up_center_count_format">%1$d follow-ups</string>
+    <string name="follow_up_center_notification_ready">Reminder notifications ready</string>
+    <string name="follow_up_center_notification_off">Notifications are off; saved follow-ups remain visible here</string>
+    <string name="follow_up_center_stat_overdue">Overdue</string>
+    <string name="follow_up_center_stat_upcoming">Upcoming</string>
+    <string name="follow_up_center_stat_done">Done</string>
+    <string name="follow_up_center_privacy">Priority is calculated locally from due time, missed-call status and saved note context. It does not analyze call audio or conversations.</string>
+    <string name="calls_follow_up_card_title">Follow-up inbox</string>
+    <string name="calls_follow_up_card_body">%1$d overdue • %2$d upcoming</string>
+    <string name="calls_follow_up_card_open">Open</string>
+</resources>
