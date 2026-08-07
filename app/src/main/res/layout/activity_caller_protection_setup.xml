@@ -326,6 +326,58 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_section_gap"
+            android:text="@string/setup_phone_integration_section"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.SectionTitle" />
+
+        <!-- Default Phone integration status. Role request stays locked until full in-call UI exists. -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.CallSecurePro.Card.Header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_10">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/csp_card_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/setup_default_phone_title"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_4"
+                    android:text="@string/setup_default_phone_body"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Body" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/defaultPhoneStatusChip"
+                    style="@style/Widget.CallSecurePro.Chip.Unknown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_12"
+                    android:text="@string/setup_status_checking" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/defaultPhoneRoleButton"
+                    style="@style/Widget.CallSecurePro.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_8"
+                    android:enabled="false"
+                    android:text="@string/setup_default_phone_action_locked" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.CallSecurePro.Card.Peach"
             android:layout_width="match_parent"
