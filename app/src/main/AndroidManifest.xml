@@ -36,11 +36,25 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Required dialer entry points: open the app from system/browser tel: actions. -->
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="tel" />
+            </intent-filter>
         </activity>
 
         <!--
-            Safe pass-through screening service. In this step it never blocks or silences a call.
-            The spam decision engine will be connected in a later step.
+            Safe pass-through screening service. It never blocks or silences a call until
+            the protection decision engine is explicitly implemented.
         -->
         <service
             android:name=".telecom.CallSecureScreeningService"
@@ -48,6 +62,20 @@
             android:permission="android.permission.BIND_SCREENING_SERVICE">
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
+
+        <!--
+            Telecom bridge for the future Call Secure Pro in-call experience.
+            The default Phone role is intentionally not requested until the full in-call UI
+            (answer/reject/end/audio/conference/emergency-safe behavior) is available.
+        -->
+        <service
+            android:name=".telecom.CallSecureInCallService"
+            android:exported="true"
+            android:permission="android.permission.BIND_INCALL_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
             </intent-filter>
         </service>
 
