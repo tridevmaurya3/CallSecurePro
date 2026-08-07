@@ -71,11 +71,12 @@
                 </LinearLayout>
 
                 <com.google.android.material.chip.Chip
-                    style="@style/Widget.CallSecurePro.Chip.Verified"
+                    android:id="@+id/dashboardStatusChip"
+                    style="@style/Widget.CallSecurePro.Chip.Unknown"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:text="@string/home_dashboard_status" />
+                    android:text="@string/home_dashboard_live_loading" />
             </LinearLayout>
 
             <LinearLayout
@@ -89,15 +90,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/home_lookup_title"
+                    android:text="@string/home_lookup_smart_title"
                     android:textAppearance="@style/TextAppearance.CallSecurePro.SectionTitle" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/home_lookup_subtitle"
-                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
-                    android:visibility="gone" />
+                    android:text="@string/home_lookup_smart_hint"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
             </LinearLayout>
 
             <LinearLayout
@@ -113,7 +113,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/home_lookup_hint"
+                    android:hint="@string/home_lookup_phone_ip_hint"
                     app:boxBackgroundColor="@color/csp_surface"
                     app:boxCornerRadiusBottomEnd="@dimen/csp_radius_medium"
                     app:boxCornerRadiusBottomStart="@dimen/csp_radius_medium"
@@ -128,7 +128,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:imeOptions="actionSearch"
-                        android:inputType="phone"
+                        android:inputType="textNoSuggestions"
                         android:maxLines="1"
                         android:textColor="@color/csp_text_primary"
                         android:textColorHint="@color/csp_text_muted" />
@@ -179,11 +179,11 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="6dp">
+                        android:padding="5dp">
 
                         <ImageView
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:contentDescription="@string/home_action_calls_title"
                             app:srcCompat="@drawable/ic_nav_calls"
                             app:tint="@color/csp_primary" />
@@ -191,12 +191,24 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="3dp"
                             android:gravity="center"
-                            android:maxLines="2"
+                            android:maxLines="1"
                             android:text="@string/home_action_calls_title"
                             android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/actionCallsSummary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:text="@string/home_dashboard_loading_short"
+                            android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -216,11 +228,11 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="6dp">
+                        android:padding="5dp">
 
                         <ImageView
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:contentDescription="@string/home_action_contacts_title"
                             app:srcCompat="@drawable/ic_nav_contacts"
                             app:tint="@color/csp_tertiary" />
@@ -228,12 +240,24 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="3dp"
                             android:gravity="center"
-                            android:maxLines="2"
+                            android:maxLines="1"
                             android:text="@string/home_action_contacts_title"
                             android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/actionContactsSummary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:text="@string/home_dashboard_loading_short"
+                            android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -252,11 +276,11 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="6dp">
+                        android:padding="5dp">
 
                         <ImageView
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:contentDescription="@string/home_action_protection_title"
                             app:srcCompat="@drawable/ic_nav_protection"
                             app:tint="@color/csp_warning" />
@@ -264,12 +288,24 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="3dp"
                             android:gravity="center"
-                            android:maxLines="2"
+                            android:maxLines="1"
                             android:text="@string/home_action_protection_title"
                             android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/actionProtectionSummary"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:text="@string/home_dashboard_loading_short"
+                            android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -305,21 +341,23 @@
                                 android:textAppearance="@style/TextAppearance.CallSecurePro.SectionTitle" />
 
                             <TextView
+                                android:id="@+id/protectionSummaryText"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:ellipsize="end"
                                 android:maxLines="1"
-                                android:text="@string/home_protection_subtitle"
+                                android:text="@string/home_dashboard_loading"
                                 android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
                         </LinearLayout>
 
                         <com.google.android.material.chip.Chip
+                            android:id="@+id/protectionStatusChip"
                             style="@style/Widget.CallSecurePro.Chip.Unknown"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:text="@string/home_protection_status" />
+                            android:text="@string/home_dashboard_live_loading" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -337,9 +375,10 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:id="@+id/screenedBlockedCount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/home_stat_spam_value"
+                                android:text="0"
                                 android:textAppearance="@style/TextAppearance.CallSecurePro.Number"
                                 android:textColor="@color/csp_spam"
                                 android:textSize="17sp" />
@@ -348,7 +387,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
-                                android:text="@string/home_stat_spam_label"
+                                android:text="@string/home_live_blocked_label"
                                 android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
                         </LinearLayout>
 
@@ -360,9 +399,10 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:id="@+id/screenedSilencedCount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/home_stat_unknown_value"
+                                android:text="0"
                                 android:textAppearance="@style/TextAppearance.CallSecurePro.Number"
                                 android:textColor="@color/csp_unknown"
                                 android:textSize="17sp" />
@@ -371,7 +411,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
-                                android:text="@string/home_stat_unknown_label"
+                                android:text="@string/home_live_silenced_label"
                                 android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
                         </LinearLayout>
 
@@ -383,9 +423,10 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:id="@+id/localReportCount"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/home_stat_reports_value"
+                                android:text="0"
                                 android:textAppearance="@style/TextAppearance.CallSecurePro.Number"
                                 android:textColor="@color/csp_business"
                                 android:textSize="17sp" />
@@ -394,7 +435,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
-                                android:text="@string/home_stat_reports_label"
+                                android:text="@string/home_live_reports_label"
                                 android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
                         </LinearLayout>
                     </LinearLayout>
@@ -429,18 +470,20 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/recentActivityTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/home_activity_empty_title"
+                            android:text="@string/home_dashboard_loading"
                             android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
 
                         <TextView
+                            android:id="@+id/recentActivityBody"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:text="@string/home_activity_empty_body"
+                            android:text="@string/home_dashboard_loading"
                             android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
                     </LinearLayout>
 
@@ -475,18 +518,20 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/setupStatusTitle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/home_setup_title"
                             android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
 
                         <TextView
+                            android:id="@+id/setupStatusBody"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:text="@string/home_setup_body"
+                            android:text="@string/home_dashboard_loading"
                             android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
                     </LinearLayout>
 
