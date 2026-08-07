@@ -11,11 +11,6 @@
         android:title="@string/nav_calls" />
 
     <item
-        android:id="@+id/nav_dial"
-        android:icon="@drawable/ic_nav_dial"
-        android:title="@string/nav_dial" />
-
-    <item
         android:id="@+id/nav_contacts"
         android:icon="@drawable/ic_nav_contacts"
         android:title="@string/nav_contacts" />
