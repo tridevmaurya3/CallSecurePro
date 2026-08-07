@@ -59,8 +59,26 @@ public final class CallerIdentityRepository {
         this.remoteSource = remoteSource;
     }
 
+    /** User-initiated number lookup. This is recorded in Recent lookups. */
     @NonNull
     public CallerIdentityResult lookup(@NonNull String rawNumber) {
+        return resolveInternal(rawNumber, true);
+    }
+
+    /**
+     * Passive caller resolution for incoming/ongoing calls. This never adds an item to the
+     * manual Recent lookups list.
+     */
+    @NonNull
+    public CallerIdentityResult resolveCaller(@NonNull String rawNumber) {
+        return resolveInternal(rawNumber, false);
+    }
+
+    @NonNull
+    private CallerIdentityResult resolveInternal(
+            @NonNull String rawNumber,
+            boolean recordLookupHistory
+    ) {
         String normalized = ProtectionRepository.normalize(rawNumber);
         if (normalized.isEmpty()) {
             throw new IllegalArgumentException("A valid phone number is required");
@@ -83,14 +101,14 @@ public final class CallerIdentityRepository {
                     100,
                     assessment
             );
-            recordHistory(rawNumber, result);
+            recordHistoryIfNeeded(rawNumber, result, recordLookupHistory);
             return result;
         }
 
         CallerIdentityEntity cached = identityDao.findByNumber(normalized);
         if (cached != null && (cached.expiresAt <= 0L || cached.expiresAt >= now)) {
             CallerIdentityResult result = fromCachedEntity(cached, assessment);
-            recordHistory(rawNumber, result);
+            recordHistoryIfNeeded(rawNumber, result, recordLookupHistory);
             return result;
         }
 
@@ -99,7 +117,7 @@ public final class CallerIdentityRepository {
             CallerIdentityEntity entity = toEntity(normalized, remoteIdentity, now);
             identityDao.upsert(entity);
             CallerIdentityResult result = fromCachedEntity(entity, assessment);
-            recordHistory(rawNumber, result);
+            recordHistoryIfNeeded(rawNumber, result, recordLookupHistory);
             return result;
         }
 
@@ -114,7 +132,7 @@ public final class CallerIdentityRepository {
                 0,
                 assessment
         );
-        recordHistory(rawNumber, result);
+        recordHistoryIfNeeded(rawNumber, result, recordLookupHistory);
         return result;
     }
 
@@ -233,14 +251,17 @@ public final class CallerIdentityRepository {
     ) {
         return identity.displayName != null
                 && !identity.displayName.trim().isEmpty()
-                && identity.source != null
                 && !identity.source.trim().isEmpty();
     }
 
-    private void recordHistory(
+    private void recordHistoryIfNeeded(
             @NonNull String queryNumber,
-            @NonNull CallerIdentityResult result
+            @NonNull CallerIdentityResult result,
+            boolean recordLookupHistory
     ) {
+        if (!recordLookupHistory) {
+            return;
+        }
         historyDao.insert(new LookupHistoryEntity(
                 result.getNormalizedNumber(),
                 queryNumber.trim().isEmpty() ? result.getDisplayNumber() : queryNumber.trim(),
