@@ -1,0 +1,13 @@
+phoneNumber,country,displayName,category,identityType,verificationLevel,source,confidence,sourceClass,sourceUrl,expiresAt
++918026599990,IN,State Bank of India Contact Centre,BANKING,BUSINESS,VERIFIED,SBI_OFFICIAL,100,BUSINESS_OFFICIAL,https://sbi.co.in/web/personal-banking/information-services/kyc-guidelines/atm-services,
++912261606160,IN,HDFC Bank Phone Banking,BANKING,BUSINESS,VERIFIED,HDFC_BANK_OFFICIAL,100,BUSINESS_OFFICIAL,https://www.hdfcbank.com/content/bbp/repositories/723fb80a-2dde-42a3-9793-7ae1be57c87f/?path=%2FPersonal%2FPay%2FCards%2FCredit%2BCard%2FCredit%2BCard%2BLanding%2BPage%2FManage%2BYour%2BCredit%2BCards%2BPDFs%2FMITC%2B1.64.pdf,
++914461084900,IN,HDFC Bank Grievance Redressal,BANKING,BUSINESS,VERIFIED,HDFC_BANK_OFFICIAL,100,BUSINESS_OFFICIAL,https://www.hdfcbank.com/content/bbp/repositories/723fb80a-2dde-42a3-9793-7ae1be57c87f/?path=%2FPersonal%2FPay%2FCards%2FCredit%2BCard%2FCredit%2BCard%2BLanding%2BPage%2FManage%2BYour%2BCredit%2BCards%2BPDFs%2FMITC%2B1.64.pdf,
++911202490000,IN,Punjab National Bank Contact Centre,BANKING,BUSINESS,VERIFIED,PNB_OFFICIAL,100,BUSINESS_OFFICIAL,https://www.pnbindia.in/downloadprocess.aspx?fid=EheRgqLGhDAUoM9oqziNEw%3D%3D,
++918061817110,IN,Union Bank of India Customer Care,BANKING,BUSINESS,VERIFIED,UNION_BANK_OFFICIAL,100,BUSINESS_OFFICIAL,https://www.unionbankofindia.co.in/pdf/Policy%20on%20Compensation%2C%20Grievance%20Redressal%20%26%20Customer%20Rights%202024-25.pdf,
++918022084232,IN,Canara Bank Customer Care,BANKING,BUSINESS,VERIFIED,CANARA_BANK_OFFICIAL,100,BUSINESS_OFFICIAL,https://canarabank.com/UploadedFiles/Pdf/Citizen-Charter-on-Customer-Service.pdf,
++918068212121,IN,Canara Bank Customer Care,BANKING,BUSINESS,VERIFIED,CANARA_BANK_OFFICIAL,100,BUSINESS_OFFICIAL,https://canarabank.com/UploadedFiles/Pdf/Citizen-Charter-on-Customer-Service.pdf,
++917949044100,IN,Bank of Baroda NRI Helpdesk,BANKING,BUSINESS,VERIFIED,BANK_OF_BARODA_OFFICIAL,100,BUSINESS_OFFICIAL,https://london.bankofbaroda.in/contact-us,
++912268276827,IN,Life Insurance Corporation of India Call Center,INSURANCE,BUSINESS,VERIFIED,LIC_OFFICIAL,100,BUSINESS_OFFICIAL,https://www.licindia.in/contact-us,
++918046122000,IN,Income Tax e-Filing Helpdesk,GOVERNMENT_TAX,BUSINESS,VERIFIED,INCOME_TAX_OFFICIAL,100,GOVERNMENT_OFFICIAL,https://www.incometax.gov.in/iec/foportal/contact-us,
++918061464700,IN,Income Tax e-Filing Helpdesk,GOVERNMENT_TAX,BUSINESS,VERIFIED,INCOME_TAX_OFFICIAL,100,GOVERNMENT_OFFICIAL,https://www.incometax.gov.in/iec/foportal/contact-us,
++912027218080,IN,Income Tax PAN and TAN Helpdesk,GOVERNMENT_TAX,BUSINESS,VERIFIED,INCOME_TAX_OFFICIAL,100,GOVERNMENT_OFFICIAL,https://www.incometax.gov.in/iec/foportal/contact-us,
