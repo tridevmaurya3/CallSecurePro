@@ -40,7 +40,6 @@
             android:minHeight="@dimen/csp_touch_target"
             app:itemHorizontalTranslationEnabled="false"
             app:itemIconSize="@dimen/csp_bottom_navigation_icon"
-            app:itemIconTint="@color/bottom_nav_item_tint"
             app:itemPaddingBottom="@dimen/csp_bottom_navigation_item_padding_bottom"
             app:itemPaddingTop="@dimen/csp_bottom_navigation_item_padding_top"
             app:itemRippleColor="@color/csp_ripple"
