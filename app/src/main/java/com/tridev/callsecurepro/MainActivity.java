@@ -1,10 +1,14 @@
 package com.tridev.callsecurepro;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -24,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
             "state_selected_navigation_item";
 
     private ActivityMainBinding binding;
+    private boolean pendingDialRequest;
+    @Nullable
+    private String pendingDialNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        captureExternalDialIntent(getIntent());
         applySystemBarInsets();
         setupBottomNavigation(savedInstanceState);
     }
@@ -77,12 +85,14 @@ public class MainActivity extends AppCompatActivity {
         );
 
         binding.bottomNavigation.setOnItemReselectedListener(item -> {
-            // Keep the current section visible when its tab is selected again.
+            if (item.getItemId() == R.id.nav_dial && pendingDialRequest) {
+                openMainSection(R.id.nav_dial);
+            }
         });
 
-        int selectedItemId = R.id.nav_home;
+        int selectedItemId = pendingDialRequest ? R.id.nav_dial : R.id.nav_home;
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && !pendingDialRequest) {
             selectedItemId = savedInstanceState.getInt(
                     STATE_SELECTED_NAVIGATION_ITEM,
                     R.id.nav_home
@@ -97,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         Fragment restoredFragment = getSupportFragmentManager()
                 .findFragmentById(R.id.mainFragmentContainer);
 
-        if (savedInstanceState == null || restoredFragment == null) {
+        if (savedInstanceState == null || restoredFragment == null || pendingDialRequest) {
             openMainSection(selectedItemId);
         }
     }
@@ -123,7 +133,13 @@ public class MainActivity extends AppCompatActivity {
             fragment = new CallsFragment();
             fragmentTag = "calls";
         } else if (itemId == R.id.nav_dial) {
-            fragment = new DialFragment();
+            if (pendingDialRequest) {
+                fragment = DialFragment.newInstance(pendingDialNumber);
+                pendingDialRequest = false;
+                pendingDialNumber = null;
+            } else {
+                fragment = new DialFragment();
+            }
             fragmentTag = "dial";
         } else if (itemId == R.id.nav_contacts) {
             fragment = new ContactsFragment();
@@ -142,6 +158,47 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
         return true;
+    }
+
+    @Override
+    protected void onNewIntent(@NonNull Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+
+        if (!captureExternalDialIntent(intent) || binding == null) {
+            return;
+        }
+
+        int currentItemId = binding.bottomNavigation.getSelectedItemId();
+        binding.bottomNavigation.setSelectedItemId(R.id.nav_dial);
+
+        if (currentItemId == R.id.nav_dial && pendingDialRequest) {
+            openMainSection(R.id.nav_dial);
+        }
+    }
+
+    private boolean captureExternalDialIntent(@Nullable Intent intent) {
+        if (intent == null || !Intent.ACTION_DIAL.equals(intent.getAction())) {
+            return false;
+        }
+
+        pendingDialRequest = true;
+        pendingDialNumber = extractPhoneNumber(intent.getData());
+        return true;
+    }
+
+    @Nullable
+    private String extractPhoneNumber(@Nullable Uri data) {
+        if (data == null || !"tel".equalsIgnoreCase(data.getScheme())) {
+            return null;
+        }
+
+        String number = data.getSchemeSpecificPart();
+        if (number == null || number.trim().isEmpty()) {
+            return null;
+        }
+
+        return number.trim();
     }
 
     @Override
