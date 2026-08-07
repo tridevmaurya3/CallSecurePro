@@ -22,7 +22,7 @@
     <string name="follow_up_center_unknown_number">Unknown number</string>
     <string name="follow_up_center_open_detail">Details</string>
     <string name="follow_up_center_mark_done">Done</string>
-    <string name="follow_up_center_snooze">Snooze 1 day</string>
+    <string name="follow_up_center_snooze">Snooze</string>
     <string name="follow_up_center_marked_done">Follow-up marked done</string>
     <string name="follow_up_center_snoozed">Follow-up snoozed for 1 day</string>
     <string name="follow_up_center_empty_title">No follow-ups here</string>
