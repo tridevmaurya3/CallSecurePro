@@ -58,6 +58,9 @@ dependencies {
     implementation(libs.material)
     implementation(libs.recyclerview)
 
+    // Offline phone-number parsing, formatting and validation metadata
+    implementation(libs.libphonenumber)
+
     // Lifecycle and architecture
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.livedata)
