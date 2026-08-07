@@ -19,6 +19,7 @@ public final class NumberIntelligenceAnalyzer {
 
     private static final String UNKNOWN_REGION_CODE = "ZZ";
     private static final String NON_GEO_REGION_CODE = "001";
+    private static final String INDIA_REGION_CODE = "IN";
 
     public enum Validity {
         VALID,
@@ -138,13 +139,11 @@ public final class NumberIntelligenceAnalyzer {
             return invalidResult();
         }
 
-        String defaultRegion = Locale.getDefault().getCountry();
-        if (defaultRegion == null || defaultRegion.trim().isEmpty()) {
-            defaultRegion = UNKNOWN_REGION_CODE;
-        }
+        String parseInput = normalizeInternationalPrefix(input);
+        String defaultRegion = resolveDefaultRegion(parseInput);
 
         try {
-            Phonenumber.PhoneNumber parsed = phoneNumberUtil.parse(input, defaultRegion);
+            Phonenumber.PhoneNumber parsed = phoneNumberUtil.parse(parseInput, defaultRegion);
             boolean valid = phoneNumberUtil.isValidNumber(parsed);
             boolean possible = phoneNumberUtil.isPossibleNumber(parsed);
 
@@ -181,6 +180,68 @@ public final class NumberIntelligenceAnalyzer {
         } catch (NumberParseException | IllegalArgumentException ignored) {
             return invalidResult();
         }
+    }
+
+    /**
+     * A phone number beginning with '+' already carries its own country code. For national input,
+     * prefer India when the digits clearly match an Indian mobile pattern; otherwise retain the
+     * device locale as the numbering-plan hint.
+     */
+    @NonNull
+    private String resolveDefaultRegion(@NonNull String input) {
+        if (input.startsWith("+")) {
+            return UNKNOWN_REGION_CODE;
+        }
+
+        String digits = digitsOnly(input);
+        if (isIndianNationalMobile(digits)) {
+            return INDIA_REGION_CODE;
+        }
+
+        String localeRegion = Locale.getDefault().getCountry();
+        if (localeRegion == null || localeRegion.trim().isEmpty()) {
+            return UNKNOWN_REGION_CODE;
+        }
+        return localeRegion.trim().toUpperCase(Locale.US);
+    }
+
+    /** Treat a bare 91-prefixed Indian mobile as an international number even when '+' is omitted. */
+    @NonNull
+    private String normalizeInternationalPrefix(@NonNull String input) {
+        if (input.startsWith("+")) {
+            return input;
+        }
+        String digits = digitsOnly(input);
+        if (digits.length() == 12
+                && digits.startsWith("91")
+                && isIndianNationalMobile(digits.substring(2))) {
+            return "+" + digits;
+        }
+        return input;
+    }
+
+    private boolean isIndianNationalMobile(@NonNull String digits) {
+        if (digits.length() == 10) {
+            char first = digits.charAt(0);
+            return first >= '6' && first <= '9';
+        }
+        if (digits.length() == 11 && digits.charAt(0) == '0') {
+            char firstSubscriberDigit = digits.charAt(1);
+            return firstSubscriberDigit >= '6' && firstSubscriberDigit <= '9';
+        }
+        return false;
+    }
+
+    @NonNull
+    private String digitsOnly(@NonNull String input) {
+        StringBuilder builder = new StringBuilder(input.length());
+        for (int i = 0; i < input.length(); i++) {
+            char value = input.charAt(i);
+            if (value >= '0' && value <= '9') {
+                builder.append(value);
+            }
+        }
+        return builder.toString();
     }
 
     @NonNull
