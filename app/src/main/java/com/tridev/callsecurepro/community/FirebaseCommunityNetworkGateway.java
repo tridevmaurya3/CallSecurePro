@@ -20,9 +20,12 @@ import com.tridev.callsecurepro.BuildConfig;
 import com.tridev.callsecurepro.identity.CallerIdentityRemoteSource;
 import com.tridev.callsecurepro.identity.CallerIdentityResult;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,8 +38,8 @@ public final class FirebaseCommunityNetworkGateway implements CommunityNetworkGa
 
     private static final String DIRECTORY_COLLECTION = "caller_directory";
     private static final String REPORT_ROOT_COLLECTION = "community_report_submissions";
-    private static final long AUTH_TIMEOUT_SECONDS = 3L;
-    private static final long LOOKUP_TIMEOUT_MILLIS = 1500L;
+    private static final long AUTH_TIMEOUT_MILLIS = 1000L;
+    private static final long LOOKUP_TIMEOUT_MILLIS = 1200L;
     private static final long WRITE_TIMEOUT_SECONDS = 8L;
 
     private final Context appContext;
@@ -169,9 +172,10 @@ public final class FirebaseCommunityNetworkGateway implements CommunityNetworkGa
             return new ReportSubmissionResult(false, null, "AUTH_UNAVAILABLE");
         }
 
-        String reportId = UUID.randomUUID().toString();
+        String numberHash = CommunityNumberHasher.sha256(normalizedNumber);
+        String reportId = dailyReportId(numberHash, category);
         Map<String, Object> payload = new HashMap<>();
-        payload.put("numberHash", CommunityNumberHasher.sha256(normalizedNumber));
+        payload.put("numberHash", numberHash);
         payload.put("category", category);
         payload.put("createdAt", FieldValue.serverTimestamp());
         payload.put("appVersion", BuildConfig.VERSION_NAME);
@@ -208,13 +212,21 @@ public final class FirebaseCommunityNetworkGateway implements CommunityNetworkGa
         try {
             AuthResult result = Tasks.await(
                     auth.signInAnonymously(),
-                    AUTH_TIMEOUT_SECONDS,
-                    TimeUnit.SECONDS
+                    AUTH_TIMEOUT_MILLIS,
+                    TimeUnit.MILLISECONDS
             );
             return result.getUser() != null;
         } catch (Exception ignored) {
             return false;
         }
+    }
+
+    @NonNull
+    private String dailyReportId(@NonNull String numberHash, @NonNull String category) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String utcDay = format.format(new Date());
+        return CommunityNumberHasher.sha256(numberHash + ":" + category + ":" + utcDay);
     }
 
     private boolean isMainThread() {
