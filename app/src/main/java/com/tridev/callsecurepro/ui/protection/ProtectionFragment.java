@@ -2,6 +2,7 @@ package com.tridev.callsecurepro.ui.protection;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,21 +14,30 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.tridev.callsecurepro.R;
+import com.tridev.callsecurepro.data.protection.ScreeningEventEntity;
 import com.tridev.callsecurepro.databinding.FragmentProtectionBinding;
+import com.tridev.callsecurepro.databinding.ItemScreeningHistoryBinding;
 import com.tridev.callsecurepro.protection.CallerAssessment;
 import com.tridev.callsecurepro.protection.CallerIntelligenceEngine;
 import com.tridev.callsecurepro.protection.ProtectionPreferences;
 import com.tridev.callsecurepro.protection.ProtectionRepository;
+import com.tridev.callsecurepro.protection.ScreeningHistoryRepository;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProtectionFragment extends Fragment {
 
+    private static final int HISTORY_PREVIEW_LIMIT = 8;
+
     private FragmentProtectionBinding binding;
     private ExecutorService protectionExecutor;
     private ProtectionRepository repository;
+    private ScreeningHistoryRepository historyRepository;
     private CallerIntelligenceEngine intelligenceEngine;
     private final AtomicInteger operationGeneration = new AtomicInteger();
 
@@ -35,6 +45,8 @@ public class ProtectionFragment extends Fragment {
     private CallerAssessment currentAssessment;
     @Nullable
     private String currentDisplayNumber;
+
+    private boolean syncingSettings;
 
     @Nullable
     @Override
@@ -52,12 +64,13 @@ public class ProtectionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         repository = new ProtectionRepository(requireContext());
+        historyRepository = new ScreeningHistoryRepository(requireContext());
         intelligenceEngine = new CallerIntelligenceEngine(requireContext());
         protectionExecutor = Executors.newSingleThreadExecutor();
 
         setupSettings();
         setupActions();
-        refreshStats();
+        refreshDashboardData();
     }
 
     @Override
@@ -65,20 +78,56 @@ public class ProtectionFragment extends Fragment {
         super.onResume();
         if (binding != null) {
             syncSettingSwitches();
-            refreshStats();
+            refreshDashboardData();
         }
     }
 
     private void setupSettings() {
         syncSettingSwitches();
 
-        binding.autoBlockSwitch.setOnCheckedChangeListener((buttonView, checked) ->
-                ProtectionPreferences.setAutoBlockHighRiskEnabled(requireContext(), checked)
-        );
+        binding.autoBlockSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+            if (!syncingSettings) {
+                ProtectionPreferences.setAutoBlockHighRiskEnabled(requireContext(), checked);
+            }
+        });
 
-        binding.silenceSuspiciousSwitch.setOnCheckedChangeListener((buttonView, checked) ->
-                ProtectionPreferences.setSilenceSuspiciousEnabled(requireContext(), checked)
-        );
+        binding.silenceSuspiciousSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+            if (!syncingSettings) {
+                ProtectionPreferences.setSilenceSuspiciousEnabled(requireContext(), checked);
+            }
+        });
+
+        binding.blockHiddenSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+            if (!syncingSettings) {
+                ProtectionPreferences.setBlockHiddenCallsEnabled(requireContext(), checked);
+            }
+        });
+
+        binding.blockUnknownSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+            if (syncingSettings) {
+                return;
+            }
+            ProtectionPreferences.setBlockUnknownCallersEnabled(requireContext(), checked);
+            if (checked) {
+                ProtectionPreferences.setSilenceUnknownCallersEnabled(requireContext(), false);
+                syncingSettings = true;
+                binding.silenceUnknownSwitch.setChecked(false);
+                syncingSettings = false;
+            }
+        });
+
+        binding.silenceUnknownSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+            if (syncingSettings) {
+                return;
+            }
+            ProtectionPreferences.setSilenceUnknownCallersEnabled(requireContext(), checked);
+            if (checked) {
+                ProtectionPreferences.setBlockUnknownCallersEnabled(requireContext(), false);
+                syncingSettings = true;
+                binding.blockUnknownSwitch.setChecked(false);
+                syncingSettings = false;
+            }
+        });
     }
 
     private void syncSettingSwitches() {
@@ -86,12 +135,23 @@ public class ProtectionFragment extends Fragment {
             return;
         }
 
+        syncingSettings = true;
         binding.autoBlockSwitch.setChecked(
                 ProtectionPreferences.isAutoBlockHighRiskEnabled(requireContext())
         );
         binding.silenceSuspiciousSwitch.setChecked(
                 ProtectionPreferences.isSilenceSuspiciousEnabled(requireContext())
         );
+        binding.blockHiddenSwitch.setChecked(
+                ProtectionPreferences.isBlockHiddenCallsEnabled(requireContext())
+        );
+        binding.blockUnknownSwitch.setChecked(
+                ProtectionPreferences.isBlockUnknownCallersEnabled(requireContext())
+        );
+        binding.silenceUnknownSwitch.setChecked(
+                ProtectionPreferences.isSilenceUnknownCallersEnabled(requireContext())
+        );
+        syncingSettings = false;
     }
 
     private void setupActions() {
@@ -99,6 +159,7 @@ public class ProtectionFragment extends Fragment {
         binding.blockButton.setOnClickListener(view -> toggleBlocked());
         binding.trustButton.setOnClickListener(view -> toggleTrusted());
         binding.reportButton.setOnClickListener(view -> reportSpam());
+        binding.clearScreeningHistoryButton.setOnClickListener(view -> clearScreeningHistory());
     }
 
     private void analyzeInputNumber() {
@@ -115,7 +176,7 @@ public class ProtectionFragment extends Fragment {
 
         binding.numberInputLayout.setError(null);
         currentDisplayNumber = displayNumber;
-        runAssessment(displayNumber, false, 0);
+        runAssessment(displayNumber);
     }
 
     private void showNumberRequired() {
@@ -201,11 +262,7 @@ public class ProtectionFragment extends Fragment {
         });
     }
 
-    private void runAssessment(
-            @NonNull String number,
-            boolean showToast,
-            int toastRes
-    ) {
+    private void runAssessment(@NonNull String number) {
         ExecutorService executor = protectionExecutor;
         if (executor == null || executor.isShutdown()) {
             return;
@@ -229,28 +286,61 @@ public class ProtectionFragment extends Fragment {
                 setWorking(false);
                 renderAssessment(number, assessment);
                 renderStats(stats);
-                if (showToast && toastRes != 0) {
-                    Toast.makeText(requireContext(), toastRes, Toast.LENGTH_SHORT).show();
-                }
             });
         });
     }
 
-    private void refreshStats() {
+    private void refreshDashboardData() {
         ExecutorService executor = protectionExecutor;
-        if (executor == null || executor.isShutdown()) {
+        ScreeningHistoryRepository currentHistoryRepository = historyRepository;
+        if (executor == null || executor.isShutdown() || currentHistoryRepository == null) {
             return;
         }
 
         executor.execute(() -> {
-            ProtectionRepository.Stats stats = repository.getStats();
+            ProtectionRepository.Stats protectionStats = repository.getStats();
+            ScreeningHistoryRepository.Stats screeningStats = currentHistoryRepository.getStats();
+            List<ScreeningEventEntity> events = currentHistoryRepository.recent(HISTORY_PREVIEW_LIMIT);
+
             if (!isAdded()) {
                 return;
             }
             requireActivity().runOnUiThread(() -> {
                 if (binding != null) {
-                    renderStats(stats);
+                    renderStats(protectionStats);
+                    renderScreeningHistory(screeningStats, events);
                 }
+            });
+        });
+    }
+
+    private void clearScreeningHistory() {
+        ExecutorService executor = protectionExecutor;
+        ScreeningHistoryRepository currentHistoryRepository = historyRepository;
+        if (executor == null || executor.isShutdown() || currentHistoryRepository == null) {
+            return;
+        }
+
+        binding.clearScreeningHistoryButton.setEnabled(false);
+        executor.execute(() -> {
+            currentHistoryRepository.clear();
+            ScreeningHistoryRepository.Stats stats = currentHistoryRepository.getStats();
+            List<ScreeningEventEntity> events = currentHistoryRepository.recent(HISTORY_PREVIEW_LIMIT);
+
+            if (!isAdded()) {
+                return;
+            }
+            requireActivity().runOnUiThread(() -> {
+                if (binding == null) {
+                    return;
+                }
+                binding.clearScreeningHistoryButton.setEnabled(true);
+                renderScreeningHistory(stats, events);
+                Toast.makeText(
+                        requireContext(),
+                        R.string.protection_history_cleared,
+                        Toast.LENGTH_SHORT
+                ).show();
             });
         });
     }
@@ -259,6 +349,73 @@ public class ProtectionFragment extends Fragment {
         binding.blockedCount.setText(String.valueOf(stats.blocked));
         binding.trustedCount.setText(String.valueOf(stats.trusted));
         binding.reportCount.setText(String.valueOf(stats.reports));
+    }
+
+    private void renderScreeningHistory(
+            @NonNull ScreeningHistoryRepository.Stats stats,
+            @NonNull List<ScreeningEventEntity> events
+    ) {
+        binding.screeningHistorySummary.setText(getString(
+                R.string.protection_history_counts_format,
+                stats.blocked,
+                stats.silenced,
+                stats.allowed
+        ));
+        binding.screeningHistoryContainer.removeAllViews();
+        binding.screeningHistoryEmpty.setVisibility(events.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.clearScreeningHistoryButton.setEnabled(!events.isEmpty());
+
+        for (ScreeningEventEntity event : events) {
+            ItemScreeningHistoryBinding row = ItemScreeningHistoryBinding.inflate(
+                    getLayoutInflater(),
+                    binding.screeningHistoryContainer,
+                    false
+            );
+            row.historyNumber.setText(event.displayNumber);
+            row.historyReason.setText(event.reason);
+            renderHistoryAction(row, event.action);
+
+            String risk = event.riskLevel.substring(0, 1).toUpperCase(Locale.getDefault())
+                    + event.riskLevel.substring(1).toLowerCase(Locale.getDefault());
+            String riskText = getString(
+                    R.string.protection_history_risk_format,
+                    risk,
+                    event.riskScore
+            );
+            String dateTime = DateFormat.getMediumDateFormat(requireContext())
+                    .format(new Date(event.screenedAt))
+                    + " • "
+                    + DateFormat.getTimeFormat(requireContext()).format(new Date(event.screenedAt));
+            row.historyMeta.setText(riskText + " • " + dateTime);
+            binding.screeningHistoryContainer.addView(row.getRoot());
+        }
+    }
+
+    private void renderHistoryAction(
+            @NonNull ItemScreeningHistoryBinding row,
+            @NonNull String action
+    ) {
+        int labelRes;
+        int foreground;
+        int background;
+
+        if (ScreeningHistoryRepository.ACTION_BLOCKED.equals(action)) {
+            labelRes = R.string.protection_history_action_blocked;
+            foreground = ContextCompat.getColor(requireContext(), R.color.csp_spam);
+            background = ContextCompat.getColor(requireContext(), R.color.csp_spam_container);
+        } else if (ScreeningHistoryRepository.ACTION_SILENCED.equals(action)) {
+            labelRes = R.string.protection_history_action_silenced;
+            foreground = ContextCompat.getColor(requireContext(), R.color.csp_unknown);
+            background = ContextCompat.getColor(requireContext(), R.color.csp_unknown_container);
+        } else {
+            labelRes = R.string.protection_history_action_allowed;
+            foreground = ContextCompat.getColor(requireContext(), R.color.csp_primary);
+            background = ContextCompat.getColor(requireContext(), R.color.csp_primary_container);
+        }
+
+        row.historyActionChip.setText(labelRes);
+        row.historyActionChip.setTextColor(foreground);
+        row.historyActionChip.setChipBackgroundColor(ColorStateList.valueOf(background));
     }
 
     private void renderAssessment(
@@ -342,6 +499,7 @@ public class ProtectionFragment extends Fragment {
         currentAssessment = null;
         currentDisplayNumber = null;
         intelligenceEngine = null;
+        historyRepository = null;
         repository = null;
         binding = null;
         super.onDestroyView();
