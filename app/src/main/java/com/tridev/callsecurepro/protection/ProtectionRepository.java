@@ -53,19 +53,37 @@ public final class ProtectionRepository {
     }
 
     public void setBlocked(@NonNull String number, boolean blocked) {
-        mutate(number, blocked, false, null, false);
+        ProtectionRuleEntity rule = getOrCreate(number);
+        rule.userBlocked = blocked;
+        if (blocked) {
+            rule.trusted = false;
+        }
+        save(rule);
     }
 
     public void setTrusted(@NonNull String number, boolean trusted) {
-        mutate(number, false, trusted, null, false);
+        ProtectionRuleEntity rule = getOrCreate(number);
+        rule.trusted = trusted;
+        if (trusted) {
+            rule.userBlocked = false;
+        }
+        save(rule);
     }
 
     public void addSpamReport(@NonNull String number) {
-        mutate(number, false, false, null, true);
+        ProtectionRuleEntity rule = getOrCreate(number);
+        rule.spamReports = Math.min(9999, rule.spamReports + 1);
+        save(rule);
     }
 
     public void setCustomLabel(@NonNull String number, @Nullable String label) {
-        mutate(number, false, false, label, false);
+        ProtectionRuleEntity rule = getOrCreate(number);
+        if (label == null || label.trim().isEmpty()) {
+            rule.customLabel = null;
+        } else {
+            rule.customLabel = label.trim();
+        }
+        save(rule);
     }
 
     @NonNull
@@ -77,60 +95,32 @@ public final class ProtectionRepository {
         );
     }
 
-    private void mutate(
-            @NonNull String number,
-            boolean setBlocked,
-            boolean setTrusted,
-            @Nullable String customLabel,
-            boolean incrementReport
-    ) {
+    @NonNull
+    private ProtectionRuleEntity getOrCreate(@NonNull String number) {
         String normalized = normalize(number);
         if (normalized.isEmpty()) {
-            return;
+            throw new IllegalArgumentException("A dialable phone number is required");
         }
 
         ProtectionRuleEntity current = ruleDao.findByNumber(normalized);
+        if (current != null) {
+            return current;
+        }
+
         String display = number.trim().isEmpty() ? normalized : number.trim();
-
-        boolean blocked = current != null && current.userBlocked;
-        boolean trusted = current != null && current.trusted;
-        int reports = current == null ? 0 : current.spamReports;
-        String label = current == null ? null : current.customLabel;
-
-        if (setBlocked) {
-            blocked = true;
-            trusted = false;
-        } else if (setTrusted) {
-            trusted = true;
-            blocked = false;
-        } else if (!incrementReport && customLabel == null) {
-            // Explicit false call from setBlocked/setTrusted clears that state.
-            if (current != null) {
-                if (current.userBlocked) {
-                    blocked = false;
-                } else if (current.trusted) {
-                    trusted = false;
-                }
-            }
-        }
-
-        if (incrementReport) {
-            reports = Math.min(9999, reports + 1);
-        }
-
-        if (customLabel != null) {
-            String trimmed = customLabel.trim();
-            label = trimmed.isEmpty() ? null : trimmed;
-        }
-
-        ruleDao.upsert(new ProtectionRuleEntity(
+        return new ProtectionRuleEntity(
                 normalized,
                 display,
-                blocked,
-                trusted,
-                reports,
-                label,
+                false,
+                false,
+                0,
+                null,
                 System.currentTimeMillis()
-        ));
+        );
+    }
+
+    private void save(@NonNull ProtectionRuleEntity rule) {
+        rule.updatedAt = System.currentTimeMillis();
+        ruleDao.upsert(rule);
     }
 }
