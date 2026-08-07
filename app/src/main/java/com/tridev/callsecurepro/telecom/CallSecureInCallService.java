@@ -1,25 +1,33 @@
 package com.tridev.callsecurepro.telecom;
 
+import android.content.Intent;
 import android.telecom.Call;
+import android.telecom.CallAudioState;
 import android.telecom.InCallService;
 
 import androidx.annotation.NonNull;
 
+import com.tridev.callsecurepro.ui.incall.InCallActivity;
+
 /**
- * Telecom bridge for future Call Secure Pro in-call UI.
- *
- * The service currently observes active calls only. User-facing answer/reject/end controls,
- * audio routing, conference handling and full-screen incoming-call presentation will be
- * implemented before the app asks to become the default Phone app.
+ * Android Telecom bridge for the Call Secure Pro in-call experience.
  */
 public class CallSecureInCallService extends InCallService {
 
     private final CallSessionManager callSessionManager = CallSessionManager.getInstance();
+    private final CallAudioController callAudioController = CallAudioController.getInstance();
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        callAudioController.attachService(this);
+    }
 
     @Override
     public void onCallAdded(@NonNull Call call) {
         super.onCallAdded(call);
         callSessionManager.registerCall(call);
+        launchInCallUi();
     }
 
     @Override
@@ -29,7 +37,29 @@ public class CallSecureInCallService extends InCallService {
     }
 
     @Override
+    public void onCallAudioStateChanged(CallAudioState audioState) {
+        super.onCallAudioStateChanged(audioState);
+        callAudioController.updateAudioState(audioState);
+    }
+
+    private void launchInCallUi() {
+        Intent intent = new Intent(this, InCallActivity.class);
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        | Intent.FLAG_ACTIVITY_CLEAR_TOP
+        );
+
+        try {
+            startActivity(intent);
+        } catch (RuntimeException ignored) {
+            // Telecom remains functional even if a device temporarily blocks background UI launch.
+        }
+    }
+
+    @Override
     public void onDestroy() {
+        callAudioController.detachService(this);
         callSessionManager.clear();
         super.onDestroy();
     }
