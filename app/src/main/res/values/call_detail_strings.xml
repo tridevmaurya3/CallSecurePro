@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="call_detail_title">Call details</string>
+    <string name="call_detail_back">Back</string>
+    <string name="call_detail_unknown">Unknown caller</string>
+    <string name="call_detail_call">Call</string>
+    <string name="call_detail_message">Message</string>
+    <string name="call_detail_lookup">Lookup</string>
+    <string name="call_detail_interaction_title">Interaction summary</string>
+    <string name="call_detail_interaction_subtitle">Calculated locally from your recent device call history</string>
+    <string name="call_detail_30_day_calls">30-day calls</string>
+    <string name="call_detail_missed">Missed</string>
+    <string name="call_detail_talk_time">Talk time</string>
+    <string name="call_detail_note_title">Call note</string>
+    <string name="call_detail_note_hint">Write what you need to remember about this call</string>
+    <string name="call_detail_followup_title">Follow-up target</string>
+    <string name="call_detail_followup_body">Save a follow-up target with this call. Notifications are not scheduled in this step.</string>
+    <string name="call_detail_followup_none">No follow-up</string>
+    <string name="call_detail_followup_tomorrow">Tomorrow</string>
+    <string name="call_detail_followup_3_days">In 3 days</string>
+    <string name="call_detail_followup_1_week">In 1 week</string>
+    <string name="call_detail_followup_done">Mark done</string>
+    <string name="call_detail_followup_pending_format">Follow up %1$s</string>
+    <string name="call_detail_followup_completed">Follow-up completed</string>
+    <string name="call_detail_save">Save note &amp; follow-up</string>
+    <string name="call_detail_saved">Call note saved</string>
+    <string name="call_detail_save_failed">Could not save this call note</string>
+    <string name="call_detail_not_found">This call is no longer available in the device call history.</string>
+    <string name="call_detail_permission_required">Call history access is required to open these details.</string>
+    <string name="call_detail_type_format">%1$s • %2$s</string>
+    <string name="call_detail_duration_format">Duration: %1$s</string>
+    <string name="call_detail_risk_format">%1$s • Risk %2$d/100</string>
+    <string name="call_detail_no_note">No note</string>
+    <string name="call_detail_note_indicator">Note</string>
+    <string name="call_detail_followup_indicator">Follow-up</string>
+    <string name="call_detail_followup_done_indicator">Done</string>
+    <string name="call_detail_no_message_app">No messaging app is available on this device.</string>
+    <string name="call_detail_no_phone_app">No phone app is available on this device.</string>
+    <string name="call_detail_private_action_unavailable">This action is unavailable for private or restricted numbers.</string>
+</resources>
