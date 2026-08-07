@@ -216,6 +216,82 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/lookup_number_intelligence_title"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/numberValidityChip"
+                    style="@style/Widget.CallSecurePro.Chip.Unknown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Valid number" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/numberTypeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_6"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Body"
+                tools:text="Type: Mobile" />
+
+            <TextView
+                android:id="@+id/numberRegionText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_4"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Body"
+                tools:text="Numbering region: India (IN) · +91" />
+
+            <TextView
+                android:id="@+id/numberInternationalText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_4"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                tools:text="International: +91 98765 43210" />
+
+            <TextView
+                android:id="@+id/numberNationalText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_2"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                tools:text="National: 098765 43210" />
+
+            <TextView
+                android:id="@+id/numberE164Text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_2"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                tools:text="E.164: +919876543210" />
+
+            <TextView
+                android:id="@+id/numberLocationDisclaimer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_6"
+                android:text="@string/lookup_number_location_disclaimer"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/csp_space_12"
+                android:background="@color/csp_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_12"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <com.google.android.material.chip.Chip
                     android:id="@+id/riskChip"
                     style="@style/Widget.CallSecurePro.Chip.Unknown"
