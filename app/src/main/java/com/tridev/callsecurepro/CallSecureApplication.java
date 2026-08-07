@@ -21,11 +21,20 @@ public class CallSecureApplication extends Application {
                     @NonNull Activity activity,
                     @Nullable Bundle savedInstanceState
             ) {
-                AppVisualThemeManager.applyActivity(activity);
+                applyTheme(activity);
             }
 
             @Override
             public void onActivityResumed(@NonNull Activity activity) {
+                applyTheme(activity);
+            }
+
+            private void applyTheme(@NonNull Activity activity) {
+                // MainActivity owns fragment-aware theming so the independently themed dialer
+                // is never overwritten by the global app background renderer.
+                if (activity instanceof MainActivity) {
+                    return;
+                }
                 AppVisualThemeManager.applyActivity(activity);
             }
 
