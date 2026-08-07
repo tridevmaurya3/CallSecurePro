@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.CallSecurePro.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/csp_space_8">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/csp_card_padding_compact">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/historyNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle"
+                tools:text="+91 98765 43210" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/historyActionChip"
+                style="@style/Widget.CallSecurePro.Chip.Unknown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/csp_space_8"
+                tools:text="Silenced" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/historyReason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_4"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.Body"
+            tools:text="Unknown caller silenced by your rule" />
+
+        <TextView
+            android:id="@+id/historyMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/csp_space_4"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+            tools:text="Unknown • Risk 20/100 • 3:42 PM" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
