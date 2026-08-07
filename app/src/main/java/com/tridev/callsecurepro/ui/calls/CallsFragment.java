@@ -135,6 +135,7 @@ public class CallsFragment extends Fragment {
 
         setupFollowUpInbox();
         setupMissedAssistant();
+        setupAnalytics();
         setupPostCallPrompt();
         setupSearch();
         setupFilters();
@@ -163,6 +164,12 @@ public class CallsFragment extends Fragment {
         summaryContent.setClickable(true);
         summaryContent.setFocusable(true);
         summaryContent.setOnClickListener(view -> openMissedAssistant());
+    }
+
+    private void setupAnalytics() {
+        binding.analyticsButton.setOnClickListener(view ->
+                startActivity(new Intent(requireContext(), CallAnalyticsActivity.class))
+        );
     }
 
     private void refreshFollowUpInbox() {
