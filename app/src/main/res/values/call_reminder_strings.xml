@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="call_reminder_channel_follow_up">Call follow-ups</string>
+    <string name="call_reminder_channel_follow_up_body">Reminders you schedule from call details</string>
+    <string name="call_reminder_channel_post_call">Post-call actions</string>
+    <string name="call_reminder_channel_post_call_body">Optional prompts to add notes or follow-ups after a call</string>
+
+    <string name="call_reminder_follow_up_title">Follow up with %1$s</string>
+    <string name="call_reminder_follow_up_body">Open the call to review details, add a note or call back.</string>
+    <string name="call_reminder_done">Done</string>
+    <string name="call_reminder_snooze">Snooze 1 day</string>
+
+    <string name="call_reminder_post_call_title">Call finished • %1$s</string>
+    <string name="call_reminder_post_call_body">Add a note, set a follow-up or review this call.</string>
+    <string name="call_reminder_open_details">Open details</string>
+
+    <string name="calls_post_call_prompt_title">Post-call action prompt</string>
+    <string name="calls_post_call_prompt_body">When enabled, show a private notification after a completed call so you can add a note or follow-up.</string>
+    <string name="calls_post_call_prompt_permission">Notifications are required for post-call prompts.</string>
+    <string name="call_detail_reminder_permission_denied">Follow-up saved. Notification permission is off, so no reminder notification can be shown.</string>
+</resources>
