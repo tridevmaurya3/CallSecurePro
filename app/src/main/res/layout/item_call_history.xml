@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dateHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/csp_space_10"
+        android:layout_marginBottom="@dimen/csp_space_6"
+        android:textAppearance="@style/TextAppearance.CallSecurePro.Label"
+        android:visibility="gone"
+        tools:text="Today"
+        tools:visibility="visible" />
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.CallSecurePro.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/csp_space_8">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="76dp"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/csp_space_12"
+            android:paddingTop="@dimen/csp_space_10"
+            android:paddingEnd="@dimen/csp_space_8"
+            android:paddingBottom="@dimen/csp_space_10">
+
+            <ImageView
+                android:id="@+id/callTypeIcon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:contentDescription="@null"
+                android:padding="6dp"
+                tools:src="@drawable/ic_call_incoming" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/csp_space_10"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/callerName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle"
+                    tools:text="Rahul Sharma" />
+
+                <TextView
+                    android:id="@+id/callerNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_2"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                    tools:text="+91 98765 43210" />
+
+                <TextView
+                    android:id="@+id/callMetadata"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/csp_space_4"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                    tools:text="Incoming • 8:17 AM • 2 min 18 sec" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/callBackButton"
+                style="@style/Widget.CallSecurePro.Button.Secondary"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="@dimen/csp_space_6"
+                android:contentDescription="@string/calls_callback"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:text=""
+                app:icon="@drawable/ic_call_back"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="22dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>
