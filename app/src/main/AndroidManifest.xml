@@ -38,6 +38,11 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".ui.community.CommunityNetworkActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".ui.network.IpIntelligenceActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
