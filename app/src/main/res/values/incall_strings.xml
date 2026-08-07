@@ -27,4 +27,28 @@
     <string name="incall_no_active_call">No active call</string>
     <string name="incall_contact_lookup_note">Caller identity is matched from your device contacts when Contacts access is allowed.</string>
     <string name="incall_timer_zero">00:00</string>
+
+    <!-- Step 16: advanced in-call controls -->
+    <string name="incall_keypad">Keypad</string>
+    <string name="incall_hide_keypad">Hide keypad</string>
+    <string name="incall_audio_route">Audio</string>
+    <string name="incall_add_call">Add call</string>
+    <string name="incall_merge">Merge</string>
+    <string name="incall_swap">Swap calls</string>
+    <string name="incall_second_call">Second call</string>
+    <string name="incall_second_call_format">%1$s • %2$s</string>
+    <string name="incall_merge_unavailable">Merge is not supported for these calls</string>
+    <string name="incall_swap_unavailable">A held and an active call are required to swap</string>
+    <string name="incall_dtmf_unavailable">Keypad tones are available only during an active call</string>
+    <string name="incall_add_call_unavailable">Add call is not available right now</string>
+    <string name="incall_audio_route_title">Choose call audio</string>
+    <string name="incall_route_earpiece">Earpiece</string>
+    <string name="incall_route_speaker">Speaker</string>
+    <string name="incall_route_bluetooth">Bluetooth</string>
+    <string name="incall_route_wired">Wired headset</string>
+    <string name="incall_route_unknown">Current route</string>
+    <string name="incall_dtmf_title">Call keypad</string>
+    <string name="incall_dtmf_hint">Use tones for IVR menus, extensions and automated services.</string>
+    <string name="incall_multi_call_title">Multiple calls</string>
+    <string name="incall_multi_call_hint">Swap or merge only when your carrier and current calls support it.</string>
 </resources>
