@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lookup_title">Advanced Number Lookup</string>
+    <string name="lookup_subtitle">Resolve saved contacts, cached identity and local safety intelligence</string>
+    <string name="lookup_hint">Enter phone number</string>
+    <string name="lookup_action">Look up</string>
+    <string name="lookup_number_required">Enter a phone number first</string>
+    <string name="lookup_invalid_number">Enter a valid phone number</string>
+    <string name="lookup_failed">Lookup could not be completed. Try again.</string>
+    <string name="lookup_unknown_name">Unknown caller</string>
+    <string name="lookup_identity_contact">Saved contact</string>
+    <string name="lookup_identity_person">Person</string>
+    <string name="lookup_identity_business">Business</string>
+    <string name="lookup_identity_unknown">Identity not resolved</string>
+    <string name="lookup_verification_local">Local contact match</string>
+    <string name="lookup_verification_verified">Verified identity</string>
+    <string name="lookup_verification_unverified">Unverified identity</string>
+    <string name="lookup_source_format">Source: %1$s</string>
+    <string name="lookup_confidence_format">Identity confidence: %1$d%%</string>
+    <string name="lookup_category_format">Category: %1$s</string>
+    <string name="lookup_risk_safe">Safe</string>
+    <string name="lookup_risk_unknown">Unknown</string>
+    <string name="lookup_risk_suspicious">Suspicious</string>
+    <string name="lookup_risk_spam">Spam</string>
+    <string name="lookup_risk_score_format">Risk score: %1$d/100</string>
+    <string name="lookup_recent_title">Recent lookups</string>
+    <string name="lookup_clear_history">Clear</string>
+    <string name="lookup_history_empty">No lookup history yet</string>
+    <string name="lookup_history_cleared">Lookup history cleared</string>
+    <string name="lookup_local_only_note">Identity lookup is offline-first. Saved contacts and real cached identities are used now; no online identity is fabricated while the secure backend source is not connected.</string>
+    <string name="lookup_source_unknown">Local intelligence</string>
+    <string name="lookup_back">Back</string>
+</resources>
