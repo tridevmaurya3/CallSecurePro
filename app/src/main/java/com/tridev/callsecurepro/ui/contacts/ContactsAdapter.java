@@ -30,18 +30,19 @@ public class ContactsAdapter extends ListAdapter<ContactListItem, ContactsAdapte
         this.callClickListener = callClickListener;
     }
 
-    public void setContacts(@NonNull List<ContactListItem> contacts) {
+    public int setContacts(@NonNull List<ContactListItem> contacts) {
         allContacts.clear();
         allContacts.addAll(contacts);
         submitList(new ArrayList<>(contacts));
+        return contacts.size();
     }
 
-    public void filter(@NonNull String query) {
+    public int filter(@NonNull String query) {
         String normalizedQuery = query.trim().toLowerCase(Locale.getDefault());
 
         if (normalizedQuery.isEmpty()) {
             submitList(new ArrayList<>(allContacts));
-            return;
+            return allContacts.size();
         }
 
         List<ContactListItem> filtered = new ArrayList<>();
@@ -54,6 +55,11 @@ public class ContactsAdapter extends ListAdapter<ContactListItem, ContactsAdapte
         }
 
         submitList(filtered);
+        return filtered.size();
+    }
+
+    public int getTotalContactCount() {
+        return allContacts.size();
     }
 
     @NonNull
