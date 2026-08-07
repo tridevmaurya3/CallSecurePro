@@ -23,5 +23,6 @@
         android:title="@string/dial_menu_remember_sim" />
     <item
         android:id="@+id/menuDialThemeStudio"
+        android:onClick="openThemeStudioMenuItem"
         android:title="@string/theme_studio_title" />
 </menu>
