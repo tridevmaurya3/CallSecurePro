@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lookupRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_fluent_page"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/csp_page_horizontal"
+    android:paddingTop="@dimen/csp_page_top"
+    android:paddingEnd="@dimen/csp_page_horizontal"
+    android:paddingBottom="@dimen/csp_page_bottom"
+    tools:context=".ui.lookup.NumberLookupActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/backButton"
+            android:layout_width="@dimen/csp_touch_target"
+            android:layout_height="@dimen/csp_touch_target"
+            android:background="@drawable/bg_icon_tile_blue"
+            android:contentDescription="@string/lookup_back"
+            android:padding="12dp"
+            android:src="@drawable/ic_back"
+            app:tint="@color/csp_primary" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/csp_space_12"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lookup_title"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.PageTitle" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_2"
+                android:text="@string/lookup_subtitle"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/csp_space_16"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/numberInputLayout"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/lookup_hint"
+            app:boxBackgroundColor="@color/csp_surface"
+            app:startIconDrawable="@drawable/ic_home_search"
+            app:startIconTint="@color/csp_text_muted">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/numberInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionSearch"
+                android:inputType="phone"
+                android:maxLines="1"
+                android:minHeight="@dimen/csp_search_height" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/lookupButton"
+            style="@style/Widget.CallSecurePro.Button.Primary"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/csp_search_height"
+            android:layout_marginStart="@dimen/csp_space_8"
+            android:text="@string/lookup_action" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/csp_space_12"
+        android:visibility="gone" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/resultCard"
+        style="@style/Widget.CallSecurePro.Card.Header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/csp_space_12"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/csp_card_padding">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/resultInitial"
+                    android:layout_width="@dimen/csp_avatar_medium"
+                    android:layout_height="@dimen/csp_avatar_medium"
+                    android:background="@drawable/bg_contact_avatar"
+                    android:gravity="center"
+                    android:text="#"
+                    android:textColor="@color/csp_tertiary"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/csp_space_12"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/resultName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="@string/lookup_unknown_name"
+                        android:textAppearance="@style/TextAppearance.CallSecurePro.SectionTitle"
+                        tools:text="Rahul Sharma" />
+
+                    <TextView
+                        android:id="@+id/resultNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/csp_space_2"
+                        android:textAppearance="@style/TextAppearance.CallSecurePro.Body"
+                        tools:text="+91 98765 43210" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_12"
+                android:orientation="horizontal">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/identityTypeChip"
+                    style="@style/Widget.CallSecurePro.Chip.Business"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Saved contact" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/verificationChip"
+                    style="@style/Widget.CallSecurePro.Chip.Verified"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/csp_space_6"
+                    tools:text="Local contact match" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/sourceText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_8"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                tools:text="Source: Device contacts" />
+
+            <TextView
+                android:id="@+id/categoryText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_4"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                android:visibility="gone"
+                tools:text="Category: Saved contact"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/confidenceText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_4"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                tools:text="Identity confidence: 100%" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/csp_space_12"
+                android:background="@color/csp_divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_12"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/riskChip"
+                    style="@style/Widget.CallSecurePro.Chip.Unknown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Safe" />
+
+                <TextView
+                    android:id="@+id/riskScoreText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/csp_space_10"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Label"
+                    tools:text="Risk score: 0/100" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/riskReasonText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_6"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Body"
+                tools:text="Saved in your contacts" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/csp_space_10"
+        android:text="@string/lookup_local_only_note"
+        android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/csp_section_gap"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/lookup_recent_title"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.SectionTitle" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/clearHistoryButton"
+            style="@style/Widget.CallSecurePro.Button.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="@string/lookup_clear_history" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/csp_space_8"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/historyRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/csp_space_12"
+            tools:listitem="@layout/item_lookup_history" />
+
+        <TextView
+            android:id="@+id/historyEmptyText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/lookup_history_empty"
+            android:textAppearance="@style/TextAppearance.CallSecurePro.Body" />
+    </FrameLayout>
+
+</LinearLayout>
