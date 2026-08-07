@@ -47,6 +47,11 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".ui.calls.FollowUpCenterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".ui.contacts.ContactProfileActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
