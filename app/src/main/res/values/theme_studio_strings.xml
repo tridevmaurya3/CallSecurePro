@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme_studio_title">Theme Studio</string>
+    <string name="theme_studio_subtitle">Choose the app background, color palette, dialer style and call button independently.</string>
+    <string name="theme_studio_back">Back</string>
+    <string name="theme_studio_preview">Live preview</string>
+    <string name="theme_studio_preview_body">Changes are saved on this device and apply when you return to the app.</string>
+    <string name="theme_studio_background_title">App background theme</string>
+    <string name="theme_studio_background_body">Reference-inspired backgrounds for the whole app.</string>
+    <string name="theme_studio_accent_title">Color palette</string>
+    <string name="theme_studio_accent_body">Controls the main accent used by navigation and dial controls.</string>
+    <string name="theme_studio_dialer_title">Keypad / dialer theme</string>
+    <string name="theme_studio_dialer_body">The keypad keeps the same familiar layout while its surface style changes.</string>
+    <string name="theme_studio_call_button_title">Calling button style</string>
+    <string name="theme_studio_call_button_body">Choose the phone button shape and color shown under the keypad.</string>
+    <string name="theme_studio_reset">Reset to default</string>
+    <string name="theme_studio_reset_done">Default visual theme restored.</string>
+    <string name="theme_studio_saved">Theme saved</string>
+    <string name="theme_studio_open">Open Theme Studio</string>
+
+    <string name="theme_bg_abstract_blue">Abstract Blue</string>
+    <string name="theme_bg_dark_abstract">Dark Abstract</string>
+    <string name="theme_bg_green_nature">Green Nature</string>
+    <string name="theme_bg_sunset">Sunset</string>
+    <string name="theme_bg_purple_gradient">Purple Gradient</string>
+    <string name="theme_bg_minimal_white">Minimal White</string>
+    <string name="theme_bg_night_sky">Night Sky</string>
+    <string name="theme_bg_ocean">Ocean</string>
+    <string name="theme_bg_geometric">Geometric</string>
+
+    <string name="theme_accent_fresh_green">Fresh Green</string>
+    <string name="theme_accent_ocean_blue">Ocean Blue</string>
+    <string name="theme_accent_sunset_orange">Sunset Orange</string>
+    <string name="theme_accent_royal_purple">Royal Purple</string>
+    <string name="theme_accent_cherry_red">Cherry Red</string>
+    <string name="theme_accent_dark_mode">Dark Mode</string>
+    <string name="theme_accent_pastel_mix">Pastel Mix</string>
+    <string name="theme_accent_material_you">Material You</string>
+    <string name="theme_accent_monochrome">Monochrome</string>
+
+    <string name="theme_dial_light">Light Theme</string>
+    <string name="theme_dial_dark">Dark Theme</string>
+    <string name="theme_dial_blue">Blue Theme</string>
+    <string name="theme_dial_gradient">Gradient Theme</string>
+    <string name="theme_dial_minimal">Minimal Theme</string>
+    <string name="theme_dial_neumorphic">Neumorphic Theme</string>
+    <string name="theme_dial_black_green">Black &amp; Green Theme</string>
+
+    <string name="theme_call_classic_green">Classic Green</string>
+    <string name="theme_call_gradient_green">Gradient Green</string>
+    <string name="theme_call_blue_circle">Blue Circle</string>
+    <string name="theme_call_blue_rounded">Blue Rounded</string>
+    <string name="theme_call_purple_circle">Purple Circle</string>
+    <string name="theme_call_orange_circle">Orange Circle</string>
+    <string name="theme_call_red_circle">Red Circle</string>
+    <string name="theme_call_dark_circle">Dark Circle</string>
+    <string name="theme_call_dark_rounded">Dark Rounded</string>
+    <string name="theme_call_light_outline">Light Outline</string>
+</resources>
