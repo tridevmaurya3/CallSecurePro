@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Keep installation possible on Wi-Fi tablets/foldables while telephony features stay conditional. -->
     <uses-feature
@@ -70,6 +71,10 @@
                 <data android:scheme="tel" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".calls.CallReminderActionReceiver"
+            android:exported="false" />
 
         <!-- Offline-first caller screening using user rules and explainable local evidence. -->
         <service
