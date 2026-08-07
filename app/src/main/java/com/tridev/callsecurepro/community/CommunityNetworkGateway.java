@@ -3,10 +3,11 @@ package com.tridev.callsecurepro.community;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.tridev.callsecurepro.identity.CallerIdentityLookupMode;
 import com.tridev.callsecurepro.identity.CallerIdentityRemoteSource;
 
 /**
- * Contract for the future authenticated Call Secure community backend.
+ * Contract for the authenticated Call Secure community backend.
  *
  * Implementations must never invent identities or report acknowledgements. A null lookup means
  * no trustworthy cloud identity is available. submitReport must return success only after a real
@@ -21,6 +22,18 @@ public interface CommunityNetworkGateway {
 
     @Nullable
     CallerIdentityRemoteSource.RemoteIdentity lookup(@NonNull String normalizedNumber);
+
+    /**
+     * Mode-aware lookup. Passive call screening can use a tighter latency budget than a manual
+     * lookup while keeping old gateway implementations source-compatible.
+     */
+    @Nullable
+    default CallerIdentityRemoteSource.RemoteIdentity lookup(
+            @NonNull String normalizedNumber,
+            @NonNull CallerIdentityLookupMode mode
+    ) {
+        return lookup(normalizedNumber);
+    }
 
     @NonNull
     ReportSubmissionResult submitReport(
