@@ -2,16 +2,34 @@
 
 const { initializeApp } = require("firebase-admin/app");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { defineSecret } = require("firebase-functions/params");
 const { runPhoneProviders, normalizePhoneInput } = require("./providers/phoneProviders");
 const { runIpProviders, normalizeIp } = require("./providers/ipProviders");
 
 initializeApp();
 
 const REGION = "asia-south1";
+const providerConfigSecret = defineSecret("CALLSECURE_PROVIDER_CONFIG");
 
 function requireAuthenticated(request) {
   if (!request.auth || !request.auth.uid) {
     throw new HttpsError("unauthenticated", "Firebase Authentication is required.");
+  }
+}
+
+function readProviderConfig() {
+  const raw = providerConfigSecret.value();
+  if (!raw || !raw.trim()) {
+    return {};
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch (_) {
+    throw new HttpsError(
+      "failed-precondition",
+      "CALLSECURE_PROVIDER_CONFIG is not valid JSON."
+    );
   }
 }
 
@@ -25,14 +43,17 @@ function configuredSources(results) {
     .map((item) => item.source);
 }
 
+const commonOptions = {
+  region: REGION,
+  timeoutSeconds: 15,
+  memory: "256MiB",
+  maxInstances: 10,
+  enforceAppCheck: false,
+  secrets: [providerConfigSecret]
+};
+
 exports.lookupPhoneIntelligence = onCall(
-  {
-    region: REGION,
-    timeoutSeconds: 15,
-    memory: "256MiB",
-    maxInstances: 10,
-    enforceAppCheck: false
-  },
+  commonOptions,
   async (request) => {
     requireAuthenticated(request);
     let phoneNumber;
@@ -42,7 +63,8 @@ exports.lookupPhoneIntelligence = onCall(
       throw new HttpsError("invalid-argument", "phoneNumber must be valid E.164 format.");
     }
 
-    const results = await runPhoneProviders(phoneNumber);
+    const providerConfig = readProviderConfig();
+    const results = await runPhoneProviders(phoneNumber, providerConfig);
     return {
       schemaVersion: 1,
       phoneNumber,
@@ -58,13 +80,7 @@ exports.lookupPhoneIntelligence = onCall(
 );
 
 exports.lookupIpIntelligence = onCall(
-  {
-    region: REGION,
-    timeoutSeconds: 15,
-    memory: "256MiB",
-    maxInstances: 10,
-    enforceAppCheck: false
-  },
+  commonOptions,
   async (request) => {
     requireAuthenticated(request);
     let ipAddress;
@@ -74,7 +90,8 @@ exports.lookupIpIntelligence = onCall(
       throw new HttpsError("invalid-argument", "ipAddress must be a valid IPv4 or IPv6 address.");
     }
 
-    const results = await runIpProviders(ipAddress);
+    const providerConfig = readProviderConfig();
+    const results = await runIpProviders(ipAddress, providerConfig);
     return {
       schemaVersion: 1,
       ipAddress,
