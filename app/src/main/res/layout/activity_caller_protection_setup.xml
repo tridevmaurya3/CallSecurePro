@@ -111,7 +111,7 @@
                     android:layout_marginTop="@dimen/csp_space_12"
                     android:text="@string/setup_progress_initial"
                     android:textAppearance="@style/TextAppearance.CallSecurePro.Label"
-                    tools:text="0 of 3 setup items complete" />
+                    tools:text="0 of 4 setup items ready" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -122,7 +122,6 @@
             android:text="@string/setup_section_required"
             android:textAppearance="@style/TextAppearance.CallSecurePro.SectionTitle" />
 
-        <!-- Caller ID and spam role -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.CallSecurePro.Card"
             android:layout_width="match_parent"
@@ -190,7 +189,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Contacts permission -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.CallSecurePro.Card.Mint"
             android:layout_width="match_parent"
@@ -258,7 +256,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Call permission -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.CallSecurePro.Card.Lavender"
             android:layout_width="match_parent"
@@ -333,7 +330,6 @@
             android:text="@string/setup_phone_integration_section"
             android:textAppearance="@style/TextAppearance.CallSecurePro.SectionTitle" />
 
-        <!-- Default Phone integration status. Role request stays locked until full in-call UI exists. -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.CallSecurePro.Card.Header"
             android:layout_width="match_parent"
@@ -373,8 +369,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/csp_space_8"
-                    android:enabled="false"
-                    android:text="@string/setup_default_phone_action_locked" />
+                    android:text="@string/setup_default_phone_action" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
