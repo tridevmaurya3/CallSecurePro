@@ -2,9 +2,11 @@ package com.tridev.callsecurepro.ui.dial;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -25,10 +28,11 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.chip.Chip;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.tridev.callsecurepro.R;
 import com.tridev.callsecurepro.databinding.FragmentDialBinding;
 import com.tridev.callsecurepro.telecom.SimCallingManager;
+import com.tridev.callsecurepro.ui.lookup.NumberLookupActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,9 +55,13 @@ public class DialFragment extends Fragment {
     private SimCallingManager simCallingManager;
     @Nullable
     private SimCallingManager.SimOption selectedSimOption;
+    @Nullable
+    private ContactMatch currentContactMatch;
 
     private boolean formattingNumber;
-    private boolean suppressRememberSwitch;
+    private boolean simTelephonyAvailable;
+    private boolean simPermissionGranted;
+    private boolean simExactMappingSupported;
     @NonNull
     private String lastNumberPreferenceCheck = "";
 
@@ -61,9 +69,17 @@ public class DialFragment extends Fragment {
             registerForActivityResult(
                     new ActivityResultContracts.RequestPermission(),
                     granted -> {
-                        if (binding != null) {
-                            refreshSimOptions();
+                        if (binding == null) {
+                            return;
                         }
+                        if (!granted) {
+                            Toast.makeText(
+                                    requireContext(),
+                                    R.string.dial_sim_permission_denied,
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
+                        refreshSimOptions();
                     }
             );
 
@@ -100,7 +116,6 @@ public class DialFragment extends Fragment {
         setupNumberInput();
         setupKeypad();
         setupActions();
-        setupSimSelection();
         refreshContactPermissionState();
         applyInitialNumberFromArguments();
         refreshSimOptions();
@@ -179,50 +194,276 @@ public class DialFragment extends Fragment {
     }
 
     private void setupActions() {
-        binding.clearButton.setOnClickListener(view -> {
-            binding.dialNumberInput.setText("");
-            hideContactMatch();
-            applyNumberSpecificSimPreference("");
-        });
-
         binding.backspaceButton.setOnClickListener(view -> deleteLastCharacter());
         binding.backspaceButton.setOnLongClickListener(view -> {
-            binding.dialNumberInput.setText("");
-            hideContactMatch();
-            applyNumberSpecificSimPreference("");
+            clearDialNumber();
             return true;
         });
 
         binding.callButton.setOnClickListener(view -> placeCall());
+        binding.moreOptionsButton.setOnClickListener(view -> showOverflowMenu());
     }
 
-    private void setupSimSelection() {
-        binding.simPermissionButton.setOnClickListener(view -> {
-            if (simCallingManager == null || simCallingManager.hasPhoneStatePermission()) {
-                refreshSimOptions();
-                return;
+    private void showOverflowMenu() {
+        if (binding == null) {
+            return;
+        }
+
+        String number = getDialableNumber();
+        PopupMenu popupMenu = new PopupMenu(requireContext(), binding.moreOptionsButton);
+        popupMenu.inflate(R.menu.menu_dial_overflow);
+
+        popupMenu.getMenu().findItem(R.id.menuDialClear).setEnabled(!number.isEmpty());
+        popupMenu.getMenu().findItem(R.id.menuDialLookup).setEnabled(!number.isEmpty());
+        popupMenu.getMenu().findItem(R.id.menuDialContact).setEnabled(!number.isEmpty());
+        popupMenu.getMenu().findItem(R.id.menuDialContact).setTitle(
+                currentContactMatch != null && currentContactMatch.contactUri != null
+                        ? R.string.dial_menu_view_contact
+                        : R.string.dial_menu_add_contact
+        );
+
+        boolean hasSpecificSimChoices = simTelephonyAvailable
+                && simPermissionGranted
+                && simExactMappingSupported
+                && simOptions.size() > 1;
+        popupMenu.getMenu().findItem(R.id.menuDialChooseSim)
+                .setVisible(hasSpecificSimChoices);
+        popupMenu.getMenu().findItem(R.id.menuDialEnableSim)
+                .setVisible(simTelephonyAvailable && !simPermissionGranted);
+
+        SimCallingManager.SimOption numberPreference = getNumberSpecificSimPreference(number);
+        boolean canRemember = hasSpecificSimChoices
+                && !number.isEmpty()
+                && simCallingManager != null
+                && !simCallingManager.isEmergencyNumber(number)
+                && (numberPreference != null
+                || (selectedSimOption != null && !selectedSimOption.isSystemDefault()));
+        popupMenu.getMenu().findItem(R.id.menuDialRememberSim).setVisible(canRemember);
+        popupMenu.getMenu().findItem(R.id.menuDialRememberSim).setTitle(
+                numberPreference == null
+                        ? R.string.dial_menu_remember_sim
+                        : R.string.dial_menu_remove_saved_sim
+        );
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.menuDialPaste) {
+                pasteNumberFromClipboard();
+                return true;
             }
-            phoneStatePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE);
+            if (itemId == R.id.menuDialClear) {
+                clearDialNumber();
+                return true;
+            }
+            if (itemId == R.id.menuDialLookup) {
+                openCallerLookup();
+                return true;
+            }
+            if (itemId == R.id.menuDialContact) {
+                openOrAddContact();
+                return true;
+            }
+            if (itemId == R.id.menuDialChooseSim) {
+                showSimSelectionDialog();
+                return true;
+            }
+            if (itemId == R.id.menuDialEnableSim) {
+                requestSimAccess();
+                return true;
+            }
+            if (itemId == R.id.menuDialRememberSim) {
+                toggleNumberSimPreference();
+                return true;
+            }
+            return false;
         });
+        popupMenu.show();
+    }
 
-        binding.rememberSimSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
-            if (suppressRememberSwitch || simCallingManager == null) {
-                return;
-            }
+    private void pasteNumberFromClipboard() {
+        ClipboardManager clipboard = (ClipboardManager) requireContext()
+                .getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard == null || !clipboard.hasPrimaryClip()) {
+            showClipboardEmpty();
+            return;
+        }
 
-            String number = getDialableNumber();
-            if (number.isEmpty()) {
-                setRememberSwitchChecked(false);
-                return;
-            }
+        ClipData clipData = clipboard.getPrimaryClip();
+        if (clipData == null || clipData.getItemCount() == 0) {
+            showClipboardEmpty();
+            return;
+        }
 
-            if (checked && selectedSimOption != null) {
-                simCallingManager.rememberSelectionForNumber(number, selectedSimOption);
-            } else if (!checked) {
-                simCallingManager.clearSelectionForNumber(number);
+        CharSequence text = clipData.getItemAt(0).coerceToText(requireContext());
+        if (text == null) {
+            showClipboardEmpty();
+            return;
+        }
+
+        String candidate = PhoneNumberUtils.extractNetworkPortion(text.toString().trim());
+        if (candidate == null || candidate.trim().isEmpty()) {
+            showClipboardEmpty();
+            return;
+        }
+        setDialNumber(candidate.trim());
+    }
+
+    private void showClipboardEmpty() {
+        Toast.makeText(
+                requireContext(),
+                R.string.dial_clipboard_empty,
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+    private void openCallerLookup() {
+        String number = getDialableNumber();
+        if (number.isEmpty()) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.dial_lookup_number_first,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        Intent intent = new Intent(requireContext(), NumberLookupActivity.class);
+        intent.putExtra(NumberLookupActivity.EXTRA_NUMBER, number);
+        startActivity(intent);
+    }
+
+    private void openOrAddContact() {
+        String number = getDialableNumber();
+        if (number.isEmpty()) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.dial_contact_number_first,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        Intent intent;
+        if (currentContactMatch != null && currentContactMatch.contactUri != null) {
+            intent = new Intent(Intent.ACTION_VIEW, currentContactMatch.contactUri);
+        } else {
+            intent = new Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI);
+            intent.putExtra(ContactsContract.Intents.Insert.PHONE, number);
+        }
+
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException exception) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.dial_contact_app_unavailable,
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+    private void requestSimAccess() {
+        if (simCallingManager == null || simCallingManager.hasPhoneStatePermission()) {
+            refreshSimOptions();
+            return;
+        }
+        phoneStatePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE);
+    }
+
+    private void showSimSelectionDialog() {
+        if (simCallingManager == null) {
+            return;
+        }
+        if (!simCallingManager.hasPhoneStatePermission()) {
+            requestSimAccess();
+            return;
+        }
+        if (!simExactMappingSupported || simOptions.size() <= 1) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.dial_sim_no_accounts,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        CharSequence[] labels = new CharSequence[simOptions.size()];
+        int selectedIndex = 0;
+        for (int index = 0; index < simOptions.size(); index++) {
+            SimCallingManager.SimOption option = simOptions.get(index);
+            labels[index] = option.getLabel();
+            if (selectedSimOption != null
+                    && selectedSimOption.getStableKey().equals(option.getStableKey())) {
+                selectedIndex = index;
             }
-            updateSimPreferenceSummary();
-        });
+        }
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dial_sim_selection_title)
+                .setSingleChoiceItems(labels, selectedIndex, (dialog, which) -> {
+                    if (which >= 0 && which < simOptions.size()) {
+                        selectSimOption(simOptions.get(which), true);
+                    }
+                    dialog.dismiss();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void toggleNumberSimPreference() {
+        if (simCallingManager == null) {
+            return;
+        }
+
+        String number = getDialableNumber();
+        if (number.isEmpty()) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.dial_sim_number_first,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        if (simCallingManager.isEmergencyNumber(number)) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.dial_sim_emergency_system_route,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        SimCallingManager.SimOption existing = getNumberSpecificSimPreference(number);
+        if (existing != null) {
+            simCallingManager.clearSelectionForNumber(number);
+            lastNumberPreferenceCheck = "";
+            applyNumberSpecificSimPreference(number);
+            Toast.makeText(
+                    requireContext(),
+                    R.string.dial_sim_removed_confirmation,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        if (selectedSimOption == null || selectedSimOption.isSystemDefault()) {
+            Toast.makeText(
+                    requireContext(),
+                    R.string.dial_sim_choose_specific_first,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        simCallingManager.rememberSelectionForNumber(number, selectedSimOption);
+        lastNumberPreferenceCheck = "";
+        applyNumberSpecificSimPreference(number);
+        Toast.makeText(
+                requireContext(),
+                R.string.dial_sim_saved_confirmation,
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     private void applyInitialNumberFromArguments() {
@@ -252,7 +493,16 @@ public class DialFragment extends Fragment {
         setDialNumber(current.substring(0, current.length() - 1));
     }
 
+    private void clearDialNumber() {
+        setDialNumber("");
+        currentContactMatch = null;
+    }
+
     private void setDialNumber(@NonNull String number) {
+        if (binding == null) {
+            return;
+        }
+
         String formatted = formatPhoneNumber(number);
         formattingNumber = true;
         binding.dialNumberInput.setText(formatted);
@@ -298,14 +548,13 @@ public class DialFragment extends Fragment {
                 requireContext(),
                 Manifest.permission.READ_CONTACTS
         ) == PackageManager.PERMISSION_GRANTED;
-
-        binding.contactPermissionNote.setVisibility(contactsAllowed ? View.GONE : View.VISIBLE);
         if (!contactsAllowed) {
             hideContactMatch();
         }
     }
 
     private void lookupContactMatch(@NonNull String number) {
+        currentContactMatch = null;
         if (binding == null) {
             return;
         }
@@ -314,14 +563,14 @@ public class DialFragment extends Fragment {
                 requireContext(),
                 Manifest.permission.READ_CONTACTS
         ) != PackageManager.PERMISSION_GRANTED) {
-            hideContactMatch();
             return;
         }
 
         String normalized = PhoneNumberUtils.normalizeNumber(number);
-        if (normalized.length() < 3 || contactLookupExecutor == null
+        if (normalized == null
+                || normalized.length() < 3
+                || contactLookupExecutor == null
                 || contactLookupExecutor.isShutdown()) {
-            hideContactMatch();
             return;
         }
 
@@ -337,7 +586,6 @@ public class DialFragment extends Fragment {
                 if (binding == null || generation != lookupGeneration.get()) {
                     return;
                 }
-
                 if (match == null) {
                     hideContactMatch();
                 } else {
@@ -355,6 +603,8 @@ public class DialFragment extends Fragment {
         );
 
         String[] projection = new String[]{
+                ContactsContract.PhoneLookup._ID,
+                ContactsContract.PhoneLookup.LOOKUP_KEY,
                 ContactsContract.PhoneLookup.DISPLAY_NAME,
                 ContactsContract.PhoneLookup.NUMBER
         };
@@ -370,19 +620,30 @@ public class DialFragment extends Fragment {
                 return null;
             }
 
+            int idIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup._ID);
+            int lookupKeyIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.LOOKUP_KEY);
             int nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
             int numberIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.NUMBER);
 
             String name = nameIndex >= 0 ? cursor.getString(nameIndex) : null;
             String matchedNumber = numberIndex >= 0 ? cursor.getString(numberIndex) : number;
-
             if (name == null || name.trim().isEmpty()) {
                 return null;
             }
 
+            Uri contactUri = null;
+            if (idIndex >= 0 && lookupKeyIndex >= 0) {
+                long contactId = cursor.getLong(idIndex);
+                String lookupKey = cursor.getString(lookupKeyIndex);
+                if (lookupKey != null && !lookupKey.trim().isEmpty()) {
+                    contactUri = ContactsContract.Contacts.getLookupUri(contactId, lookupKey);
+                }
+            }
+
             return new ContactMatch(
                     name.trim(),
-                    matchedNumber == null ? number : matchedNumber.trim()
+                    matchedNumber == null ? number : matchedNumber.trim(),
+                    contactUri
             );
         } catch (SecurityException ignored) {
             return null;
@@ -390,35 +651,21 @@ public class DialFragment extends Fragment {
     }
 
     private void showContactMatch(@NonNull ContactMatch match) {
-        binding.contactMatchCard.setVisibility(View.VISIBLE);
-        binding.contactMatchName.setText(match.name);
-        binding.contactMatchNumber.setText(match.number);
-
-        String trimmed = match.name.trim();
-        String initial = trimmed.isEmpty()
-                ? "#"
-                : trimmed.substring(0, 1).toUpperCase(Locale.getDefault());
-        binding.contactMatchInitial.setText(initial);
+        currentContactMatch = match;
     }
 
     private void hideContactMatch() {
-        if (binding != null) {
-            binding.contactMatchCard.setVisibility(View.GONE);
-        }
+        currentContactMatch = null;
     }
 
     private void refreshSimOptions() {
-        FragmentDialBinding currentBinding = binding;
         SimCallingManager manager = simCallingManager;
         ExecutorService executor = simExecutor;
-        if (currentBinding == null || manager == null || executor == null || executor.isShutdown()) {
+        if (binding == null || manager == null || executor == null || executor.isShutdown()) {
             return;
         }
 
         int generation = simGeneration.incrementAndGet();
-        currentBinding.simLoadingProgress.setVisibility(View.VISIBLE);
-        currentBinding.simInfoText.setText(R.string.dial_sim_loading);
-
         executor.execute(() -> {
             SimCallingManager.LoadResult result = manager.loadOptions();
             if (!isAdded() || generation != simGeneration.get()) {
@@ -435,77 +682,23 @@ public class DialFragment extends Fragment {
     }
 
     private void renderSimOptions(@NonNull SimCallingManager.LoadResult result) {
-        binding.simLoadingProgress.setVisibility(View.GONE);
-        binding.simChipGroup.removeAllViews();
+        simTelephonyAvailable = result.isTelephonyAvailable();
+        simPermissionGranted = result.isPermissionGranted();
+        simExactMappingSupported = result.isExactSimMappingSupported();
+
         simOptions.clear();
         simOptions.addAll(result.getOptions());
         selectedSimOption = null;
         lastNumberPreferenceCheck = "";
 
-        if (!result.isTelephonyAvailable()) {
-            binding.simInfoText.setText(R.string.dial_sim_no_telephony);
-            binding.simPermissionButton.setVisibility(View.GONE);
-            binding.simChipGroup.setVisibility(View.GONE);
-            binding.rememberSimSwitch.setVisibility(View.GONE);
-            binding.simPreferenceText.setVisibility(View.GONE);
-            binding.simStatusChip.setText(R.string.dial_sim_status_system);
+        if (simOptions.isEmpty()) {
             return;
         }
 
-        if (!result.isPermissionGranted()) {
-            binding.simInfoText.setText(R.string.dial_sim_permission_body);
-            binding.simPermissionButton.setVisibility(View.VISIBLE);
-            binding.simChipGroup.setVisibility(View.GONE);
-            binding.rememberSimSwitch.setVisibility(View.GONE);
-            binding.simPreferenceText.setVisibility(View.VISIBLE);
-            binding.simPreferenceText.setText(R.string.dial_sim_system_preference);
-            binding.simStatusChip.setText(R.string.dial_sim_status_system);
-            if (!simOptions.isEmpty()) {
-                selectedSimOption = simOptions.get(0);
-            }
-            return;
-        }
-
-        binding.simPermissionButton.setVisibility(View.GONE);
-
-        int specificSimCount = Math.max(0, simOptions.size() - 1);
-        if (!result.isExactSimMappingSupported()) {
-            binding.simInfoText.setText(R.string.dial_sim_legacy_system_default);
-        } else if (specificSimCount == 0) {
-            binding.simInfoText.setText(R.string.dial_sim_no_accounts);
-        } else if (specificSimCount == 1) {
-            binding.simInfoText.setText(R.string.dial_sim_ready_one);
-        } else {
-            binding.simInfoText.setText(
-                    getString(R.string.dial_sim_ready_many, specificSimCount)
-            );
-        }
-
-        binding.simChipGroup.setVisibility(View.VISIBLE);
-        for (SimCallingManager.SimOption option : simOptions) {
-            Chip chip = new Chip(requireContext());
-            chip.setId(View.generateViewId());
-            chip.setText(option.getLabel());
-            chip.setTag(option.getStableKey());
-            chip.setCheckable(true);
-            chip.setClickable(true);
-            chip.setCheckedIconVisible(true);
-            chip.setEnsureMinTouchTargetSize(true);
-            chip.setOnClickListener(view -> selectSimOption(option, true));
-            binding.simChipGroup.addView(chip);
-        }
-
-        SimCallingManager.SimOption initial = simCallingManager.resolveInitialSelection(
-                getDialableNumber(),
-                simOptions
-        );
+        SimCallingManager.SimOption initial = simCallingManager == null
+                ? simOptions.get(0)
+                : simCallingManager.resolveInitialSelection(getDialableNumber(), simOptions);
         selectSimOption(initial, false);
-
-        boolean multipleSpecificSims = specificSimCount >= 2;
-        binding.rememberSimSwitch.setVisibility(
-                multipleSpecificSims ? View.VISIBLE : View.GONE
-        );
-        binding.simPreferenceText.setVisibility(View.VISIBLE);
         applyNumberSpecificSimPreference(getDialableNumber());
     }
 
@@ -514,61 +707,13 @@ public class DialFragment extends Fragment {
             boolean fromUser
     ) {
         selectedSimOption = option;
-
         if (fromUser && simCallingManager != null) {
             simCallingManager.rememberGlobalSelection(option);
-            if (binding.rememberSimSwitch.isChecked() && !getDialableNumber().isEmpty()) {
-                simCallingManager.rememberSelectionForNumber(getDialableNumber(), option);
-            }
         }
-
-        updateSimChipAppearance();
-        updateSimPreferenceSummary();
-    }
-
-    private void updateSimChipAppearance() {
-        if (binding == null || selectedSimOption == null) {
-            return;
-        }
-
-        int selectedBackground = ContextCompat.getColor(
-                requireContext(),
-                R.color.csp_primary_container
-        );
-        int selectedForeground = ContextCompat.getColor(
-                requireContext(),
-                R.color.csp_primary
-        );
-        int normalBackground = ContextCompat.getColor(
-                requireContext(),
-                R.color.csp_surface
-        );
-        int normalForeground = ContextCompat.getColor(
-                requireContext(),
-                R.color.csp_text_primary
-        );
-
-        for (int index = 0; index < binding.simChipGroup.getChildCount(); index++) {
-            View child = binding.simChipGroup.getChildAt(index);
-            if (!(child instanceof Chip)) {
-                continue;
-            }
-
-            Chip chip = (Chip) child;
-            boolean selected = selectedSimOption.getStableKey().equals(chip.getTag());
-            chip.setChecked(selected);
-            chip.setChipBackgroundColor(ColorStateList.valueOf(
-                    selected ? selectedBackground : normalBackground
-            ));
-            chip.setTextColor(selected ? selectedForeground : normalForeground);
-            chip.setCheckedIconTint(ColorStateList.valueOf(selectedForeground));
-        }
-
-        binding.simStatusChip.setText(selectedSimOption.getLabel());
     }
 
     private void applyNumberSpecificSimPreference(@NonNull String number) {
-        if (simCallingManager == null || simOptions.isEmpty() || binding == null) {
+        if (simCallingManager == null || simOptions.isEmpty()) {
             return;
         }
 
@@ -577,52 +722,23 @@ public class DialFragment extends Fragment {
             normalized = "";
         }
         if (normalized.equals(lastNumberPreferenceCheck)) {
-            updateSimPreferenceSummary();
             return;
         }
         lastNumberPreferenceCheck = normalized;
 
-        SimCallingManager.SimOption numberPreference =
-                simCallingManager.resolveNumberSpecificSelection(number, simOptions);
-        if (numberPreference != null) {
-            setRememberSwitchChecked(true);
-            selectSimOption(numberPreference, false);
-        } else {
-            setRememberSwitchChecked(false);
-            updateSimPreferenceSummary();
+        SimCallingManager.SimOption resolved =
+                simCallingManager.resolveInitialSelection(number, simOptions);
+        if (resolved != null) {
+            selectedSimOption = resolved;
         }
     }
 
-    private void setRememberSwitchChecked(boolean checked) {
-        if (binding == null) {
-            return;
+    @Nullable
+    private SimCallingManager.SimOption getNumberSpecificSimPreference(@NonNull String number) {
+        if (simCallingManager == null || simOptions.isEmpty() || number.trim().isEmpty()) {
+            return null;
         }
-        suppressRememberSwitch = true;
-        binding.rememberSimSwitch.setChecked(checked);
-        suppressRememberSwitch = false;
-    }
-
-    private void updateSimPreferenceSummary() {
-        if (binding == null || selectedSimOption == null || simCallingManager == null) {
-            return;
-        }
-
-        String number = getDialableNumber();
-        if (!number.isEmpty() && simCallingManager.isEmergencyNumber(number)) {
-            binding.simPreferenceText.setText(R.string.dial_sim_emergency_system_route);
-            return;
-        }
-
-        SimCallingManager.SimOption numberPreference =
-                simCallingManager.resolveNumberSpecificSelection(number, simOptions);
-        if (numberPreference != null
-                && numberPreference.getStableKey().equals(selectedSimOption.getStableKey())) {
-            binding.simPreferenceText.setText(R.string.dial_sim_saved_for_number);
-        } else if (selectedSimOption.isSystemDefault()) {
-            binding.simPreferenceText.setText(R.string.dial_sim_system_preference);
-        } else {
-            binding.simPreferenceText.setText(R.string.dial_sim_global_preference);
-        }
+        return simCallingManager.resolveNumberSpecificSelection(number, simOptions);
     }
 
     private void placeCall() {
@@ -640,15 +756,8 @@ public class DialFragment extends Fragment {
         ) == PackageManager.PERMISSION_GRANTED;
 
         if (directCallAllowed) {
-            if (simCallingManager != null
-                    && binding.rememberSimSwitch.isChecked()
-                    && selectedSimOption != null
-                    && !simCallingManager.isEmergencyNumber(number)) {
-                simCallingManager.rememberSelectionForNumber(number, selectedSimOption);
-            }
-
             TelecomManager telecomManager = (TelecomManager) requireContext()
-                    .getSystemService(android.content.Context.TELECOM_SERVICE);
+                    .getSystemService(Context.TELECOM_SERVICE);
             if (telecomManager != null) {
                 try {
                     Bundle extras = simCallingManager == null
@@ -697,6 +806,7 @@ public class DialFragment extends Fragment {
 
         simOptions.clear();
         selectedSimOption = null;
+        currentContactMatch = null;
         simCallingManager = null;
         binding = null;
         super.onDestroyView();
@@ -707,10 +817,17 @@ public class DialFragment extends Fragment {
         private final String name;
         @NonNull
         private final String number;
+        @Nullable
+        private final Uri contactUri;
 
-        private ContactMatch(@NonNull String name, @NonNull String number) {
+        private ContactMatch(
+                @NonNull String name,
+                @NonNull String number,
+                @Nullable Uri contactUri
+        ) {
             this.name = name;
             this.number = number;
+            this.contactUri = contactUri;
         }
     }
 }
