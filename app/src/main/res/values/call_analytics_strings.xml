@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="call_analytics_title">Call Analytics</string>
+    <string name="call_analytics_subtitle">Private, on-device insights from your recent call history</string>
+    <string name="call_analytics_back">Back</string>
+    <string name="call_analytics_permission_title">Call history access needed</string>
+    <string name="call_analytics_permission_body">Allow Call history access to calculate local trends. Call data is not uploaded by this feature.</string>
+    <string name="call_analytics_permission_action">Allow access</string>
+    <string name="call_analytics_30_day">Last 30 days</string>
+    <string name="call_analytics_total_calls">Calls</string>
+    <string name="call_analytics_talk_time">Talk time</string>
+    <string name="call_analytics_avg_call">Avg answered</string>
+    <string name="call_analytics_unique">Callers</string>
+    <string name="call_analytics_call_mix">Call mix</string>
+    <string name="call_analytics_incoming">Incoming</string>
+    <string name="call_analytics_outgoing">Outgoing</string>
+    <string name="call_analytics_missed">Missed</string>
+    <string name="call_analytics_blocked_rejected">Blocked / rejected</string>
+    <string name="call_analytics_count_percent">%1$d • %2$d%%</string>
+    <string name="call_analytics_7_day_trend">7-day trend</string>
+    <string name="call_analytics_trend_up">%1$d calls • +%2$d vs previous 7 days</string>
+    <string name="call_analytics_trend_down">%1$d calls • %2$d vs previous 7 days</string>
+    <string name="call_analytics_trend_same">%1$d calls • same as previous 7 days</string>
+    <string name="call_analytics_patterns">Calling patterns</string>
+    <string name="call_analytics_busiest_day">Busiest day</string>
+    <string name="call_analytics_busiest_time">Busiest time</string>
+    <string name="call_analytics_repeat_missed">Repeat missed</string>
+    <string name="call_analytics_repeat_missed_value">%1$d callers</string>
+    <string name="call_analytics_no_data">Not enough data</string>
+    <string name="call_analytics_morning">Morning • 5 AM–12 PM</string>
+    <string name="call_analytics_afternoon">Afternoon • 12–5 PM</string>
+    <string name="call_analytics_evening">Evening • 5–10 PM</string>
+    <string name="call_analytics_night">Night • 10 PM–5 AM</string>
+    <string name="call_analytics_top_contacts">Top contacts</string>
+    <string name="call_analytics_top_contact_meta">%1$d calls • %2$s talk time</string>
+    <string name="call_analytics_top_empty">No dialable caller history is available yet.</string>
+    <string name="call_analytics_day_count">%1$s • %2$d</string>
+    <string name="call_analytics_privacy">Analytics stays on this device. No call audio, transcript or message content is analyzed.</string>
+    <string name="call_analytics_minutes">%1$d min</string>
+    <string name="call_analytics_hours_minutes">%1$d hr %2$d min</string>
+    <string name="call_analytics_seconds">%1$d sec</string>
+    <string name="calls_open_analytics">Open call analytics</string>
+</resources>
