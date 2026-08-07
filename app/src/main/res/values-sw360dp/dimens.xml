@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Standard Android phones -->
-    <dimen name="csp_bottom_navigation_content_height">72dp</dimen>
-    <dimen name="csp_bottom_navigation_icon">23dp</dimen>
+    <dimen name="csp_bottom_navigation_content_height">74dp</dimen>
+    <dimen name="csp_bottom_navigation_icon">26dp</dimen>
     <dimen name="csp_bottom_navigation_text">11sp</dimen>
     <dimen name="csp_bottom_navigation_margin">6dp</dimen>
     <dimen name="csp_bottom_navigation_item_padding_top">7dp</dimen>
