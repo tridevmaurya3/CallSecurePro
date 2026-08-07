@@ -82,6 +82,7 @@ public class PostCallActionWorker extends Worker {
                 .setContentText(context.getString(R.string.call_reminder_post_call_body))
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setCategory(NotificationCompat.CATEGORY_STATUS)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .addAction(
