@@ -1,14 +1,10 @@
 package com.tridev.callsecurepro.ui.incall;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.ContactsContract;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
 import android.view.View;
@@ -26,8 +22,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.tridev.callsecurepro.R;
 import com.tridev.callsecurepro.databinding.ActivityInCallBinding;
+import com.tridev.callsecurepro.identity.CallerIdentityRepository;
+import com.tridev.callsecurepro.identity.CallerIdentityResult;
 import com.tridev.callsecurepro.protection.CallerAssessment;
 import com.tridev.callsecurepro.protection.CallerIntelligenceEngine;
+import com.tridev.callsecurepro.protection.ProtectionRepository;
 import com.tridev.callsecurepro.telecom.CallAudioController;
 import com.tridev.callsecurepro.telecom.CallSessionManager;
 
@@ -40,8 +39,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * User-facing Telecom call screen.
  *
- * Every state-changing call action is triggered only by an explicit user tap. Caller risk is
- * calculated from the same explainable local intelligence used by CallScreeningService.
+ * Every state-changing call action is triggered only by an explicit user tap. Caller identity
+ * uses the same offline-first repository as manual Number Lookup, while passive call resolution
+ * is deliberately excluded from manual lookup history.
  */
 public class InCallActivity extends AppCompatActivity
         implements CallSessionManager.Listener, CallAudioController.Listener {
@@ -52,7 +52,8 @@ public class InCallActivity extends AppCompatActivity
     private final Handler timerHandler = new Handler(Looper.getMainLooper());
     private final AtomicInteger identityGeneration = new AtomicInteger();
 
-    private ExecutorService contactLookupExecutor;
+    private ExecutorService identityExecutor;
+    private CallerIdentityRepository identityRepository;
     private CallerIntelligenceEngine intelligenceEngine;
 
     @Nullable
@@ -81,7 +82,8 @@ public class InCallActivity extends AppCompatActivity
         binding = ActivityInCallBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        contactLookupExecutor = Executors.newSingleThreadExecutor();
+        identityExecutor = Executors.newSingleThreadExecutor();
+        identityRepository = new CallerIdentityRepository(this);
         intelligenceEngine = new CallerIntelligenceEngine(this);
 
         applySystemInsets();
@@ -228,23 +230,31 @@ public class InCallActivity extends AppCompatActivity
             applyCallerName(getString(R.string.incall_unknown_caller));
         }
 
-        boolean contactsAllowed = ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-        ) == PackageManager.PERMISSION_GRANTED;
-        binding.identityNote.setVisibility(contactsAllowed ? View.GONE : View.VISIBLE);
-
-        ExecutorService executor = contactLookupExecutor;
-        CallerIntelligenceEngine engine = intelligenceEngine;
-        if (executor == null || executor.isShutdown() || engine == null) {
+        ExecutorService executor = identityExecutor;
+        CallerIdentityRepository repository = identityRepository;
+        CallerIntelligenceEngine fallbackEngine = intelligenceEngine;
+        if (executor == null || executor.isShutdown() || fallbackEngine == null) {
             return;
         }
 
         int generation = identityGeneration.incrementAndGet();
         executor.execute(() -> {
-            CallerAssessment assessment = engine.assess(number);
-            String contactName = contactsAllowed ? queryContactName(number) : null;
+            CallerIdentityResult result = null;
+            CallerAssessment assessment;
 
+            try {
+                if (repository != null && !ProtectionRepository.normalize(number).isEmpty()) {
+                    result = repository.resolveCaller(number);
+                    assessment = result.getAssessment();
+                } else {
+                    assessment = fallbackEngine.assess(number);
+                }
+            } catch (RuntimeException ignored) {
+                assessment = fallbackEngine.assess(number);
+            }
+
+            CallerIdentityResult resolvedResult = result;
+            CallerAssessment resolvedAssessment = assessment;
             if (generation != identityGeneration.get()) {
                 return;
             }
@@ -253,10 +263,18 @@ public class InCallActivity extends AppCompatActivity
                 if (binding == null || generation != identityGeneration.get()) {
                     return;
                 }
-                if (contactName != null) {
-                    applyCallerName(contactName);
+
+                if (resolvedResult != null && resolvedResult.hasResolvedName()) {
+                    applyCallerName(resolvedResult.getDisplayName());
+                    binding.identityNote.setVisibility(View.VISIBLE);
+                    binding.identityNote.setText(
+                            getString(R.string.lookup_source_format, resolvedResult.getSource())
+                    );
+                } else {
+                    binding.identityNote.setVisibility(View.GONE);
                 }
-                renderCallerAssessment(assessment);
+
+                renderCallerAssessment(resolvedAssessment);
             });
         });
     }
@@ -309,36 +327,6 @@ public class InCallActivity extends AppCompatActivity
 
         String number = handle.getSchemeSpecificPart().trim();
         return number.isEmpty() ? getString(R.string.incall_private_number) : number;
-    }
-
-    @Nullable
-    private String queryContactName(@NonNull String number) {
-        Uri lookupUri = Uri.withAppendedPath(
-                ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-                Uri.encode(number)
-        );
-
-        try (Cursor cursor = getContentResolver().query(
-                lookupUri,
-                new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME},
-                null,
-                null,
-                null
-        )) {
-            if (cursor == null || !cursor.moveToFirst()) {
-                return null;
-            }
-
-            int nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
-            if (nameIndex < 0) {
-                return null;
-            }
-
-            String name = cursor.getString(nameIndex);
-            return name == null || name.trim().isEmpty() ? null : name.trim();
-        } catch (SecurityException ignored) {
-            return null;
-        }
     }
 
     private void applyCallerName(@NonNull String name) {
@@ -463,11 +451,12 @@ public class InCallActivity extends AppCompatActivity
         callSessionManager.removeListener(this);
         callAudioController.removeListener(this);
 
-        if (contactLookupExecutor != null) {
-            contactLookupExecutor.shutdownNow();
-            contactLookupExecutor = null;
+        if (identityExecutor != null) {
+            identityExecutor.shutdownNow();
+            identityExecutor = null;
         }
 
+        identityRepository = null;
         intelligenceEngine = null;
         binding = null;
         super.onDestroy();
