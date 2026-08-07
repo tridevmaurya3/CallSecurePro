@@ -8,11 +8,13 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
@@ -22,32 +24,17 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.tridev.callsecurepro.R;
-import com.tridev.callsecurepro.ui.theme.ThemeStudioActivity;
 
-/**
- * Runtime renderer for the user-selectable visual themes.
- *
- * The theme engine changes appearance only. It does not alter call routing,
- * permissions, caller screening, database state, or telecom behavior.
- */
+/** Runtime renderer for the user-selectable whole-app visual system. */
 public final class AppVisualThemeManager {
 
-    private static final int DARK_SURFACE = Color.rgb(25, 29, 36);
-    private static final int DARK_SURFACE_ALT = Color.rgb(31, 36, 45);
-    private static final int DARK_OUTLINE = Color.rgb(66, 75, 88);
-    private static final int DARK_TEXT = Color.rgb(245, 247, 250);
-    private static final int DARK_TEXT_SECONDARY = Color.rgb(198, 205, 216);
-    private static final int LIGHT_NAV_SURFACE = Color.argb(246, 255, 255, 255);
-    private static final int DARK_NAV_SURFACE = Color.argb(246, 20, 24, 31);
+    private static final int DARK_NAV_SURFACE = Color.argb(248, 18, 23, 31);
+    private static final int LIGHT_NAV_SURFACE = Color.argb(248, 255, 255, 255);
 
     private AppVisualThemeManager() {
     }
 
     public static void applyActivity(@NonNull Activity activity) {
-        if (activity instanceof ThemeStudioActivity) {
-            return;
-        }
-
         View content = activity.findViewById(android.R.id.content);
         if (content instanceof ViewGroup) {
             ViewGroup group = (ViewGroup) content;
@@ -59,25 +46,30 @@ public final class AppVisualThemeManager {
         } else if (content != null) {
             applyRoot(activity, content);
         }
-
         applyWindowChrome(activity);
     }
 
     public static void applyWindowChrome(@NonNull Activity activity) {
         boolean dark = isDarkBackground(activity);
-        @ColorInt int barColor = dark ? Color.rgb(13, 17, 24) : Color.TRANSPARENT;
-        activity.getWindow().setStatusBarColor(barColor);
-        activity.getWindow().setNavigationBarColor(
-                dark ? Color.rgb(13, 17, 24) : Color.rgb(247, 249, 252)
+        activity.getWindow().setStatusBarColor(
+                dark ? Color.rgb(10, 15, 23) : Color.TRANSPARENT
         );
+        activity.getWindow().setNavigationBarColor(
+                dark ? Color.rgb(10, 15, 23) : Color.rgb(247, 249, 252)
+        );
+
+        WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(
+                activity.getWindow(),
+                activity.getWindow().getDecorView()
+        );
+        controller.setAppearanceLightStatusBars(!dark);
+        controller.setAppearanceLightNavigationBars(!dark);
     }
 
     public static void applyRoot(@NonNull Context context, @NonNull View root) {
         root.setBackground(createBackground(context));
-        styleAccentTree(context, root);
-        if (isDarkBackground(context)) {
-            styleDarkTree(context, root);
-        }
+        SurfacePalette palette = paletteFor(context);
+        styleTree(context, root, palette);
     }
 
     public static void applyMainNavigation(
@@ -86,26 +78,28 @@ public final class AppVisualThemeManager {
             @NonNull BottomNavigationView navigation
     ) {
         boolean dark = isDarkBackground(context);
-        int surfaceColor = dark ? DARK_NAV_SURFACE : LIGHT_NAV_SURFACE;
-        int outlineColor = dark ? DARK_OUTLINE : ContextCompat.getColor(context, R.color.csp_outline);
+        SurfacePalette palette = paletteFor(context);
 
         GradientDrawable background = new GradientDrawable();
         background.setShape(GradientDrawable.RECTANGLE);
-        background.setColor(surfaceColor);
+        background.setColor(dark ? DARK_NAV_SURFACE : LIGHT_NAV_SURFACE);
         background.setCornerRadius(dp(context, 26));
-        background.setStroke(Math.max(1, Math.round(dp(context, 1))), outlineColor);
+        background.setStroke(
+                Math.max(1, Math.round(dp(context, 1))),
+                palette.outline
+        );
         surface.setBackground(background);
 
         int accent = accentColor(context);
-        int inactive = dark
-                ? Color.rgb(174, 184, 198)
-                : ContextCompat.getColor(context, R.color.csp_text_muted);
+        int inactive = dark ? Color.rgb(174, 184, 198) : palette.secondaryText;
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_checked},
                 new int[]{}
         };
-        int[] colors = new int[]{accent, inactive};
-        ColorStateList itemColors = new ColorStateList(states, colors);
+        ColorStateList itemColors = new ColorStateList(
+                states,
+                new int[]{accent, inactive}
+        );
         navigation.setItemIconTintList(itemColors);
         navigation.setItemTextColor(itemColors);
         navigation.setItemRippleColor(ColorStateList.valueOf(withAlpha(accent, 28)));
@@ -121,9 +115,9 @@ public final class AppVisualThemeManager {
         switch (theme) {
             case ABSTRACT_BLUE:
                 colors = new int[]{
-                        Color.rgb(230, 241, 255),
+                        Color.rgb(229, 241, 255),
                         Color.rgb(213, 232, 255),
-                        Color.rgb(244, 248, 255)
+                        Color.rgb(244, 249, 255)
                 };
                 break;
             case DARK_ABSTRACT:
@@ -135,44 +129,44 @@ public final class AppVisualThemeManager {
                 break;
             case GREEN_NATURE:
                 colors = new int[]{
-                        Color.rgb(235, 249, 234),
-                        Color.rgb(218, 243, 220),
-                        Color.rgb(246, 252, 241)
+                        Color.rgb(233, 249, 233),
+                        Color.rgb(216, 241, 219),
+                        Color.rgb(247, 252, 242)
                 };
                 break;
             case SUNSET:
                 colors = new int[]{
-                        Color.rgb(255, 239, 222),
-                        Color.rgb(255, 220, 219),
-                        Color.rgb(255, 242, 232)
+                        Color.rgb(255, 239, 220),
+                        Color.rgb(255, 220, 218),
+                        Color.rgb(255, 244, 233)
                 };
                 break;
             case PURPLE_GRADIENT:
                 colors = new int[]{
-                        Color.rgb(240, 232, 255),
-                        Color.rgb(225, 215, 255),
-                        Color.rgb(248, 241, 255)
+                        Color.rgb(239, 231, 255),
+                        Color.rgb(224, 214, 255),
+                        Color.rgb(249, 242, 255)
                 };
                 break;
             case NIGHT_SKY:
                 colors = new int[]{
-                        Color.rgb(5, 19, 46),
-                        Color.rgb(12, 35, 72),
-                        Color.rgb(9, 16, 35)
+                        Color.rgb(5, 18, 44),
+                        Color.rgb(12, 34, 69),
+                        Color.rgb(8, 15, 33)
                 };
                 orientation = GradientDrawable.Orientation.TOP_BOTTOM;
                 break;
             case OCEAN:
                 colors = new int[]{
-                        Color.rgb(224, 247, 252),
-                        Color.rgb(210, 239, 248),
-                        Color.rgb(239, 250, 251)
+                        Color.rgb(222, 247, 252),
+                        Color.rgb(207, 239, 248),
+                        Color.rgb(239, 251, 252)
                 };
                 break;
             case GEOMETRIC:
                 colors = new int[]{
-                        Color.rgb(244, 238, 222),
-                        Color.rgb(225, 241, 239),
+                        Color.rgb(245, 239, 223),
+                        Color.rgb(224, 241, 239),
                         Color.rgb(255, 226, 207)
                 };
                 orientation = GradientDrawable.Orientation.LEFT_RIGHT;
@@ -182,7 +176,7 @@ public final class AppVisualThemeManager {
                 colors = new int[]{
                         Color.rgb(250, 251, 253),
                         Color.rgb(245, 248, 252),
-                        Color.rgb(255, 255, 255)
+                        Color.WHITE
                 };
                 break;
         }
@@ -225,18 +219,57 @@ public final class AppVisualThemeManager {
 
     @ColorInt
     public static int contrastOn(@ColorInt int color) {
-        return Color.luminance(color) > 0.55f ? Color.rgb(20, 24, 31) : Color.WHITE;
+        return Color.luminance(color) > 0.55f
+                ? Color.rgb(20, 24, 31)
+                : Color.WHITE;
     }
 
-    private static void styleAccentTree(@NonNull Context context, @NonNull View view) {
+    private static void styleTree(
+            @NonNull Context context,
+            @NonNull View view,
+            @NonNull SurfacePalette palette
+    ) {
         int accent = accentColor(context);
         int defaultPrimary = ContextCompat.getColor(context, R.color.csp_primary);
+
+        if (view instanceof MaterialCardView) {
+            MaterialCardView card = (MaterialCardView) view;
+            card.setCardBackgroundColor(palette.surface);
+            card.setStrokeColor(palette.outline);
+        }
+
+        if (view instanceof TextInputLayout) {
+            TextInputLayout inputLayout = (TextInputLayout) view;
+            inputLayout.setBoxBackgroundColor(palette.inputSurface);
+            inputLayout.setBoxStrokeColor(palette.outline);
+            inputLayout.setDefaultHintTextColor(ColorStateList.valueOf(palette.secondaryText));
+        }
+
+        if (view instanceof TextInputEditText) {
+            TextInputEditText editText = (TextInputEditText) view;
+            editText.setTextColor(palette.primaryText);
+            editText.setHintTextColor(palette.secondaryText);
+        } else if (view instanceof TextView
+                && !(view instanceof Chip)
+                && !(view instanceof MaterialButton)) {
+            TextView textView = (TextView) view;
+            int current = textView.getCurrentTextColor();
+            if (!isSemanticColor(context, current)) {
+                textView.setTextColor(
+                        isPrimaryTextColor(context, current)
+                                ? palette.primaryText
+                                : palette.secondaryText
+                );
+            }
+        }
 
         if (view instanceof FloatingActionButton) {
             FloatingActionButton fab = (FloatingActionButton) view;
             fab.setBackgroundTintList(ColorStateList.valueOf(accent));
             fab.setImageTintList(ColorStateList.valueOf(contrastOn(accent)));
-        } else if (view instanceof MaterialButton) {
+        }
+
+        if (view instanceof MaterialButton) {
             MaterialButton button = (MaterialButton) view;
             ColorStateList tint = button.getBackgroundTintList();
             boolean primaryFill = tint != null && tint.getDefaultColor() == defaultPrimary;
@@ -254,48 +287,18 @@ public final class AppVisualThemeManager {
             }
         }
 
-        if (view instanceof ViewGroup) {
-            ViewGroup group = (ViewGroup) view;
-            for (int index = 0; index < group.getChildCount(); index++) {
-                styleAccentTree(context, group.getChildAt(index));
-            }
-        }
-    }
-
-    private static void styleDarkTree(@NonNull Context context, @NonNull View view) {
-        if (view instanceof MaterialCardView) {
-            MaterialCardView card = (MaterialCardView) view;
-            card.setCardBackgroundColor(DARK_SURFACE_ALT);
-            card.setStrokeColor(DARK_OUTLINE);
-        }
-
-        if (view instanceof TextInputLayout) {
-            TextInputLayout inputLayout = (TextInputLayout) view;
-            inputLayout.setBoxBackgroundColor(DARK_SURFACE);
-            inputLayout.setBoxStrokeColor(DARK_OUTLINE);
-            inputLayout.setDefaultHintTextColor(ColorStateList.valueOf(DARK_TEXT_SECONDARY));
-        }
-
-        if (view instanceof TextInputEditText) {
-            TextInputEditText editText = (TextInputEditText) view;
-            editText.setTextColor(DARK_TEXT);
-            editText.setHintTextColor(DARK_TEXT_SECONDARY);
-        } else if (view instanceof TextView
-                && !(view instanceof Chip)
-                && !(view instanceof MaterialButton)) {
-            TextView textView = (TextView) view;
-            int current = textView.getCurrentTextColor();
-            if (!isSemanticColor(context, current)) {
-                textView.setTextColor(
-                        isPrimaryTextColor(context, current) ? DARK_TEXT : DARK_TEXT_SECONDARY
-                );
+        if (view instanceof ImageView) {
+            ImageView imageView = (ImageView) view;
+            ColorStateList tint = imageView.getImageTintList();
+            if (tint != null && tint.getDefaultColor() == defaultPrimary) {
+                imageView.setImageTintList(ColorStateList.valueOf(accent));
             }
         }
 
         if (view instanceof ViewGroup) {
             ViewGroup group = (ViewGroup) view;
             for (int index = 0; index < group.getChildCount(); index++) {
-                styleDarkTree(context, group.getChildAt(index));
+                styleTree(context, group.getChildAt(index), palette);
             }
         }
     }
@@ -319,6 +322,85 @@ public final class AppVisualThemeManager {
                 || color == ContextCompat.getColor(context, R.color.csp_call_blocked);
     }
 
+    @NonNull
+    private static SurfacePalette paletteFor(@NonNull Context context) {
+        switch (ThemePreferences.getBackgroundTheme(context)) {
+            case ABSTRACT_BLUE:
+                return new SurfacePalette(
+                        Color.rgb(244, 249, 255),
+                        Color.rgb(240, 247, 255),
+                        Color.rgb(193, 216, 241),
+                        Color.rgb(22, 38, 58),
+                        Color.rgb(78, 96, 119)
+                );
+            case DARK_ABSTRACT:
+                return new SurfacePalette(
+                        Color.rgb(27, 32, 41),
+                        Color.rgb(22, 27, 35),
+                        Color.rgb(69, 79, 94),
+                        Color.rgb(246, 248, 251),
+                        Color.rgb(190, 200, 214)
+                );
+            case GREEN_NATURE:
+                return new SurfacePalette(
+                        Color.rgb(246, 252, 245),
+                        Color.rgb(242, 250, 241),
+                        Color.rgb(197, 224, 199),
+                        Color.rgb(24, 47, 31),
+                        Color.rgb(80, 105, 86)
+                );
+            case SUNSET:
+                return new SurfacePalette(
+                        Color.rgb(255, 249, 244),
+                        Color.rgb(255, 246, 239),
+                        Color.rgb(238, 205, 187),
+                        Color.rgb(55, 36, 31),
+                        Color.rgb(112, 83, 73)
+                );
+            case PURPLE_GRADIENT:
+                return new SurfacePalette(
+                        Color.rgb(250, 247, 255),
+                        Color.rgb(247, 243, 255),
+                        Color.rgb(215, 201, 238),
+                        Color.rgb(43, 31, 62),
+                        Color.rgb(96, 80, 119)
+                );
+            case NIGHT_SKY:
+                return new SurfacePalette(
+                        Color.rgb(17, 29, 49),
+                        Color.rgb(14, 25, 43),
+                        Color.rgb(56, 78, 111),
+                        Color.rgb(245, 248, 253),
+                        Color.rgb(184, 199, 220)
+                );
+            case OCEAN:
+                return new SurfacePalette(
+                        Color.rgb(245, 252, 253),
+                        Color.rgb(240, 250, 252),
+                        Color.rgb(190, 222, 230),
+                        Color.rgb(22, 46, 53),
+                        Color.rgb(75, 103, 111)
+                );
+            case GEOMETRIC:
+                return new SurfacePalette(
+                        Color.rgb(255, 252, 246),
+                        Color.rgb(251, 249, 242),
+                        Color.rgb(219, 208, 187),
+                        Color.rgb(48, 43, 34),
+                        Color.rgb(103, 94, 77)
+                );
+            case MINIMAL_WHITE:
+            default:
+                return new SurfacePalette(
+                        Color.WHITE,
+                        Color.rgb(252, 253, 255),
+                        ContextCompat.getColor(context, R.color.csp_outline),
+                        ContextCompat.getColor(context, R.color.csp_text_primary),
+                        ContextCompat.getColor(context, R.color.csp_text_secondary)
+                );
+        }
+    }
+
     @ColorInt
     private static int withAlpha(@ColorInt int color, int alpha) {
         return Color.argb(
@@ -331,5 +413,27 @@ public final class AppVisualThemeManager {
 
     private static float dp(@NonNull Context context, float value) {
         return value * context.getResources().getDisplayMetrics().density;
+    }
+
+    private static final class SurfacePalette {
+        final int surface;
+        final int inputSurface;
+        final int outline;
+        final int primaryText;
+        final int secondaryText;
+
+        SurfacePalette(
+                int surface,
+                int inputSurface,
+                int outline,
+                int primaryText,
+                int secondaryText
+        ) {
+            this.surface = surface;
+            this.inputSurface = inputSurface;
+            this.outline = outline;
+            this.primaryText = primaryText;
+            this.secondaryText = secondaryText;
+        }
     }
 }
