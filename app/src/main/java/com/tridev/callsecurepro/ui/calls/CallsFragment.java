@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CallLog;
 import android.text.Editable;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tridev.callsecurepro.R;
 import com.tridev.callsecurepro.calls.CallNoteRepository;
+import com.tridev.callsecurepro.calls.CallReminderPreferences;
 import com.tridev.callsecurepro.data.calls.CallNoteEntity;
 import com.tridev.callsecurepro.databinding.FragmentCallsBinding;
 
@@ -55,6 +57,7 @@ public class CallsFragment extends Fragment {
     private final List<CallHistoryItem> allCalls = new ArrayList<>();
     private CallFilter activeFilter = CallFilter.ALL;
     private boolean loadingCalls;
+    private boolean suppressPostCallPromptSwitch;
 
     private final ActivityResultLauncher<String> callLogPermissionLauncher =
             registerForActivityResult(
@@ -68,6 +71,25 @@ public class CallsFragment extends Fragment {
                             loadCallHistory();
                         } else {
                             showPermissionState();
+                        }
+                    }
+            );
+
+    private final ActivityResultLauncher<String> notificationPermissionLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(),
+                    granted -> {
+                        if (!isAdded() || binding == null) {
+                            return;
+                        }
+                        CallReminderPreferences.setPostCallPromptEnabled(requireContext(), granted);
+                        setPostCallPromptSwitch(granted);
+                        if (!granted) {
+                            Toast.makeText(
+                                    requireContext(),
+                                    R.string.calls_post_call_prompt_permission,
+                                    Toast.LENGTH_SHORT
+                            ).show();
                         }
                     }
             );
@@ -108,9 +130,9 @@ public class CallsFragment extends Fragment {
         binding.allowCallLogButton.setOnClickListener(view1 ->
                 callLogPermissionLauncher.launch(Manifest.permission.READ_CALL_LOG)
         );
-
         binding.refreshButton.setOnClickListener(view1 -> loadCallHistory());
 
+        setupPostCallPrompt();
         setupSearch();
         setupFilters();
         refreshPermissionAndData();
@@ -120,8 +142,63 @@ public class CallsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (binding != null) {
+            refreshPostCallPromptState();
             refreshPermissionAndData();
         }
+    }
+
+    private void setupPostCallPrompt() {
+        refreshPostCallPromptState();
+        binding.postCallPromptSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+            if (suppressPostCallPromptSwitch || !isAdded()) {
+                return;
+            }
+
+            if (!checked) {
+                CallReminderPreferences.setPostCallPromptEnabled(requireContext(), false);
+                return;
+            }
+
+            if (canPostNotifications()) {
+                CallReminderPreferences.setPostCallPromptEnabled(requireContext(), true);
+                return;
+            }
+
+            CallReminderPreferences.setPostCallPromptEnabled(requireContext(), false);
+            setPostCallPromptSwitch(false);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        });
+    }
+
+    private void refreshPostCallPromptState() {
+        if (!isAdded() || binding == null) {
+            return;
+        }
+        boolean enabled = CallReminderPreferences.isPostCallPromptEnabled(requireContext());
+        if (enabled && !canPostNotifications()) {
+            enabled = false;
+            CallReminderPreferences.setPostCallPromptEnabled(requireContext(), false);
+        }
+        setPostCallPromptSwitch(enabled);
+    }
+
+    private void setPostCallPromptSwitch(boolean checked) {
+        if (binding == null) {
+            return;
+        }
+        suppressPostCallPromptSwitch = true;
+        binding.postCallPromptSwitch.setChecked(checked);
+        suppressPostCallPromptSwitch = false;
+    }
+
+    private boolean canPostNotifications() {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                || ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void setupSearch() {
