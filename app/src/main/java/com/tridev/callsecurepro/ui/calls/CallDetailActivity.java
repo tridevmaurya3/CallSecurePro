@@ -27,9 +27,9 @@ import com.tridev.callsecurepro.R;
 import com.tridev.callsecurepro.calls.CallNoteRepository;
 import com.tridev.callsecurepro.data.calls.CallNoteEntity;
 import com.tridev.callsecurepro.databinding.ActivityCallDetailBinding;
-import com.tridev.callsecurepro.identity.NumberLookupActivity;
 import com.tridev.callsecurepro.protection.CallerAssessment;
 import com.tridev.callsecurepro.protection.CallerIntelligenceEngine;
+import com.tridev.callsecurepro.ui.lookup.NumberLookupActivity;
 
 import java.util.Calendar;
 import java.util.Date;
