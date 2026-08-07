@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Internal-only navigation target used by Home and ACTION_DIAL routing. -->
+    <item name="nav_dial" type="id" />
+</resources>
