@@ -4,6 +4,7 @@
 
     <!-- Permissions are requested only from explicit user actions in their feature screens. -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -36,6 +37,11 @@
 
         <activity
             android:name=".ui.calls.CallDetailActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.contacts.ContactProfileActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
