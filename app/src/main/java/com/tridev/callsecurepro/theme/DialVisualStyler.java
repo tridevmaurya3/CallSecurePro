@@ -4,13 +4,16 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.button.MaterialButton;
-import com.tridev.callsecurepro.databinding.FragmentDialBinding;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.tridev.callsecurepro.R;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,45 +24,61 @@ public final class DialVisualStyler {
     private DialVisualStyler() {
     }
 
-    public static void apply(
-            @NonNull Context context,
-            @NonNull FragmentDialBinding binding
-    ) {
+    public static void apply(@NonNull Context context, @NonNull View root) {
         ThemePreferences.DialerTheme dialerTheme = ThemePreferences.getDialerTheme(context);
         DialColors colors = colorsFor(dialerTheme);
 
-        binding.dialRoot.setBackground(createDialBackground(dialerTheme));
-        binding.dialNumberInputLayout.setBoxBackgroundColor(colors.inputBackground);
-        binding.dialNumberInputLayout.setBoxStrokeColor(colors.outline);
-        binding.dialNumberInput.setTextColor(colors.numberText);
-        binding.dialNumberInput.setHintTextColor(colors.secondaryText);
+        root.setBackground(createDialBackground(dialerTheme));
 
-        List<MaterialButton> keys = Arrays.asList(
-                binding.key1,
-                binding.key2,
-                binding.key3,
-                binding.key4,
-                binding.key5,
-                binding.key6,
-                binding.key7,
-                binding.key8,
-                binding.key9,
-                binding.keyStar,
-                binding.key0,
-                binding.keyHash
-        );
+        TextInputLayout inputLayout = root.findViewById(R.id.dialNumberInputLayout);
+        TextInputEditText numberInput = root.findViewById(R.id.dialNumberInput);
+        MaterialButton moreOptions = root.findViewById(R.id.moreOptionsButton);
+        MaterialButton backspace = root.findViewById(R.id.backspaceButton);
+        MaterialButton callButton = root.findViewById(R.id.callButton);
 
-        for (MaterialButton key : keys) {
-            styleKey(context, key, colors, dialerTheme);
+        if (inputLayout != null) {
+            inputLayout.setBoxBackgroundColor(colors.inputBackground);
+            inputLayout.setBoxStrokeColor(colors.outline);
+        }
+        if (numberInput != null) {
+            numberInput.setTextColor(colors.numberText);
+            numberInput.setHintTextColor(colors.secondaryText);
         }
 
-        styleUtilityButton(context, binding.moreOptionsButton, colors, dialerTheme);
-        styleUtilityButton(context, binding.backspaceButton, colors, dialerTheme);
-        styleCallButton(
-                context,
-                binding.callButton,
-                ThemePreferences.getCallButtonStyle(context)
+        List<Integer> keyIds = Arrays.asList(
+                R.id.key1,
+                R.id.key2,
+                R.id.key3,
+                R.id.key4,
+                R.id.key5,
+                R.id.key6,
+                R.id.key7,
+                R.id.key8,
+                R.id.key9,
+                R.id.keyStar,
+                R.id.key0,
+                R.id.keyHash
         );
+        for (int id : keyIds) {
+            MaterialButton key = root.findViewById(id);
+            if (key != null) {
+                styleKey(context, key, colors, dialerTheme);
+            }
+        }
+
+        if (moreOptions != null) {
+            styleUtilityButton(context, moreOptions, colors, dialerTheme);
+        }
+        if (backspace != null) {
+            styleUtilityButton(context, backspace, colors, dialerTheme);
+        }
+        if (callButton != null) {
+            styleCallButton(
+                    context,
+                    callButton,
+                    ThemePreferences.getCallButtonStyle(context)
+            );
+        }
     }
 
     public static void styleCallButton(
