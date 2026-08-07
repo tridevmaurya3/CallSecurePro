@@ -30,9 +30,11 @@ import java.util.List;
  * Resolution priority:
  * 1) a real contact saved on the device,
  * 2) a still-valid cached identity from a real prior source,
- * 3) an optional authenticated community/cloud source,
+ * 3) the ordered multi-source remote provider pipeline,
  * 4) unknown identity with the local protection assessment only.
  *
+ * The remote pipeline is provider-based. Firebase Community is the first real cloud provider;
+ * future licensed business/reputation providers can be added without rewriting this repository.
  * This repository never invents a caller/business name.
  */
 public final class CallerIdentityRepository {
@@ -46,12 +48,21 @@ public final class CallerIdentityRepository {
     private final CallerIdentityRemoteSource remoteSource;
 
     public CallerIdentityRepository(@NonNull Context context) {
-        this(
-                context,
-                new CommunityCallerIdentityRemoteSource(
-                        CommunityNetworkProvider.get(context.getApplicationContext())
+        this(context, createDefaultRemotePipeline(context));
+    }
+
+    @NonNull
+    private static CallerIdentityRemoteSource createDefaultRemotePipeline(@NonNull Context context) {
+        Context appContext = context.getApplicationContext();
+        return new MultiSourceCallerIdentityRemoteSource.Builder()
+                .add(
+                        "firebase-community",
+                        100,
+                        new CommunityCallerIdentityRemoteSource(
+                                CommunityNetworkProvider.get(appContext)
+                        )
                 )
-        );
+                .build();
     }
 
     public CallerIdentityRepository(
@@ -69,22 +80,31 @@ public final class CallerIdentityRepository {
     /** User-initiated number lookup. This is recorded in Recent lookups. */
     @NonNull
     public CallerIdentityResult lookup(@NonNull String rawNumber) {
-        return resolveInternal(rawNumber, true);
+        return resolveInternal(
+                rawNumber,
+                true,
+                CallerIdentityLookupMode.USER_INITIATED
+        );
     }
 
     /**
      * Passive caller resolution for incoming/ongoing calls. This never adds an item to the
-     * manual Recent lookups list.
+     * manual Recent lookups list and keeps the remote path latency-sensitive.
      */
     @NonNull
     public CallerIdentityResult resolveCaller(@NonNull String rawNumber) {
-        return resolveInternal(rawNumber, false);
+        return resolveInternal(
+                rawNumber,
+                false,
+                CallerIdentityLookupMode.PASSIVE_CALL_SCREENING
+        );
     }
 
     @NonNull
     private CallerIdentityResult resolveInternal(
             @NonNull String rawNumber,
-            boolean recordLookupHistory
+            boolean recordLookupHistory,
+            @NonNull CallerIdentityLookupMode lookupMode
     ) {
         String normalized = ProtectionRepository.normalize(rawNumber);
         if (normalized.isEmpty()) {
@@ -119,7 +139,10 @@ public final class CallerIdentityRepository {
             return result;
         }
 
-        CallerIdentityRemoteSource.RemoteIdentity remoteIdentity = remoteSource.lookup(normalized);
+        CallerIdentityRemoteSource.RemoteIdentity remoteIdentity = remoteSource.lookup(
+                normalized,
+                lookupMode
+        );
         if (remoteIdentity != null && hasMeaningfulRemoteIdentity(remoteIdentity)) {
             CallerIdentityEntity entity = toEntity(normalized, remoteIdentity, now);
             identityDao.upsert(entity);
