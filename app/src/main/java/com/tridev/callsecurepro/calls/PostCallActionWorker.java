@@ -115,7 +115,8 @@ public class PostCallActionWorker extends Worker {
                         CallLog.Calls._ID,
                         CallLog.Calls.NUMBER,
                         CallLog.Calls.CACHED_NAME,
-                        CallLog.Calls.DATE
+                        CallLog.Calls.DATE,
+                        CallLog.Calls.DURATION
                 },
                 null,
                 null,
@@ -129,7 +130,8 @@ public class PostCallActionWorker extends Worker {
             int numberIndex = cursor.getColumnIndex(CallLog.Calls.NUMBER);
             int nameIndex = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
             int dateIndex = cursor.getColumnIndex(CallLog.Calls.DATE);
-            if (idIndex < 0 || numberIndex < 0 || dateIndex < 0) {
+            int durationIndex = cursor.getColumnIndex(CallLog.Calls.DURATION);
+            if (idIndex < 0 || numberIndex < 0 || dateIndex < 0 || durationIndex < 0) {
                 return null;
             }
 
@@ -142,7 +144,9 @@ public class PostCallActionWorker extends Worker {
                 }
 
                 long callDate = cursor.getLong(dateIndex);
-                if (Math.abs(endedAt - callDate) > MATCH_WINDOW_MS) {
+                long durationMs = Math.max(0L, cursor.getLong(durationIndex)) * 1000L;
+                long estimatedEnd = callDate + durationMs;
+                if (Math.abs(endedAt - estimatedEnd) > MATCH_WINDOW_MS) {
                     continue;
                 }
 
