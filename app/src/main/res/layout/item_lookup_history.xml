@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.CallSecurePro.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/csp_space_8"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/csp_card_padding_compact">
+
+        <TextView
+            android:id="@+id/initialText"
+            android:layout_width="@dimen/csp_avatar_small"
+            android:layout_height="@dimen/csp_avatar_small"
+            android:background="@drawable/bg_contact_avatar"
+            android:gravity="center"
+            android:text="#"
+            android:textColor="@color/csp_tertiary"
+            android:textStyle="bold"
+            tools:text="R" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/csp_space_10"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/nameText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle"
+                tools:text="Rahul Sharma" />
+
+            <TextView
+                android:id="@+id/numberText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_2"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                tools:text="+91 98765 43210" />
+
+            <TextView
+                android:id="@+id/sourceText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/csp_space_2"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
+                tools:text="Device contacts • SAFE" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/lookup_action"
+            android:src="@drawable/ic_home_search"
+            app:tint="@color/csp_primary" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
