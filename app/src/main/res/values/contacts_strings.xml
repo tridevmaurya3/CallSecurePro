@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contacts_profile_title">Contact profile</string>
+    <string name="contacts_profile_numbers">Phone numbers</string>
+    <string name="contacts_profile_number_count">%1$d numbers</string>
+    <string name="contacts_profile_one_number">1 number</string>
+    <string name="contacts_profile_call">Call</string>
+    <string name="contacts_profile_message">Message</string>
+    <string name="contacts_profile_lookup">Lookup</string>
+    <string name="contacts_profile_favorite">Favorite</string>
+    <string name="contacts_profile_add_favorite">Add favorite</string>
+    <string name="contacts_profile_remove_favorite">Remove favorite</string>
+    <string name="contacts_profile_write_permission">Allow Contacts editing to change favorite status.</string>
+    <string name="contacts_profile_write_denied">Favorite was not changed. Contact details remain available.</string>
+    <string name="contacts_profile_update_failed">Could not update this contact.</string>
+    <string name="contacts_profile_not_found">This contact is no longer available.</string>
+    <string name="contacts_profile_no_numbers">No phone number is available for this contact.</string>
+    <string name="contacts_profile_more_numbers">+%1$d more</string>
+    <string name="contacts_message">Message contact</string>
+    <string name="contacts_open_profile">Open contact profile</string>
+</resources>
