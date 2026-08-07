@@ -33,6 +33,7 @@
     <string name="dial_sim_saved_confirmation">SIM preference saved for this number.</string>
     <string name="dial_sim_removed_confirmation">Saved SIM preference removed for this number.</string>
     <string name="dial_sim_access_needed">Enable SIM access to choose a specific outgoing SIM.</string>
+    <string name="dial_sim_choose_specific_first">Choose a specific SIM before saving a number preference.</string>
     <string name="dial_sim_selection_title">Choose outgoing SIM</string>
 
     <!-- Smart dual-SIM calling -->
