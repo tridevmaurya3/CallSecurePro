@@ -47,10 +47,25 @@
                     android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
             </LinearLayout>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/analyticsButton"
+                style="@style/Widget.CallSecurePro.Button.Secondary"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="6dp"
+                android:contentDescription="@string/calls_open_analytics"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text=""
+                app:icon="@drawable/ic_call_analytics"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="20dp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="6dp"
                 android:text="@string/calls_post_call_prompt_title"
                 android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
                 android:textStyle="bold" />
