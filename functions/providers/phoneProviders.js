@@ -92,10 +92,79 @@ async function telesignPhoneId(phoneNumber, config = {}) {
   });
 }
 
+async function veriphoneLookup(phoneNumber, config = {}) {
+  const apiKey = config.apiKey;
+  if (!configured(apiKey)) {
+    return { source: "VERIPHONE", status: "NOT_CONFIGURED" };
+  }
+
+  const e164 = normalizePhoneInput(phoneNumber);
+  const mode = config.currentCarrierEnabled === true ? "current" : "static";
+  const data = await fetchJson(
+    `https://api.veriphone.io/v3/verify?phone=${encodeURIComponent(e164)}&mode=${mode}`,
+    {
+      headers: {
+        Authorization: `Bearer ${apiKey.trim()}`
+      }
+    },
+    5000
+  );
+
+  return compactObject({
+    source: "VERIPHONE",
+    status: "OK",
+    phoneNumber: nonEmpty(data.e164) || e164,
+    valid: typeof data.phone_valid === "boolean" ? data.phone_valid : null,
+    lineType: nonEmpty(data.current_line_type) || nonEmpty(data.phone_type),
+    carrierName: nonEmpty(data.current_carrier) || nonEmpty(data.carrier),
+    originalCarrier: nonEmpty(data.original_carrier),
+    ported: typeof data.ported === "boolean" ? data.ported : null,
+    countryCode: nonEmpty(data.country_code),
+    countryName: nonEmpty(data.country),
+    phoneRegion: nonEmpty(data.phone_region),
+    nationalFormat: nonEmpty(data.local_number),
+    internationalFormat: nonEmpty(data.international_number),
+    mode: nonEmpty(data.mode)
+  });
+}
+
+async function abstractPhoneLookup(phoneNumber, config = {}) {
+  const apiKey = config.apiKey;
+  if (!configured(apiKey)) {
+    return { source: "ABSTRACT_PHONE", status: "NOT_CONFIGURED" };
+  }
+
+  const e164 = normalizePhoneInput(phoneNumber);
+  const data = await fetchJson(
+    `https://phonevalidation.abstractapi.com/v1/?api_key=${encodeURIComponent(apiKey.trim())}&phone=${encodeURIComponent(e164)}`,
+    {},
+    5000
+  );
+
+  const format = data.format || {};
+  const country = data.country || {};
+  return compactObject({
+    source: "ABSTRACT_PHONE",
+    status: "OK",
+    phoneNumber: e164,
+    valid: typeof data.valid === "boolean" ? data.valid : null,
+    lineType: nonEmpty(data.line_type),
+    carrierName: nonEmpty(data.carrier),
+    countryCode: nonEmpty(country.code) || nonEmpty(data.country_code),
+    countryName: nonEmpty(country.name) || nonEmpty(data.country_name),
+    registeredLocation: nonEmpty(data.location) || nonEmpty(data.registered_location),
+    nationalFormat: nonEmpty(format.national) || nonEmpty(data.local_format),
+    internationalFormat: nonEmpty(data.international_format),
+    riskScore: typeof data.risk_score === "number" ? data.risk_score : null
+  });
+}
+
 async function runPhoneProviders(phoneNumber, providerConfig = {}) {
   const jobs = [
     ["TWILIO_LOOKUP", () => twilioLookup(phoneNumber, providerConfig.twilio || {})],
-    ["TELESIGN_PHONE_ID", () => telesignPhoneId(phoneNumber, providerConfig.telesign || {})]
+    ["TELESIGN_PHONE_ID", () => telesignPhoneId(phoneNumber, providerConfig.telesign || {})],
+    ["VERIPHONE", () => veriphoneLookup(phoneNumber, providerConfig.veriphone || {})],
+    ["ABSTRACT_PHONE", () => abstractPhoneLookup(phoneNumber, providerConfig.abstractPhone || {})]
   ];
 
   const results = await Promise.all(jobs.map(async ([source, job]) => {
