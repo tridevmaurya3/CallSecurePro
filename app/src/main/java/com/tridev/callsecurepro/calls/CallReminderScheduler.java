@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -63,8 +64,11 @@ public final class CallReminderScheduler {
     }
 
     public static void cancelFollowUp(@NonNull Context context, long callLogId) {
-        WorkManager.getInstance(context.getApplicationContext())
-                .cancelUniqueWork(followUpWorkName(callLogId));
+        Context appContext = context.getApplicationContext();
+        WorkManager.getInstance(appContext).cancelUniqueWork(followUpWorkName(callLogId));
+        NotificationManagerCompat.from(appContext).cancel(
+                CallFollowUpWorker.notificationId(callLogId)
+        );
     }
 
     public static void schedulePostCallPrompt(
