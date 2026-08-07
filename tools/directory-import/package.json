@@ -1,0 +1,19 @@
+{
+  "name": "callsecurepro-spark-directory-import",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Spark-compatible verified public/business caller directory importer",
+  "main": "index.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "validate": "node index.js --input=directory.template.csv",
+    "import": "node index.js --commit"
+  },
+  "dependencies": {
+    "csv-parse": "7.0.1",
+    "firebase-admin": "14.2.0",
+    "libphonenumber-js": "1.13.9"
+  }
+}
