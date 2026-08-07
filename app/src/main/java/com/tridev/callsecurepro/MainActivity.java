@@ -221,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         binding.main.setBackground(AppVisualThemeManager.createBackground(this));
+        AppVisualThemeManager.applyWindowChrome(this);
         AppVisualThemeManager.applyMainNavigation(
                 this,
                 binding.bottomNavigationSurface,
