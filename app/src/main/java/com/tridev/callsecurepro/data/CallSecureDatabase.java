@@ -9,6 +9,8 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.tridev.callsecurepro.data.calls.CallNoteDao;
+import com.tridev.callsecurepro.data.calls.CallNoteEntity;
 import com.tridev.callsecurepro.data.identity.CallerIdentityDao;
 import com.tridev.callsecurepro.data.identity.CallerIdentityEntity;
 import com.tridev.callsecurepro.data.identity.LookupHistoryDao;
@@ -20,9 +22,10 @@ import com.tridev.callsecurepro.data.protection.ProtectionRuleEntity;
         entities = {
                 ProtectionRuleEntity.class,
                 CallerIdentityEntity.class,
-                LookupHistoryEntity.class
+                LookupHistoryEntity.class,
+                CallNoteEntity.class
         },
-        version = 2,
+        version = 3,
         exportSchema = false
 )
 public abstract class CallSecureDatabase extends RoomDatabase {
@@ -71,6 +74,31 @@ public abstract class CallSecureDatabase extends RoomDatabase {
         }
     };
 
+    private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `call_notes` (" +
+                            "`callLogId` INTEGER NOT NULL, " +
+                            "`normalizedNumber` TEXT NOT NULL, " +
+                            "`callTimestamp` INTEGER NOT NULL, " +
+                            "`noteText` TEXT NOT NULL, " +
+                            "`followUpAt` INTEGER NOT NULL, " +
+                            "`followUpDone` INTEGER NOT NULL, " +
+                            "`updatedAt` INTEGER NOT NULL, " +
+                            "PRIMARY KEY(`callLogId`))"
+            );
+            database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_call_notes_normalizedNumber` " +
+                            "ON `call_notes` (`normalizedNumber`)"
+            );
+            database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_call_notes_followUpAt` " +
+                            "ON `call_notes` (`followUpAt`)"
+            );
+        }
+    };
+
     @NonNull
     public static CallSecureDatabase getInstance(@NonNull Context context) {
         if (INSTANCE == null) {
@@ -81,7 +109,7 @@ public abstract class CallSecureDatabase extends RoomDatabase {
                                     CallSecureDatabase.class,
                                     "call_secure_pro.db"
                             )
-                            .addMigrations(MIGRATION_1_2)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                             .build();
                 }
             }
@@ -94,4 +122,6 @@ public abstract class CallSecureDatabase extends RoomDatabase {
     public abstract CallerIdentityDao callerIdentityDao();
 
     public abstract LookupHistoryDao lookupHistoryDao();
+
+    public abstract CallNoteDao callNoteDao();
 }
