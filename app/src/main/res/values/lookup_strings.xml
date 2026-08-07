@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="lookup_title">Advanced Number Lookup</string>
-    <string name="lookup_subtitle">Resolve saved contacts, cached identity and local safety intelligence</string>
+    <string name="lookup_subtitle">Resolve identity, safety and offline numbering-plan intelligence</string>
     <string name="lookup_hint">Enter phone number</string>
     <string name="lookup_action">Look up</string>
     <string name="lookup_number_required">Enter a phone number first</string>
@@ -23,11 +23,38 @@
     <string name="lookup_risk_suspicious">Suspicious</string>
     <string name="lookup_risk_spam">Spam</string>
     <string name="lookup_risk_score_format">Risk score: %1$d/100</string>
+
+    <!-- Offline numbering-plan intelligence. Region means numbering region, never live location. -->
+    <string name="lookup_number_intelligence_title">Number intelligence</string>
+    <string name="lookup_number_valid">Valid number</string>
+    <string name="lookup_number_possible">Possible number</string>
+    <string name="lookup_number_invalid_plan">Invalid / unrecognized</string>
+    <string name="lookup_number_type_format">Type: %1$s</string>
+    <string name="lookup_number_region_format">Numbering region: %1$s</string>
+    <string name="lookup_number_region_code_format">%1$s (%2$s) · +%3$d</string>
+    <string name="lookup_number_region_unknown">Numbering region unavailable</string>
+    <string name="lookup_number_international_format">International: %1$s</string>
+    <string name="lookup_number_national_format">National: %1$s</string>
+    <string name="lookup_number_e164_format">E.164: %1$s</string>
+    <string name="lookup_number_location_disclaimer">Numbering region is based on phone-number metadata. It does not reveal the caller’s current or exact location.</string>
+    <string name="lookup_number_type_mobile">Mobile</string>
+    <string name="lookup_number_type_fixed">Fixed line</string>
+    <string name="lookup_number_type_fixed_mobile">Fixed line or mobile</string>
+    <string name="lookup_number_type_toll_free">Toll-free</string>
+    <string name="lookup_number_type_premium">Premium rate</string>
+    <string name="lookup_number_type_shared">Shared cost</string>
+    <string name="lookup_number_type_voip">VoIP</string>
+    <string name="lookup_number_type_personal">Personal number</string>
+    <string name="lookup_number_type_pager">Pager</string>
+    <string name="lookup_number_type_uan">Universal access number</string>
+    <string name="lookup_number_type_voicemail">Voicemail</string>
+    <string name="lookup_number_type_unknown">Unknown type</string>
+
     <string name="lookup_recent_title">Recent lookups</string>
     <string name="lookup_clear_history">Clear</string>
     <string name="lookup_history_empty">No lookup history yet</string>
     <string name="lookup_history_cleared">Lookup history cleared</string>
-    <string name="lookup_local_only_note">Identity lookup is offline-first. Saved contacts and real cached identities are used now; no online identity is fabricated while the secure backend source is not connected.</string>
+    <string name="lookup_local_only_note">Identity lookup is offline-first. Saved contacts, real cached identities and local numbering-plan metadata are used now; no online identity or live location is fabricated while the secure backend source is not connected.</string>
     <string name="lookup_source_unknown">Local intelligence</string>
     <string name="lookup_back">Back</string>
 </resources>
