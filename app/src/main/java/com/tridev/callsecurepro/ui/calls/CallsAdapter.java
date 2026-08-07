@@ -17,21 +17,22 @@ import com.tridev.callsecurepro.databinding.ItemCallHistoryBinding;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class CallsAdapter extends ListAdapter<CallHistoryItem, CallsAdapter.CallViewHolder> {
 
-    public interface OnCallBackClickListener {
+    public interface Listener {
+        void onOpenDetails(@NonNull CallHistoryItem item);
+
         void onCallBack(@NonNull CallHistoryItem item);
     }
 
     @NonNull
-    private final OnCallBackClickListener callbackListener;
+    private final Listener listener;
 
-    public CallsAdapter(@NonNull OnCallBackClickListener callbackListener) {
+    public CallsAdapter(@NonNull Listener listener) {
         super(DIFF_CALLBACK);
-        this.callbackListener = callbackListener;
+        this.listener = listener;
     }
 
     @NonNull
@@ -72,8 +73,27 @@ public class CallsAdapter extends ListAdapter<CallHistoryItem, CallsAdapter.Call
 
             binding.callTypeIcon.setImageResource(iconForType(item.getType()));
             binding.callMetadata.setText(buildMetadata(context, item));
-            binding.callBackButton.setVisibility(isDialable(item.getNumber()) ? View.VISIBLE : View.INVISIBLE);
-            binding.callBackButton.setOnClickListener(view -> callbackListener.onCallBack(item));
+
+            boolean hasNote = item.hasNote();
+            boolean hasFollowUp = item.hasFollowUp();
+            binding.smartBadges.setVisibility(
+                    hasNote || hasFollowUp ? View.VISIBLE : View.GONE
+            );
+            binding.noteChip.setVisibility(hasNote ? View.VISIBLE : View.GONE);
+            binding.followUpChip.setVisibility(hasFollowUp ? View.VISIBLE : View.GONE);
+            if (hasFollowUp) {
+                binding.followUpChip.setText(
+                        item.isFollowUpDone()
+                                ? R.string.call_detail_followup_done_indicator
+                                : R.string.call_detail_followup_indicator
+                );
+            }
+
+            binding.callCard.setOnClickListener(view -> listener.onOpenDetails(item));
+            binding.callBackButton.setVisibility(
+                    isDialable(item.getNumber()) ? View.VISIBLE : View.INVISIBLE
+            );
+            binding.callBackButton.setOnClickListener(view -> listener.onCallBack(item));
 
             boolean showHeader = position == 0
                     || !isSameDay(
@@ -207,7 +227,10 @@ public class CallsAdapter extends ListAdapter<CallHistoryItem, CallsAdapter.Call
                             && safeEquals(oldItem.getCachedName(), newItem.getCachedName())
                             && oldItem.getType() == newItem.getType()
                             && oldItem.getTimestamp() == newItem.getTimestamp()
-                            && oldItem.getDurationSeconds() == newItem.getDurationSeconds();
+                            && oldItem.getDurationSeconds() == newItem.getDurationSeconds()
+                            && safeEquals(oldItem.getNoteText(), newItem.getNoteText())
+                            && oldItem.getFollowUpAt() == newItem.getFollowUpAt()
+                            && oldItem.isFollowUpDone() == newItem.isFollowUpDone();
                 }
             };
 
