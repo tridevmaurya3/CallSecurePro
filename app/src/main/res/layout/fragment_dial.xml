@@ -13,249 +13,68 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingStart="@dimen/csp_page_horizontal"
-        android:paddingTop="@dimen/csp_page_top"
+        android:paddingTop="14dp"
         android:paddingEnd="@dimen/csp_page_horizontal"
-        android:paddingBottom="@dimen/csp_page_bottom">
-
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.CallSecurePro.Card.Lavender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/csp_card_padding">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dial_real_title"
-                    android:textAppearance="@style/TextAppearance.CallSecurePro.PageTitle" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/csp_space_4"
-                    android:text="@string/dial_real_subtitle"
-                    android:textAppearance="@style/TextAppearance.CallSecurePro.Body" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.CallSecurePro.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/csp_space_16">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/csp_card_padding">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/dialNumberInputLayout"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/dial_number_hint">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/dialNumberInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:imeOptions="actionDone"
-                        android:inputType="phone"
-                        android:maxLines="1"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.CallSecurePro.Number"
-                        tools:text="+91 98765 43210" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/contactMatchCard"
-                    style="@style/Widget.CallSecurePro.Card.Mint"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/csp_space_12"
-                    android:visibility="gone"
-                    tools:visibility="visible">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="@dimen/csp_card_padding_compact">
-
-                        <TextView
-                            android:id="@+id/contactMatchInitial"
-                            android:layout_width="44dp"
-                            android:layout_height="44dp"
-                            android:background="@drawable/bg_contact_avatar"
-                            android:gravity="center"
-                            android:text="R"
-                            android:textColor="@color/csp_tertiary"
-                            android:textSize="17sp"
-                            android:textStyle="bold" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/csp_space_12"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/contactMatchName"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:ellipsize="end"
-                                android:maxLines="1"
-                                android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle"
-                                tools:text="Rahul Sharma" />
-
-                            <TextView
-                                android:id="@+id/contactMatchNumber"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/csp_space_2"
-                                android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
-                                tools:text="+91 98765 43210" />
-                        </LinearLayout>
-
-                        <com.google.android.material.chip.Chip
-                            style="@style/Widget.CallSecurePro.Chip.Safe"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/dial_contact_match_label" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <TextView
-                    android:id="@+id/contactPermissionNote"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/csp_space_10"
-                    android:text="@string/dial_contacts_permission_note"
-                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
-                    android:visibility="gone" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/simSelectionCard"
-            style="@style/Widget.CallSecurePro.Card.Header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/csp_space_12">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/csp_card_padding_compact">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/dial_sim_title"
-                            android:textAppearance="@style/TextAppearance.CallSecurePro.CardTitle" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/csp_space_2"
-                            android:text="@string/dial_sim_subtitle"
-                            android:textAppearance="@style/TextAppearance.CallSecurePro.Caption" />
-                    </LinearLayout>
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/simStatusChip"
-                        style="@style/Widget.CallSecurePro.Chip.Business"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/csp_space_8"
-                        android:text="@string/dial_sim_status_system" />
-                </LinearLayout>
-
-                <ProgressBar
-                    android:id="@+id/simLoadingProgress"
-                    style="?android:attr/progressBarStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/csp_space_10"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/simInfoText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/csp_space_10"
-                    android:text="@string/dial_sim_loading"
-                    android:textAppearance="@style/TextAppearance.CallSecurePro.Body" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/simPermissionButton"
-                    style="@style/Widget.CallSecurePro.Button.Secondary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/csp_space_8"
-                    android:text="@string/dial_sim_permission_action"
-                    android:visibility="gone" />
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/simChipGroup"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/csp_space_8"
-                    android:visibility="gone"
-                    app:chipSpacingHorizontal="@dimen/csp_space_8"
-                    app:chipSpacingVertical="@dimen/csp_space_6"
-                    app:singleSelection="true" />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/rememberSimSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/csp_space_8"
-                    android:text="@string/dial_sim_remember_number"
-                    android:textColor="@color/csp_text_primary"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/simPreferenceText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/csp_space_4"
-                    android:text="@string/dial_sim_system_preference"
-                    android:textAppearance="@style/TextAppearance.CallSecurePro.Caption"
-                    android:visibility="gone" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        android:paddingBottom="18dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/csp_space_16"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dialNumberInputLayout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/dial_number_hint"
+                app:boxBackgroundColor="@color/csp_surface"
+                app:boxCornerRadiusBottomEnd="@dimen/csp_radius_large"
+                app:boxCornerRadiusBottomStart="@dimen/csp_radius_large"
+                app:boxCornerRadiusTopEnd="@dimen/csp_radius_large"
+                app:boxCornerRadiusTopStart="@dimen/csp_radius_large"
+                app:boxStrokeColor="@color/csp_outline">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dialNumberInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center"
+                    android:imeOptions="actionDone"
+                    android:inputType="phone"
+                    android:maxLines="1"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.CallSecurePro.Number"
+                    android:textSize="21sp"
+                    tools:text="+91 98765 43210" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/moreOptionsButton"
+                style="@style/Widget.CallSecurePro.Button.Secondary"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/dial_more_options"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text=""
+                app:icon="@drawable/ic_more_vertical"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="@color/csp_text_primary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
@@ -395,35 +214,39 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/csp_space_16"
+            android:layout_marginTop="18dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/clearButton"
-                style="@style/Widget.CallSecurePro.Button.Secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dial_clear" />
+            <Space
+                android:layout_width="56dp"
+                android:layout_height="1dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/callButton"
                 style="@style/Widget.CallSecurePro.DialCallButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/csp_space_12"
+                android:layout_height="64dp"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
-                android:text="@string/dial_call" />
+                android:text="@string/dial_call"
+                app:icon="@drawable/ic_contact_call"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/backspaceButton"
-                style="@style/Widget.CallSecurePro.Button.Secondary"
+                style="@style/Widget.CallSecurePro.DialUtilityButton"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
-                android:layout_marginStart="@dimen/csp_space_12"
+                android:layout_marginStart="12dp"
                 android:contentDescription="@string/dial_backspace"
-                android:text="⌫"
-                android:textSize="20sp" />
+                android:minWidth="56dp"
+                android:text=""
+                app:icon="@drawable/ic_dial_backspace"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp" />
         </LinearLayout>
 
     </LinearLayout>
