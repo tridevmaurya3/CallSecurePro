@@ -11,6 +11,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.tridev.callsecurepro.data.calls.CallNoteDao;
 import com.tridev.callsecurepro.data.calls.CallNoteEntity;
+import com.tridev.callsecurepro.data.community.CommunityReportDao;
+import com.tridev.callsecurepro.data.community.CommunityReportEntity;
 import com.tridev.callsecurepro.data.identity.CallerIdentityDao;
 import com.tridev.callsecurepro.data.identity.CallerIdentityEntity;
 import com.tridev.callsecurepro.data.identity.LookupHistoryDao;
@@ -26,9 +28,10 @@ import com.tridev.callsecurepro.data.protection.ScreeningEventEntity;
                 CallerIdentityEntity.class,
                 LookupHistoryEntity.class,
                 CallNoteEntity.class,
-                ScreeningEventEntity.class
+                ScreeningEventEntity.class,
+                CommunityReportEntity.class
         },
-        version = 4,
+        version = 5,
         exportSchema = false
 )
 public abstract class CallSecureDatabase extends RoomDatabase {
@@ -127,6 +130,36 @@ public abstract class CallSecureDatabase extends RoomDatabase {
         }
     };
 
+    private static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `community_report_outbox` (" +
+                            "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                            "`normalizedNumber` TEXT NOT NULL, " +
+                            "`displayNumber` TEXT NOT NULL, " +
+                            "`category` TEXT NOT NULL, " +
+                            "`status` TEXT NOT NULL, " +
+                            "`createdAt` INTEGER NOT NULL, " +
+                            "`updatedAt` INTEGER NOT NULL, " +
+                            "`attemptCount` INTEGER NOT NULL, " +
+                            "`serverReportId` TEXT)"
+            );
+            database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_community_report_outbox_normalizedNumber` " +
+                            "ON `community_report_outbox` (`normalizedNumber`)"
+            );
+            database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_community_report_outbox_status` " +
+                            "ON `community_report_outbox` (`status`)"
+            );
+            database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_community_report_outbox_createdAt` " +
+                            "ON `community_report_outbox` (`createdAt`)"
+            );
+        }
+    };
+
     @NonNull
     public static CallSecureDatabase getInstance(@NonNull Context context) {
         if (INSTANCE == null) {
@@ -137,7 +170,12 @@ public abstract class CallSecureDatabase extends RoomDatabase {
                                     CallSecureDatabase.class,
                                     "call_secure_pro.db"
                             )
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                            .addMigrations(
+                                    MIGRATION_1_2,
+                                    MIGRATION_2_3,
+                                    MIGRATION_3_4,
+                                    MIGRATION_4_5
+                            )
                             .build();
                 }
             }
@@ -154,4 +192,6 @@ public abstract class CallSecureDatabase extends RoomDatabase {
     public abstract CallNoteDao callNoteDao();
 
     public abstract ScreeningEventDao screeningEventDao();
+
+    public abstract CommunityReportDao communityReportDao();
 }
