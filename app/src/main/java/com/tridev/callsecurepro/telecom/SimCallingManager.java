@@ -32,7 +32,7 @@ import java.util.Map;
  *
  * The manager never guesses hidden subscription identifiers and never forces a selected
  * account for emergency calls. User preferences are stored locally and are applied only when
- * the same enabled PhoneAccountHandle is still available on the device.
+ * the same enabled cellular PhoneAccountHandle is still available on the device.
  */
 public final class SimCallingManager {
 
@@ -101,15 +101,18 @@ public final class SimCallingManager {
         private final List<SimOption> options;
         private final boolean telephonyAvailable;
         private final boolean permissionGranted;
+        private final boolean exactSimMappingSupported;
 
         private LoadResult(
                 @NonNull List<SimOption> options,
                 boolean telephonyAvailable,
-                boolean permissionGranted
+                boolean permissionGranted,
+                boolean exactSimMappingSupported
         ) {
             this.options = Collections.unmodifiableList(options);
             this.telephonyAvailable = telephonyAvailable;
             this.permissionGranted = permissionGranted;
+            this.exactSimMappingSupported = exactSimMappingSupported;
         }
 
         @NonNull
@@ -123,6 +126,10 @@ public final class SimCallingManager {
 
         public boolean isPermissionGranted() {
             return permissionGranted;
+        }
+
+        public boolean isExactSimMappingSupported() {
+            return exactSimMappingSupported;
         }
     }
 
@@ -150,65 +157,80 @@ public final class SimCallingManager {
 
         boolean telephonyAvailable = hasTelephony();
         boolean permissionGranted = hasPhoneStatePermission();
+        boolean exactMappingSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
+
         if (!telephonyAvailable || !permissionGranted) {
-            return new LoadResult(options, telephonyAvailable, permissionGranted);
+            return new LoadResult(
+                    options,
+                    telephonyAvailable,
+                    permissionGranted,
+                    exactMappingSupported
+            );
+        }
+
+        // Android 8-10 do not expose a reliable public API to map each cellular subscription
+        // to its PhoneAccountHandle. On those versions, stay on System default instead of
+        // risking a call through the wrong account.
+        if (!exactMappingSupported) {
+            return new LoadResult(options, true, true, false);
         }
 
         TelecomManager telecomManager =
                 (TelecomManager) appContext.getSystemService(Context.TELECOM_SERVICE);
-        if (telecomManager == null) {
-            return new LoadResult(options, true, true);
+        TelephonyManager telephonyManager =
+                (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
+        if (telecomManager == null || telephonyManager == null) {
+            return new LoadResult(options, true, true, true);
         }
 
         try {
-            List<PhoneAccountHandle> handles = telecomManager.getCallCapablePhoneAccounts();
-            if (handles == null || handles.isEmpty()) {
-                return new LoadResult(options, true, true);
+            Map<Integer, SubscriptionInfo> subscriptionById = loadSubscriptionsById();
+            if (subscriptionById.isEmpty()) {
+                return new LoadResult(options, true, true, true);
             }
 
-            Map<Integer, SubscriptionInfo> subscriptionById = loadSubscriptionsById();
-            TelephonyManager telephonyManager =
-                    (TelephonyManager) appContext.getSystemService(Context.TELEPHONY_SERVICE);
+            List<PhoneAccountHandle> handles = telecomManager.getCallCapablePhoneAccounts();
+            if (handles == null || handles.isEmpty()) {
+                return new LoadResult(options, true, true, true);
+            }
 
-            int fallbackPosition = 0;
             for (PhoneAccountHandle handle : handles) {
                 if (handle == null) {
                     continue;
                 }
 
-                int subscriptionId = SubscriptionManager.INVALID_SUBSCRIPTION_ID;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && telephonyManager != null) {
-                    try {
-                        subscriptionId = telephonyManager.getSubscriptionId(handle);
-                    } catch (SecurityException | UnsupportedOperationException ignored) {
-                        subscriptionId = SubscriptionManager.INVALID_SUBSCRIPTION_ID;
-                    }
+                int subscriptionId;
+                try {
+                    subscriptionId = telephonyManager.getSubscriptionId(handle);
+                } catch (SecurityException | UnsupportedOperationException ignored) {
+                    continue;
                 }
 
                 SubscriptionInfo info = subscriptionById.get(subscriptionId);
-                int slotIndex = info == null
-                        ? fallbackPosition
-                        : info.getSimSlotIndex();
-                if (slotIndex < 0) {
-                    slotIndex = fallbackPosition;
+                if (info == null) {
+                    // Ignore non-cellular/VoIP phone accounts; this UI is specifically for SIMs.
+                    continue;
                 }
 
-                String label = buildLabel(info, slotIndex);
+                int slotIndex = info.getSimSlotIndex();
+                if (slotIndex < 0) {
+                    continue;
+                }
+
                 options.add(new SimOption(
                         stableKey(handle),
-                        label,
+                        buildLabel(info, slotIndex),
                         handle,
                         false,
                         slotIndex,
                         subscriptionId
                 ));
-                fallbackPosition++;
             }
         } catch (SecurityException | UnsupportedOperationException ignored) {
             // Keep System default as the safe fallback.
         }
 
-        return new LoadResult(options, true, true);
+        return new LoadResult(options, true, true, true);
     }
 
     @NonNull
@@ -231,18 +253,14 @@ public final class SimCallingManager {
                 }
             }
         } catch (SecurityException | UnsupportedOperationException ignored) {
-            // Account handles can still be shown with generic SIM labels.
+            // No subscription metadata means no specific-SIM option will be exposed.
         }
         return result;
     }
 
     @NonNull
-    private String buildLabel(@Nullable SubscriptionInfo info, int slotIndex) {
-        String base = "SIM " + (Math.max(0, slotIndex) + 1);
-        if (info == null) {
-            return base;
-        }
-
+    private String buildLabel(@NonNull SubscriptionInfo info, int slotIndex) {
+        String base = "SIM " + (slotIndex + 1);
         CharSequence carrierName = info.getCarrierName();
         if (carrierName == null || carrierName.toString().trim().isEmpty()) {
             carrierName = info.getDisplayName();
@@ -265,21 +283,24 @@ public final class SimCallingManager {
 
         String numberKey = preferenceKeyForNumber(number);
         if (numberKey != null) {
-            String savedForNumber = preferences.getString(numberKey, null);
-            SimOption matched = findByStableKey(savedForNumber, options);
+            SimOption matched = findByStableKey(
+                    preferences.getString(numberKey, null),
+                    options
+            );
             if (matched != null) {
                 return matched;
             }
         }
 
-        String globalKey = preferences.getString(KEY_GLOBAL_ACCOUNT, null);
-        SimOption global = findByStableKey(globalKey, options);
+        SimOption global = findByStableKey(
+                preferences.getString(KEY_GLOBAL_ACCOUNT, null),
+                options
+        );
         if (global != null) {
             return global;
         }
 
         if (options.size() == 2 && options.get(0).isSystemDefault()) {
-            // Exactly one enabled call account: select it without making the user tap again.
             return options.get(1);
         }
 
