@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +15,7 @@ import com.tridev.callsecurepro.MainActivity;
 import com.tridev.callsecurepro.R;
 import com.tridev.callsecurepro.databinding.FragmentHomeBinding;
 import com.tridev.callsecurepro.setup.CallerProtectionSetupActivity;
+import com.tridev.callsecurepro.ui.lookup.NumberLookupActivity;
 
 public class HomeFragment extends Fragment {
 
@@ -83,11 +83,9 @@ public class HomeFragment extends Fragment {
 
         binding.numberLookupInputLayout.setError(null);
 
-        Toast.makeText(
-                requireContext(),
-                R.string.home_lookup_placeholder_message,
-                Toast.LENGTH_SHORT
-        ).show();
+        Intent intent = new Intent(requireContext(), NumberLookupActivity.class);
+        intent.putExtra(NumberLookupActivity.EXTRA_NUMBER, number);
+        startActivity(intent);
     }
 
     private void openSection(int itemId) {
