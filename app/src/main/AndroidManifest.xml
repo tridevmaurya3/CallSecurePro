@@ -17,6 +17,7 @@
         android:required="false" />
 
     <application
+        android:name=".CallSecureApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -53,6 +54,11 @@
 
         <activity
             android:name=".ui.contacts.ContactProfileActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.theme.ThemeStudioActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
