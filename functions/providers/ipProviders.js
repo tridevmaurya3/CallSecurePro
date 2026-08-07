@@ -37,8 +37,8 @@ async function reverseDns(ipAddress) {
   }
 }
 
-async function ipinfoLookup(ipAddress) {
-  const token = process.env.IPINFO_TOKEN;
+async function ipinfoLookup(ipAddress, config = {}) {
+  const token = config.token;
   if (!configured(token)) {
     return { source: "IPINFO", status: "NOT_CONFIGURED" };
   }
@@ -62,9 +62,9 @@ async function ipinfoLookup(ipAddress) {
   });
 }
 
-async function maxMindLookup(ipAddress) {
-  const accountId = process.env.MAXMIND_ACCOUNT_ID;
-  const licenseKey = process.env.MAXMIND_LICENSE_KEY;
+async function maxMindLookup(ipAddress, config = {}) {
+  const accountId = config.accountId;
+  const licenseKey = config.licenseKey;
   if (!configured(accountId) || !configured(licenseKey)) {
     return { source: "MAXMIND_GEOIP", status: "NOT_CONFIGURED" };
   }
@@ -100,8 +100,8 @@ async function maxMindLookup(ipAddress) {
   });
 }
 
-async function ip2LocationLookup(ipAddress) {
-  const key = process.env.IP2LOCATION_API_KEY;
+async function ip2LocationLookup(ipAddress, config = {}) {
+  const key = config.apiKey;
   if (!configured(key)) {
     return { source: "IP2LOCATION_IO", status: "NOT_CONFIGURED" };
   }
@@ -125,8 +125,8 @@ async function ip2LocationLookup(ipAddress) {
   });
 }
 
-async function dbIpLookup(ipAddress) {
-  const key = process.env.DBIP_API_KEY;
+async function dbIpLookup(ipAddress, config = {}) {
+  const key = config.apiKey;
   if (!configured(key)) {
     return { source: "DB_IP", status: "NOT_CONFIGURED" };
   }
@@ -155,9 +155,9 @@ async function dbIpLookup(ipAddress) {
   });
 }
 
-async function greyNoiseLookup(ipAddress) {
+async function greyNoiseLookup(ipAddress, config = {}) {
   const ip = normalizeIp(ipAddress);
-  const key = process.env.GREYNOISE_API_KEY;
+  const key = config.apiKey;
   if (configured(key)) {
     const data = await fetchJson(
       `https://api.greynoise.io/v3/ip/${encodeURIComponent(ip)}?quick=true`,
@@ -201,8 +201,8 @@ async function greyNoiseLookup(ipAddress) {
   }
 }
 
-async function abuseIpDbLookup(ipAddress) {
-  const key = process.env.ABUSEIPDB_API_KEY;
+async function abuseIpDbLookup(ipAddress, config = {}) {
+  const key = config.apiKey;
   if (!configured(key)) {
     return { source: "ABUSEIPDB", status: "NOT_CONFIGURED" };
   }
@@ -234,15 +234,15 @@ async function abuseIpDbLookup(ipAddress) {
   });
 }
 
-async function runIpProviders(ipAddress) {
+async function runIpProviders(ipAddress, providerConfig = {}) {
   const jobs = [
     ["DNS_PTR", () => reverseDns(ipAddress)],
-    ["IPINFO", () => ipinfoLookup(ipAddress)],
-    ["MAXMIND_GEOIP", () => maxMindLookup(ipAddress)],
-    ["IP2LOCATION_IO", () => ip2LocationLookup(ipAddress)],
-    ["DB_IP", () => dbIpLookup(ipAddress)],
-    ["GREYNOISE", () => greyNoiseLookup(ipAddress)],
-    ["ABUSEIPDB", () => abuseIpDbLookup(ipAddress)]
+    ["IPINFO", () => ipinfoLookup(ipAddress, providerConfig.ipinfo || {})],
+    ["MAXMIND_GEOIP", () => maxMindLookup(ipAddress, providerConfig.maxmind || {})],
+    ["IP2LOCATION_IO", () => ip2LocationLookup(ipAddress, providerConfig.ip2location || {})],
+    ["DB_IP", () => dbIpLookup(ipAddress, providerConfig.dbip || {})],
+    ["GREYNOISE", () => greyNoiseLookup(ipAddress, providerConfig.greynoise || {})],
+    ["ABUSEIPDB", () => abuseIpDbLookup(ipAddress, providerConfig.abuseipdb || {})]
   ];
 
   return Promise.all(jobs.map(async ([source, job]) => {
