@@ -81,57 +81,66 @@ public final class DialVisualStyler {
         button.setMinHeight(0);
         button.setText("");
         button.setIconPadding(0);
-        button.setCornerRadius(Math.round(dp(context, rounded ? 20 : 35)));
-        button.setStrokeWidth(0);
         button.setElevation(dp(context, 3));
 
-        int fill;
-        int icon = Color.WHITE;
+        int iconColor = Color.WHITE;
+        int[] fillColors;
+        int outlineColor = Color.TRANSPARENT;
+        int outlineWidth = 0;
+
         switch (style) {
+            case GRADIENT_GREEN:
+                fillColors = new int[]{
+                        Color.rgb(62, 207, 107),
+                        Color.rgb(28, 173, 137)
+                };
+                break;
             case BLUE_CIRCLE:
             case BLUE_ROUNDED:
-                fill = Color.rgb(32, 118, 232);
+                fillColors = new int[]{Color.rgb(32, 118, 232), Color.rgb(32, 118, 232)};
                 break;
             case PURPLE_CIRCLE:
-                fill = Color.rgb(161, 42, 214);
+                fillColors = new int[]{Color.rgb(161, 42, 214), Color.rgb(161, 42, 214)};
                 break;
             case ORANGE_CIRCLE:
-                fill = Color.rgb(255, 149, 0);
+                fillColors = new int[]{Color.rgb(255, 149, 0), Color.rgb(255, 149, 0)};
                 break;
             case RED_CIRCLE:
-                fill = Color.rgb(239, 56, 54);
+                fillColors = new int[]{Color.rgb(239, 56, 54), Color.rgb(239, 56, 54)};
                 break;
             case DARK_CIRCLE:
             case DARK_ROUNDED:
-                fill = Color.rgb(28, 31, 36);
+                fillColors = new int[]{Color.rgb(28, 31, 36), Color.rgb(28, 31, 36)};
                 break;
             case LIGHT_OUTLINE:
-                fill = Color.WHITE;
-                icon = Color.rgb(52, 199, 89);
-                button.setStrokeWidth(Math.max(1, Math.round(dp(context, 1))));
-                button.setStrokeColor(ColorStateList.valueOf(Color.rgb(225, 230, 236)));
+                fillColors = new int[]{Color.WHITE, Color.WHITE};
+                iconColor = Color.rgb(52, 199, 89);
+                outlineColor = Color.rgb(225, 230, 236);
+                outlineWidth = Math.max(1, Math.round(dp(context, 1)));
                 button.setElevation(dp(context, 2));
                 break;
-            case GRADIENT_GREEN:
-                GradientDrawable gradient = new GradientDrawable(
-                        GradientDrawable.Orientation.TL_BR,
-                        new int[]{
-                                Color.rgb(62, 207, 107),
-                                Color.rgb(28, 173, 137)
-                        }
-                );
-                gradient.setShape(GradientDrawable.OVAL);
-                button.setBackground(gradient);
-                button.setIconTint(ColorStateList.valueOf(Color.WHITE));
-                return;
             case CLASSIC_GREEN:
             default:
-                fill = Color.rgb(52, 199, 89);
+                fillColors = new int[]{Color.rgb(52, 199, 89), Color.rgb(52, 199, 89)};
                 break;
         }
 
-        button.setBackgroundTintList(ColorStateList.valueOf(fill));
-        button.setIconTint(ColorStateList.valueOf(icon));
+        GradientDrawable background = new GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                fillColors
+        );
+        if (rounded) {
+            background.setShape(GradientDrawable.RECTANGLE);
+            background.setCornerRadius(dp(context, 20));
+        } else {
+            background.setShape(GradientDrawable.OVAL);
+        }
+        if (outlineWidth > 0) {
+            background.setStroke(outlineWidth, outlineColor);
+        }
+
+        button.setBackground(background);
+        button.setIconTint(ColorStateList.valueOf(iconColor));
     }
 
     @NonNull
