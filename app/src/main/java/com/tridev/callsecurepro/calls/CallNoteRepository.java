@@ -75,4 +75,12 @@ public final class CallNoteRepository {
     public void markFollowUpDone(long callLogId) {
         callNoteDao.markFollowUpDone(callLogId, System.currentTimeMillis());
     }
+
+    public void snoozeFollowUp(long callLogId, long followUpAt) {
+        callNoteDao.snoozeFollowUp(
+                callLogId,
+                Math.max(System.currentTimeMillis(), followUpAt),
+                System.currentTimeMillis()
+        );
+    }
 }
