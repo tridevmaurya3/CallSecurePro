@@ -88,9 +88,7 @@ public class CallFollowUpWorker extends Worker {
                 R.string.call_reminder_follow_up_title,
                 displayInfo.title
         );
-        String body = note.noteText == null || note.noteText.trim().isEmpty()
-                ? getApplicationContext().getString(R.string.call_reminder_follow_up_body)
-                : note.noteText.trim();
+        String body = getApplicationContext().getString(R.string.call_reminder_follow_up_body);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(
                 getApplicationContext(),
@@ -99,9 +97,9 @@ public class CallFollowUpWorker extends Worker {
                 .setSmallIcon(R.drawable.ic_notification_call)
                 .setContentTitle(title)
                 .setContentText(body)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setCategory(NotificationCompat.CATEGORY_REMINDER)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .addAction(0, getApplicationContext().getString(R.string.call_reminder_done), doneIntent)
