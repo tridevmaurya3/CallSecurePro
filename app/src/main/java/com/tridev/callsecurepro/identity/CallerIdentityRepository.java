@@ -20,7 +20,6 @@ import com.tridev.callsecurepro.data.identity.LookupHistoryDao;
 import com.tridev.callsecurepro.data.identity.LookupHistoryEntity;
 import com.tridev.callsecurepro.protection.CallerAssessment;
 import com.tridev.callsecurepro.protection.CallerIntelligenceEngine;
-import com.tridev.callsecurepro.protection.ProtectionRepository;
 
 import java.util.List;
 
@@ -33,9 +32,12 @@ import java.util.List;
  * 3) the ordered multi-source remote provider pipeline,
  * 4) unknown identity with the local protection assessment only.
  *
- * The remote pipeline is provider-based. Firebase Community is the first real cloud provider;
- * future licensed business/reputation providers can be added without rewriting this repository.
- * This repository never invents a caller/business name.
+ * New cache entries use a canonical E.164 key whenever the number can be parsed. This means
+ * national and international representations of the same number converge on one learned result.
+ * Legacy normalized cache entries remain readable during migration.
+ *
+ * Short-lived SHA-256 negative caching suppresses repeated remote misses without storing a raw
+ * phone number in preferences. This repository never invents a caller/business name.
  */
 public final class CallerIdentityRepository {
 
@@ -46,6 +48,8 @@ public final class CallerIdentityRepository {
     private final LookupHistoryDao historyDao;
     private final CallerIntelligenceEngine intelligenceEngine;
     private final CallerIdentityRemoteSource remoteSource;
+    private final CallerIdentityLookupKey lookupKeyResolver;
+    private final RemoteLookupMissCache remoteMissCache;
 
     public CallerIdentityRepository(@NonNull Context context) {
         this(context, createDefaultRemotePipeline(context));
@@ -74,6 +78,8 @@ public final class CallerIdentityRepository {
         identityDao = database.callerIdentityDao();
         historyDao = database.lookupHistoryDao();
         intelligenceEngine = new CallerIntelligenceEngine(appContext);
+        lookupKeyResolver = new CallerIdentityLookupKey();
+        remoteMissCache = new RemoteLookupMissCache(appContext);
         this.remoteSource = remoteSource;
     }
 
@@ -106,10 +112,8 @@ public final class CallerIdentityRepository {
             boolean recordLookupHistory,
             @NonNull CallerIdentityLookupMode lookupMode
     ) {
-        String normalized = ProtectionRepository.normalize(rawNumber);
-        if (normalized.isEmpty()) {
-            throw new IllegalArgumentException("A valid phone number is required");
-        }
+        CallerIdentityLookupKey.Key lookupKey = lookupKeyResolver.resolve(rawNumber);
+        String canonicalNumber = lookupKey.canonical;
 
         long now = System.currentTimeMillis();
         identityDao.deleteExpired(now);
@@ -118,7 +122,7 @@ public final class CallerIdentityRepository {
         ContactIdentity contactIdentity = findContact(rawNumber);
         if (contactIdentity != null) {
             CallerIdentityResult result = new CallerIdentityResult(
-                    normalized,
+                    canonicalNumber,
                     contactIdentity.number,
                     contactIdentity.name,
                     "Saved contact",
@@ -128,42 +132,76 @@ public final class CallerIdentityRepository {
                     100,
                     assessment
             );
+            remoteMissCache.clear(canonicalNumber);
             recordHistoryIfNeeded(rawNumber, result, recordLookupHistory);
             return result;
         }
 
-        CallerIdentityEntity cached = identityDao.findByNumber(normalized);
-        if (cached != null && (cached.expiresAt <= 0L || cached.expiresAt >= now)) {
+        CallerIdentityEntity cached = findCachedIdentity(lookupKey, now);
+        if (cached != null) {
             CallerIdentityResult result = fromCachedEntity(cached, assessment);
+            remoteMissCache.clear(canonicalNumber);
             recordHistoryIfNeeded(rawNumber, result, recordLookupHistory);
             return result;
         }
 
-        CallerIdentityRemoteSource.RemoteIdentity remoteIdentity = remoteSource.lookup(
-                normalized,
-                lookupMode
+        boolean remoteSkipped = remoteMissCache.shouldSkipRemote(
+                canonicalNumber,
+                lookupMode,
+                now
         );
-        if (remoteIdentity != null && hasMeaningfulRemoteIdentity(remoteIdentity)) {
-            CallerIdentityEntity entity = toEntity(normalized, remoteIdentity, now);
-            identityDao.upsert(entity);
-            CallerIdentityResult result = fromCachedEntity(entity, assessment);
-            recordHistoryIfNeeded(rawNumber, result, recordLookupHistory);
-            return result;
+        if (!remoteSkipped) {
+            CallerIdentityRemoteSource.RemoteIdentity remoteIdentity = remoteSource.lookup(
+                    canonicalNumber,
+                    lookupMode
+            );
+            if (remoteIdentity != null && hasMeaningfulRemoteIdentity(remoteIdentity)) {
+                CallerIdentityEntity entity = toEntity(canonicalNumber, remoteIdentity, now);
+                identityDao.upsert(entity);
+                remoteMissCache.clear(canonicalNumber);
+                CallerIdentityResult result = fromCachedEntity(entity, assessment);
+                recordHistoryIfNeeded(rawNumber, result, recordLookupHistory);
+                return result;
+            }
+            remoteMissCache.recordMiss(canonicalNumber, now);
         }
 
         CallerIdentityResult result = new CallerIdentityResult(
-                normalized,
-                rawNumber.trim().isEmpty() ? normalized : rawNumber.trim(),
+                canonicalNumber,
+                rawNumber.trim().isEmpty() ? canonicalNumber : rawNumber.trim(),
                 null,
                 null,
                 CallerIdentityResult.IdentityType.UNKNOWN,
                 CallerIdentityResult.VerificationLevel.UNVERIFIED,
-                "Local intelligence",
+                remoteSkipped ? "Recent remote miss cache" : "Local intelligence",
                 0,
                 assessment
         );
         recordHistoryIfNeeded(rawNumber, result, recordLookupHistory);
         return result;
+    }
+
+    @Nullable
+    private CallerIdentityEntity findCachedIdentity(
+            @NonNull CallerIdentityLookupKey.Key lookupKey,
+            long now
+    ) {
+        CallerIdentityEntity cached = identityDao.findByNumber(lookupKey.canonical);
+        if (isUsableCache(cached, now)) {
+            return cached;
+        }
+
+        if (lookupKey.hasDistinctLegacyAlias()) {
+            CallerIdentityEntity legacy = identityDao.findByNumber(lookupKey.legacy);
+            if (isUsableCache(legacy, now)) {
+                return legacy;
+            }
+        }
+        return null;
+    }
+
+    private boolean isUsableCache(@Nullable CallerIdentityEntity entity, long now) {
+        return entity != null && (entity.expiresAt <= 0L || entity.expiresAt >= now);
     }
 
     @NonNull
@@ -248,7 +286,7 @@ public final class CallerIdentityRepository {
 
     @NonNull
     private CallerIdentityEntity toEntity(
-            @NonNull String normalized,
+            @NonNull String canonicalNumber,
             @NonNull CallerIdentityRemoteSource.RemoteIdentity remoteIdentity,
             long now
     ) {
@@ -260,9 +298,9 @@ public final class CallerIdentityRepository {
                 : remoteIdentity.displayName;
 
         return new CallerIdentityEntity(
-                normalized,
+                canonicalNumber,
                 remoteIdentity.displayNumber.trim().isEmpty()
-                        ? normalized
+                        ? canonicalNumber
                         : remoteIdentity.displayNumber.trim(),
                 personName,
                 businessName,
