@@ -29,15 +29,18 @@ import java.util.List;
  * Resolution priority:
  * 1) a real contact saved on the device,
  * 2) a still-valid cached identity from a real prior source,
- * 3) the ordered multi-source remote provider pipeline,
- * 4) unknown identity with the local protection assessment only.
+ * 3) Firebase verified/community directory,
+ * 4) key-free user-initiated exact-phone public/business discovery,
+ * 5) unknown identity with the local protection assessment only.
  *
  * New cache entries use a canonical E.164 key whenever the number can be parsed. This means
  * national and international representations of the same number converge on one learned result.
  * Legacy normalized cache entries remain readable during migration.
  *
  * Short-lived SHA-256 negative caching suppresses repeated remote misses without storing a raw
- * phone number in preferences. This repository never invents a caller/business name.
+ * phone number in preferences. Slow public discovery is disabled for passive call screening,
+ * and public/community-maintained discoveries are never promoted to verified owner identity.
+ * This repository never invents a caller/business name.
  */
 public final class CallerIdentityRepository {
 
@@ -65,6 +68,16 @@ public final class CallerIdentityRepository {
                         new CommunityCallerIdentityRemoteSource(
                                 CommunityNetworkProvider.get(appContext)
                         )
+                )
+                .add(
+                        "wikidata-exact-phone",
+                        70,
+                        new WikidataCallerIdentityRemoteSource()
+                )
+                .add(
+                        "openstreetmap-exact-phone",
+                        60,
+                        new OpenStreetMapCallerIdentityRemoteSource()
                 )
                 .build();
     }
