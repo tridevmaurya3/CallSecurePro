@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -113,7 +114,13 @@ public final class WikidataCallerIdentityRemoteSource implements CallerIdentityR
             @NonNull String body,
             @NonNull String normalizedNumber
     ) {
-        JSONObject root = new JSONObject(body);
+        final JSONObject root;
+        try {
+            root = new JSONObject(body);
+        } catch (JSONException ignored) {
+            return null;
+        }
+
         JSONObject results = root.optJSONObject("results");
         if (results == null) {
             return null;
