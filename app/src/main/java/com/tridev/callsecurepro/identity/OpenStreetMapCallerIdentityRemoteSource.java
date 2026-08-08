@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -124,7 +125,13 @@ public final class OpenStreetMapCallerIdentityRemoteSource implements CallerIden
             @NonNull String body,
             @NonNull String normalizedNumber
     ) {
-        JSONObject root = new JSONObject(body);
+        final JSONObject root;
+        try {
+            root = new JSONObject(body);
+        } catch (JSONException ignored) {
+            return null;
+        }
+
         JSONArray elements = root.optJSONArray("elements");
         if (elements == null) {
             return null;
